@@ -41,6 +41,8 @@ public class FileSystemResourceLoader extends DefaultResourceLoader {
 	 * Resolve resource paths as file system paths.
 	 * <p>Note: Even if a given path starts with a slash, it will get
 	 * interpreted as relative to the current VM working directory.
+	 * 将资源路径解析为文件系统路径。 注意：即使给定的路径以斜杠开头，它也会被解释为相对于当前VM工作目录。
+	 *
 	 * @param path the path to the resource
 	 * @return the corresponding Resource handle
 	 * @see FileSystemResource
@@ -56,8 +58,8 @@ public class FileSystemResourceLoader extends DefaultResourceLoader {
 
 
 	/**
-	 * FileSystemResource that explicitly expresses a context-relative path
-	 * through implementing the ContextResource interface.
+	 * FileSystemResource that explicitly expresses a context-relative path through implementing the ContextResource interface.
+	 * FileSystemResource，通过实现ContextResource接口显式表示上下文相对路径。
 	 */
 	private static class FileSystemContextResource extends FileSystemResource implements ContextResource {
 

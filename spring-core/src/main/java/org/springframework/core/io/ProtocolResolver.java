@@ -33,11 +33,16 @@ import org.springframework.lang.Nullable;
 public interface ProtocolResolver {
 
 	/**
-	 * Resolve the given location against the given resource loader
-	 * if this implementation's protocol matches.
-	 * @param location the user-specified resource location
-	 * @param resourceLoader the associated resource loader
-	 * @return a corresponding {@code Resource} handle if the given location
+	 * Resolve the given location against the given resource loader if this implementation's protocol matches.
+	 * 如果此实现的协议匹配，则根据给定的resourceLoader(资源加载程序)解析给定的位置。
+	 * <p>
+	 * 在介绍 Resource 时，提到如果要实现自定义 Resource，我们只需要继承 AbstractResource 即可；
+	 * 然后要实现自定义读取Resource，我们只需要继承 DefaultResourceLoader 即可，
+	 * 但是有了 ProtocolResolver 后，我们要实现自定义读取Resource，也可以不需要直接继承 DefaultResourceLoader，改为实现 ProtocolResolver 接口也可以实现自定义的 ResourceLoader。
+	 *
+	 * @param location       the user-specified resource location 用户指定的资源位置
+	 * @param resourceLoader the associated resource loader 关联的资源加载器
+	 * @return a corresponding {@code Resource} handle if the given location 如果给定位置与此解析器的协议匹配，则为相应的资源句柄，否则为null
 	 * matches this resolver's protocol, or {@code null} otherwise
 	 */
 	@Nullable
