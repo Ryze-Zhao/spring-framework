@@ -83,6 +83,8 @@ public class XmlValidationModeDetector {
 	/**
 	 * Detect the validation mode for the XML document in the supplied {@link InputStream}.
 	 * Note that the supplied {@link InputStream} is closed by this method before returning.
+	 * 在提供的InputStream中检测XML文档的验证模式。请注意，提供的InputStream在返回之前由此方法关闭
+	 *
 	 * @param inputStream the InputStream to parse
 	 * @throws IOException in case of I/O failure
 	 * @see #VALIDATION_DTD
@@ -90,26 +92,34 @@ public class XmlValidationModeDetector {
 	 */
 	public int detectValidationMode(InputStream inputStream) throws IOException {
 		// Peek into the file to look for DOCTYPE.
+		// 查看文件以查找DOCTYPE
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+			// 是否为 DTD 校验模式。默认为，非 DTD 模式，即 XSD 模式
 			boolean isDtdValidated = false;
 			String content;
+			// <0> 循环，逐行读取 XML 文件的内容
 			while ((content = reader.readLine()) != null) {
 				content = consumeCommentTokens(content);
+				// 跳过，如果是注释，或者
 				if (this.inComment || !StringUtils.hasText(content)) {
 					continue;
 				}
+				// <1> 包含 DOCTYPE 为 DTD 模式
 				if (hasDoctype(content)) {
 					isDtdValidated = true;
 					break;
 				}
+				// <2>  hasOpeningTag 方法会校验，如果这一行有 < ，并且 < 后面跟着的是字母，则返回 true 。
 				if (hasOpeningTag(content)) {
 					// End of meaningful data...
 					break;
 				}
 			}
+			// 返回 VALIDATION_DTD or VALIDATION_XSD 模式
 			return (isDtdValidated ? VALIDATION_DTD : VALIDATION_XSD);
 		}
 		catch (CharConversionException ex) {
+			// <3> 返回 VALIDATION_AUTO 模式
 			// Choked on some character encoding...
 			// Leave the decision up to the caller.
 			return VALIDATION_AUTO;
@@ -119,6 +129,7 @@ public class XmlValidationModeDetector {
 
 	/**
 	 * Does the content contain the DTD DOCTYPE declaration?
+	 * 内容是否包含DTD DOCTYPE声明？
 	 */
 	private boolean hasDoctype(String content) {
 		return content.contains(DOCTYPE);
@@ -128,6 +139,7 @@ public class XmlValidationModeDetector {
 	 * Does the supplied content contain an XML opening tag. If the parse state is currently
 	 * in an XML comment then this method always returns false. It is expected that all comment
 	 * tokens will have consumed for the supplied content before passing the remainder to this method.
+	 * 提供的内容是否包含XML开始标记。如果解析状态当前在XML注释中，那么此方法总是返回false。在将剩余内容传递给此方法之前，所有注释标记都将被所提供的内容使用
 	 */
 	private boolean hasOpeningTag(String content) {
 		if (this.inComment) {
