@@ -45,14 +45,15 @@ public abstract class BeanDefinitionReaderUtils {
 
 
 	/**
-	 * Create a new GenericBeanDefinition for the given parent name and class name,
-	 * eagerly loading the bean class if a ClassLoader has been specified.
-	 * @param parentName the name of the parent bean, if any
-	 * @param className the name of the bean class, if any
-	 * @param classLoader the ClassLoader to use for loading bean classes
-	 * (can be {@code null} to just register bean classes by name)
-	 * @return the bean definition
-	 * @throws ClassNotFoundException if the bean class could not be loaded
+	 * Create a new GenericBeanDefinition for the given parent name and class name,eagerly loading the bean class if a ClassLoader has been specified.
+	 * 为给定的父名称和类名创建一个新的GenericBeanDefinition，如果指定了类加载器，则急切地加载bean类。
+	 *
+	 * @param parentName  the name of the parent bean, if any 父bean的名称（如果有的话）
+	 * @param className   the name of the bean class, if any bean类的名称，如果有的话
+	 * @param classLoader the ClassLoader to use for loading bean classes 用于加载bean类的类加载器（可以是{@code null}，以便只按名称注册bean类）
+	 *                    (can be {@code null} to just register bean classes by name)
+	 * @return the bean definition 返回bean定义
+	 * @throws ClassNotFoundException if the bean class could not be loaded 如果无法加载bean类，则引发ClassNotFoundException
 	 */
 	public static AbstractBeanDefinition createBeanDefinition(
 			@Nullable String parentName, @Nullable String className, @Nullable ClassLoader classLoader) throws ClassNotFoundException {
