@@ -1501,10 +1501,12 @@ public class BeanDefinitionParserDelegate {
 
 	/**
 	 * Decorate the given bean definition through a namespace handler, if applicable.
-	 * @param ele the current element
-	 * @param originalDef the current bean definition
-	 * @param containingBd the containing bean definition (if any)
-	 * @return the decorated bean definition
+	 * 如果适用，通过名称空间处理程序修饰给定的bean定义。
+	 *
+	 * @param ele          the current element   当前元素
+	 * @param originalDef  the current bean definition   当前bean定义
+	 * @param containingBd the containing bean definition (if any)  包含bean定义（如果有的话）
+	 * @return the decorated bean definition 装饰bean定义
 	 */
 	public BeanDefinitionHolder decorateBeanDefinitionIfRequired(
 			Element ele, BeanDefinitionHolder originalDef, @Nullable BeanDefinition containingBd) {
@@ -1512,6 +1514,7 @@ public class BeanDefinitionParserDelegate {
 		BeanDefinitionHolder finalDefinition = originalDef;
 
 		// Decorate based on custom attributes first.
+		// 首先根据自定义属性进行装饰。
 		NamedNodeMap attributes = ele.getAttributes();
 		for (int i = 0; i < attributes.getLength(); i++) {
 			Node node = attributes.item(i);
@@ -1519,6 +1522,7 @@ public class BeanDefinitionParserDelegate {
 		}
 
 		// Decorate based on custom nested elements.
+		// 基于自定义嵌套元素进行装饰。
 		NodeList children = ele.getChildNodes();
 		for (int i = 0; i < children.getLength(); i++) {
 			Node node = children.item(i);
@@ -1530,31 +1534,33 @@ public class BeanDefinitionParserDelegate {
 	}
 
 	/**
-	 * Decorate the given bean definition through a namespace handler,
-	 * if applicable.
-	 * @param node the current child node
-	 * @param originalDef the current bean definition
-	 * @param containingBd the containing bean definition (if any)
-	 * @return the decorated bean definition
+	 * Decorate the given bean definition through a namespace handler,if applicable.
+	 * 如果适用，通过名称空间处理程序修饰给定的bean定义。
+	 * @param node the current child node   当前子节点
+	 * @param originalDef the current bean definition   当前bean定义
+	 * @param containingBd the containing bean definition (if any)  包含bean定义（如果有的话)
+	 * @return the decorated bean definition    装饰bean定义
 	 */
 	public BeanDefinitionHolder decorateIfRequired(
 			Node node, BeanDefinitionHolder originalDef, @Nullable BeanDefinition containingBd) {
-
+		// <1> 获取自定义标签的命名空间
 		String namespaceUri = getNamespaceURI(node);
+		// <2> 过滤掉默认命名标签
 		if (namespaceUri != null && !isDefaultNamespace(namespaceUri)) {
+			// <2> 获取相应的处理器
 			NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);
 			if (handler != null) {
+				// <3> 进行装饰处理
 				BeanDefinitionHolder decorated =
 						handler.decorate(node, originalDef, new ParserContext(this.readerContext, this, containingBd));
 				if (decorated != null) {
 					return decorated;
 				}
-			}
-			else if (namespaceUri.startsWith("http://www.springframework.org/schema/")) {
+			} else if (namespaceUri.startsWith("http://www.springframework.org/schema/")) {
 				error("Unable to locate Spring NamespaceHandler for XML schema namespace [" + namespaceUri + "]", node);
-			}
-			else {
+			} else {
 				// A custom namespace, not to be handled by Spring - maybe "xml:...".
+				// 一个自定义名称空间，不由Spring处理-可能是“xml:…”。
 				if (logger.isDebugEnabled()) {
 					logger.debug("No Spring NamespaceHandler found for XML schema namespace [" + namespaceUri + "]");
 				}
