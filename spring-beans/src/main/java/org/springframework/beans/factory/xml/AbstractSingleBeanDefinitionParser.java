@@ -48,43 +48,52 @@ import org.springframework.lang.Nullable;
 public abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDefinitionParser {
 
 	/**
-	 * Creates a {@link BeanDefinitionBuilder} instance for the
-	 * {@link #getBeanClass bean Class} and passes it to the
-	 * {@link #doParse} strategy method.
-	 * @param element the element that is to be parsed into a single BeanDefinition
-	 * @param parserContext the object encapsulating the current state of the parsing process
-	 * @return the BeanDefinition resulting from the parsing of the supplied {@link Element}
-	 * @throws IllegalStateException if the bean {@link Class} returned from
-	 * {@link #getBeanClass(org.w3c.dom.Element)} is {@code null}
+	 * Creates a {@link BeanDefinitionBuilder} instance for the {@link #getBeanClass bean Class} and passes it to the{@link #doParse} strategy method.
+	 * 为bean类创建BeanDefinitionBuilder实例，并将其传递给doParse策略方法。
+	 *
+	 * @param element       the element that is to be parsed into a single BeanDefinition     要解析为单个BeanDefinition的元素
+	 * @param parserContext the object encapsulating the current state of the parsing process   封装解析过程当前状态的对象
+	 * @return the BeanDefinition resulting from the parsing of the supplied {@link Element}    解析提供的元素所产生的BeanDefinition
+	 * @throws IllegalStateException if the bean {@link Class} returned from 如果从getBeanClass（Element）返回的bean类为null
+	 *                               {@link #getBeanClass(org.w3c.dom.Element)} is {@code null}
 	 * @see #doParse
 	 */
 	@Override
 	protected final AbstractBeanDefinition parseInternal(Element element, ParserContext parserContext) {
+		// 创建 BeanDefinitionBuilder 对象
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition();
+		// 获取父类元素
 		String parentName = getParentName(element);
 		if (parentName != null) {
 			builder.getRawBeanDefinition().setParentName(parentName);
 		}
+		// 获取自定义标签中的 class，这个时候会去调用自定义解析中的 getBeanClass()
 		Class<?> beanClass = getBeanClass(element);
 		if (beanClass != null) {
 			builder.getRawBeanDefinition().setBeanClass(beanClass);
-		}
-		else {
+		} else {
+			// beanClass 为 null，意味着子类并没有重写 getBeanClass() 方法，则尝试去判断是否重写了 getBeanClassName()
 			String beanClassName = getBeanClassName(element);
 			if (beanClassName != null) {
 				builder.getRawBeanDefinition().setBeanClassName(beanClassName);
 			}
 		}
+		// 设置 source 属性
 		builder.getRawBeanDefinition().setSource(parserContext.extractSource(element));
+		// 设置 scope 属性
 		BeanDefinition containingBd = parserContext.getContainingBeanDefinition();
 		if (containingBd != null) {
 			// Inner bean definition must receive same scope as containing bean.
+			// 内部bean定义必须接收与包含bean相同的作用域。
 			builder.setScope(containingBd.getScope());
 		}
+		// 设置 lazy-init 属性
 		if (parserContext.isDefaultLazyInit()) {
 			// Default-lazy-init applies to custom bean definitions as well.
+			// 默认的lazy init也适用于自定义bean定义。
 			builder.setLazyInit(true);
 		}
+		// 调用子类的 doParse() 进行解析
 		doParse(element, parserContext, builder);
 		return builder.getBeanDefinition();
 	}

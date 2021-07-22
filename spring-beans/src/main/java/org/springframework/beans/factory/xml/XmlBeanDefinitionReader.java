@@ -579,6 +579,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 	/**
 	 * Lazily create a default NamespaceHandlerResolver, if not set before.
+	 * 如果之前未设置，则延迟创建默认的NamespaceHandlerResolver
+	 *
 	 * @see #createDefaultNamespaceHandlerResolver()
 	 */
 	public NamespaceHandlerResolver getNamespaceHandlerResolver() {
@@ -591,6 +593,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	/**
 	 * Create the default implementation of {@link NamespaceHandlerResolver} used if none is specified.
 	 * <p>The default implementation returns an instance of {@link DefaultNamespaceHandlerResolver}.
+	 * 创建NamespaceHandlerResolver的默认实现（如果未指定）。 默认实现返回DefaultNamespaceHandlerResolver的实例
 	 * @see DefaultNamespaceHandlerResolver#DefaultNamespaceHandlerResolver(ClassLoader)
 	 */
 	protected NamespaceHandlerResolver createDefaultNamespaceHandlerResolver() {
