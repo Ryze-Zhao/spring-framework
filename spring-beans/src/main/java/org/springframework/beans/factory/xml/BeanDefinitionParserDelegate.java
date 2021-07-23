@@ -1459,6 +1459,8 @@ public class BeanDefinitionParserDelegate {
 
 	/**
 	 * Parse a custom element (outside of the default namespace).
+	 * 解析自定义元素（在默认命名空间之外）。
+	 *
 	 * @param ele the element to parse
 	 * @return the resulting bean definition
 	 */

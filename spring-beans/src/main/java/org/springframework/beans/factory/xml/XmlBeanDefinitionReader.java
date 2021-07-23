@@ -151,8 +151,10 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 	/**
 	 * Create new XmlBeanDefinitionReader for the given bean factory.
-	 * @param registry the BeanFactory to load bean definitions into,
-	 * in the form of a BeanDefinitionRegistry
+	 * 为给定的bean工厂创建新的XmlBeanDefinitionReader
+	 *
+	 * @param registry the BeanFactory to load bean definitions into,in the form of a BeanDefinitionRegistry
+	 *                 以BeanDefinitionRegistry的形式将bean定义加载到的BeanFactory
 	 */
 	public XmlBeanDefinitionReader(BeanDefinitionRegistry registry) {
 		super(registry);
@@ -450,10 +452,11 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 	/**
 	 * Actually load the specified document using the configured DocumentLoader.
-	 * @param inputSource the SAX InputSource to read from
-	 * @param resource the resource descriptor for the XML file
-	 * @return the DOM Document
-	 * @throws Exception when thrown from the DocumentLoader
+	 * 使用配置的DocumentLoader实际加载指定的文档。
+	 * @param inputSource the SAX InputSource to read from      要读取的SAX输入源
+	 * @param resource the resource descriptor for the XML file     XML文件的资源描述符
+	 * @return the DOM Document         DOM文档
+	 * @throws Exception when thrown from the DocumentLoader    从DocumentLoader抛出时
 	 * @see #setDocumentLoader
 	 * @see DocumentLoader#loadDocument
 	 */
