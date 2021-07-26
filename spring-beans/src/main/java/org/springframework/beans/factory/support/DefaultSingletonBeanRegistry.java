@@ -79,40 +79,37 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	/**
 	 * Cache of singleton objects: bean name to bean instance.
 	 * 存放的是单例 bean 的映射。
-	 * <p>
+	 * 一级缓存，存放的是单例 bean 的映射。
+	 * 注意，这里的 bean 是已经创建完成的。
+	 *
 	 * 对应关系为 bean name --> bean instance。
 	 */
 	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
 
 	/**
-	 * Cache of singleton factories: bean name to ObjectFactory.
-	 * 存放的是 ObjectFactory，可以理解为创建单例 bean 的 factory 。
+	 * Cache of early singleton objects: bean name to bean instance.
+	 * 二级缓存，存放的是早期半成品（未初始化完）的 bean，对应关系也是 bean name --> bean instance。
+	 * 它与 {@link #singletonObjects} 区别在于， 它自己存放的 bean 不一定是完整。
+	 * 这个 Map 也是解决【循环依赖】的关键所在。
 	 *
-	 * 存放的是【早期】的单例 bean 的映射。
-	 *
-	 * 对应关系也是 bean name --> bean instance。
-	 *
-	 * 它与 {@link #singletonObjects} 的区别区别在，于 earlySingletonObjects 中存放的 bean 不一定是完整的。
+	 * 存放的是 ObjectFactory，可以理解为创建单例 bean 的 factory 。存放的是【早期】的单例 bean 的映射。
+	 * 它与 {@link #singletonObjects} 的区别区别在于 earlySingletonObjects 中存放的 bean 不一定是完整的。
 	 *
 	 * 从 {@link #getSingleton(String)} 方法中，中我们可以了解，bean 在创建过程中就已经加入到 earlySingletonObjects 中了，
 	 * 所以当在 bean 的创建过程中就可以通过 getBean() 方法获取。
-	 * 这个 Map 也是解决【循环依赖】的关键所在。
-	 */
-	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
-
-	/**
-	 * Cache of early singleton objects: bean name to bean instance.
-	 * <p>
-	 * 存放的是早期的 bean，对应关系也是 bean name --> bean instance。
-	 * <p>
-	 * 它与 {@link #singletonFactories} 区别在于 earlySingletonObjects 中存放的 bean 不一定是完整。
-	 * <p>
-	 * 从 {@link #getSingleton(String)} 方法中，我们可以了解，bean 在创建过程中就已经加入到 earlySingletonObjects 中了。
-	 * 所以当在 bean 的创建过程中，就可以通过 getBean() 方法获取。
-	 * <p>
-	 * 这个 Map 也是【循环依赖】的关键所在。
 	 */
 	private final Map<String, Object> earlySingletonObjects = new ConcurrentHashMap<>(16);
+
+	/**
+	 * Cache of singleton factories: bean name to ObjectFactory.
+	 *
+	 * 三级缓存，存放的是 ObjectFactory，可以理解为创建早期半成品（未初始化完）的 bean 的 factory ，最终添加到二级缓存 {@link #earlySingletonObjects} 中
+	 *
+	 * 对应关系是 bean name --> ObjectFactory
+	 *
+	 * 这个 Map 也是【循环依赖】的关键所在。
+	 */
+	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
 
 	/**
 	 * Set of registered singletons, containing the bean names in registration order.
@@ -173,7 +170,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 	/**
 	 * Add the given singleton object to the singleton cache of this factory.
-	 * <p>To be called for eager registration of singletons. 将给定的单例对象添加到此工厂的单例缓存。 被要求立即注册的单例。
+	 * <p>To be called for eager registration of singletons.
+	 * 将给定的单例对象添加到此工厂的单例缓存。 被要求立即注册的单例。
 	 * @param beanName the name of the bean
 	 * @param singletonObject the singleton object
 	 */
@@ -187,10 +185,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	}
 
 	/**
-	 * Add the given singleton factory for building the specified singleton
-	 * if necessary.
-	 * <p>To be called for eager registration of singletons, e.g. to be able to
-	 * resolve circular references.
+	 * Add the given singleton factory for building the specified singleton if necessary.
+	 * <p>To be called for eager registration of singletons, e.g. to be able to resolve circular references.
+	 * 如果需要，添加给定的单例工厂来构建指定的单例。 迫切需要单例注册，例如能够解析循环引用
 	 * @param beanName the name of the bean
 	 * @param singletonFactory the factory for the singleton object
 	 */
@@ -215,24 +212,27 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * Return the (raw) singleton object registered under the given name.
 	 * <p>Checks already instantiated singletons and also allows for an early
 	 * reference to a currently created singleton (resolving a circular reference).
-	 * @param beanName the name of the bean to look for
-	 * @param allowEarlyReference whether early references should be created or not
-	 * @return the registered singleton object, or {@code null} if none found
+	 * 返回在给定名称下注册的（原始）单例对象。 检查已实例化的单例，还允许对当前创建的单例进行早期引用（解析循环引用）。
+	 * @param beanName the name of the bean to look for 要查找的bean的名称
+	 * @param allowEarlyReference whether early references should be created or not 是否应创建早期引用
+	 * @return the registered singleton object, or {@code null} if none found   注册的单例对象，如果找不到则为null
 	 */
 	@Nullable
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
 		// Quick check for existing instance without full singleton lock
-		// 快速检查没有完整单例锁的现有实例
+		// 从单例缓冲中加载 bean
 		Object singletonObject = this.singletonObjects.get(beanName);
 		// 缓存中的 bean 为空，且当前 bean 正在创建
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
 			singletonObject = this.earlySingletonObjects.get(beanName);
 			//双重校验
+			// earlySingletonObjects 中没有，且允许提前创建
 			if (singletonObject == null && allowEarlyReference) {
 				// 加锁
 				synchronized (this.singletonObjects) {
 					// Consistent creation of early reference within full singleton lock
 					// 在完整单例锁中一致地创建早期引用
+					// 从 earlySingletonObjects 获取
 					singletonObject = this.singletonObjects.get(beanName);
 					if (singletonObject == null) {
 						// 从 earlySingletonObjects 获取

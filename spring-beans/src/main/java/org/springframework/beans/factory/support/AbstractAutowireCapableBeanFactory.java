@@ -607,6 +607,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Eagerly cache singletons to be able to resolve circular references
 		// even when triggered by lifecycle interfaces like BeanFactoryAware.
 		// <4> 解决单例模式的循环依赖
+		// 单例模式 && 运行循环依赖 && 当前单例 bean 是否正在被创建
 		boolean earlySingletonExposure = (mbd.isSingleton() && this.allowCircularReferences &&
 				isSingletonCurrentlyInCreation(beanName));
 		if (earlySingletonExposure) {
@@ -987,8 +988,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	}
 
 	/**
-	 * Obtain a reference for early access to the specified bean,
-	 * typically for the purpose of resolving a circular reference.
+	 * Obtain a reference for early access to the specified bean,typically for the purpose of resolving a circular reference.
+	 * 获取一个引用，以便早期访问指定的bean，通常用于解析循环引用。
+	 *
+	 * 对创建的早期半成品（未初始化）的 Bean 处理引用。例如说，AOP 就是在这里动态织入，创建其代理 Bean 返回
 	 * @param beanName the name of the bean (for error handling purposes)
 	 * @param mbd the merged bean definition for the bean
 	 * @param bean the raw bean instance
