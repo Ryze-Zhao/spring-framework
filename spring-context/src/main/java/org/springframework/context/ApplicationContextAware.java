@@ -66,6 +66,7 @@ public interface ApplicationContextAware extends Aware {
 	 * or a custom init-method. Invoked after {@link ResourceLoaderAware#setResourceLoader},
 	 * {@link ApplicationEventPublisherAware#setApplicationEventPublisher} and
 	 * {@link MessageSourceAware}, if applicable.
+	 * 设置此 bean 对象的 ApplicationContext，通常，该方法用于初始化对象
 	 * @param applicationContext the ApplicationContext object to be used by this object
 	 * @throws ApplicationContextException in case of context initialization errors
 	 * @throws BeansException if thrown by application context methods
