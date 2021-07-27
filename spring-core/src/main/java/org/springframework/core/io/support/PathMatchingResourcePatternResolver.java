@@ -347,16 +347,16 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 */
 	protected Set<Resource> doFindAllClassPathResources(String path) throws IOException {
 		Set<Resource> result = new LinkedHashSet<>(16);
-		// <1> 根据 ClassLoader 加载路径下的所有资源
+		// <IoC解析点1-1> 根据 ClassLoader 加载路径下的所有资源
 		ClassLoader cl = getClassLoader();
 		Enumeration<URL> resourceUrls = (cl != null ? cl.getResources(path) : ClassLoader.getSystemResources(path));
-		// <2> 读取为Resource
+		// <IoC解析点1-2> 读取为Resource
 		while (resourceUrls.hasMoreElements()) {
 			URL url = resourceUrls.nextElement();
 			// 将 URL 转换成 UrlResource
 			result.add(convertClassLoaderURL(url));
 		}
-		// <3> 如果我们传入的path为null或者空白，加载路径下得所有 jar 包
+		// <IoC解析点1-3> 如果我们传入的path为null或者空白，加载路径下得所有 jar 包
 		if (!StringUtils.hasLength(path)) {
 			// The above result is likely to be incomplete, i.e. only containing file system references. We need to have pointers to each of the jar files on the classpath as well...
 			// 上述结果可能不完整，即仅包含文件系统引用。我们需要有指向类路径上每个jar文件的指针
@@ -545,6 +545,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 		// 转换成 Resource 数组返回
 		return result.toArray(new Resource[0]);
 	}
+
 
 	/**
 	 * Determine the root directory for the given location.
