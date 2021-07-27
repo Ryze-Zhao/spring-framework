@@ -56,6 +56,7 @@ public interface Resource extends InputStreamSource {
 	 * <p>This method performs a definitive existence check, whereas the
 	 * existence of a {@code Resource} handle only guarantees a valid
 	 * descriptor handle.
+	 * (资源是否存在)
 	 * 确定此资源是否实际以物理形式存在。 此方法执行确定的存在性检查，而资源句柄的存在仅保证有效的描述符句柄。资源是否存在
 	 */
 	boolean exists();
@@ -68,6 +69,7 @@ public interface Resource extends InputStreamSource {
 	 * Note that actual content reading may still fail when attempted.
 	 * However, a value of {@code false} is a definitive indication
 	 * that the resource content cannot be read.
+	 * (资源是否可读)
 	 * 指示是否可以通过getInputStream()读取此资源的非空内容。 对于存在的典型资源描述符是这样的，因为从5.1开始，它严格地暗示了exists()语义。
 	 * 请注意，实际内容读取在尝试时仍可能失败。但是，值false表示无法读取资源内容。资源是否可读
 	 * @see #getInputStream()
@@ -82,7 +84,8 @@ public interface Resource extends InputStreamSource {
 	 * If {@code true}, the InputStream cannot be read multiple times,
 	 * and must be read and closed to avoid resource leaks.
 	 * <p>Will be {@code false} for typical resource descriptors.
-	 * 示此资源是否表示具有开放流的句柄。如果为true，则不能多次读取InputStream，必须读取并关闭InputStream以避免资源泄漏。 对于典型的资源描述符将为false。资源所代表的句柄是否被一个 stream 打开了
+	 * (资源所代表的句柄是否被一个 stream 打开了)
+	 * 指示此资源是否表示具有开放流的句柄。如果为true，则不能多次读取InputStream，必须读取并关闭InputStream以避免资源泄漏。 对于典型的资源描述符将为false。资源所代表的句柄是否被一个 stream 打开了
 	 */
 	default boolean isOpen() {
 		return false;
@@ -93,6 +96,7 @@ public interface Resource extends InputStreamSource {
 	 * A value of {@code true} strongly suggests (but does not guarantee)
 	 * that a {@link #getFile()} call will succeed.
 	 * <p>This is conservatively {@code false} by default.
+	 * (是否为 File)
 	 * 确定此资源是否表示文件系统中的文件。值true强烈建议（但不保证）getFile()调用将成功。 默认情况下，这是false。是否为 文件
 	 * @since 5.0
 	 * @see #getFile()
