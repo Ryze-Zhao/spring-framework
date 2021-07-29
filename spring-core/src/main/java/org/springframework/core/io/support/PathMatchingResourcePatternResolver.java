@@ -194,18 +194,19 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 					PathMatchingResourcePatternResolver.class.getClassLoader());
 			equinoxResolveMethod = fileLocatorClass.getMethod("resolve", URL.class);
 			logger.trace("Found Equinox FileLocator for OSGi bundle URL resolution");
-		} catch (Throwable ex) {
+		}
+		catch (Throwable ex) {
 			equinoxResolveMethod = null;
 		}
 	}
 
 	/**
-	 * 内置的 ResourceLoader 资源定位器
+	 * 内置的 ResourceLoader 资源定位器.
 	 */
 	private final ResourceLoader resourceLoader;
 
 	/**
-	 * Ant 路径匹配器
+	 * Ant 路径匹配器.
 	 */
 	private PathMatcher pathMatcher = new AntPathMatcher();
 
@@ -290,12 +291,14 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 			if (getPathMatcher().isPattern(locationPattern.substring(CLASSPATH_ALL_URL_PREFIX.length()))) {
 				// a class path resource pattern
 				return findPathMatchingResources(locationPattern);
-			} else {
+			}
+			else {
 				// all class path resources with the given name
 				// 路径不包含通配符
 				return findAllClassPathResources(locationPattern.substring(CLASSPATH_ALL_URL_PREFIX.length()));
 			}
-		} else {
+		}
+		else {
 			// 不以 "classpath*:" 开头
 
 			// Generally only look for a pattern after a prefix here, and on Tomcat only after the "*/" separator for its "war:" protocol.
@@ -305,7 +308,8 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 			if (getPathMatcher().isPattern(locationPattern.substring(prefixEnd))) {
 				// a file pattern
 				return findPathMatchingResources(locationPattern);
-			} else {
+			}
+			else {
 				// 路径包含通配符
 
 				// a single resource with the given name
@@ -531,10 +535,12 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 			if (rootDirUrl.getProtocol().startsWith(ResourceUtils.URL_PROTOCOL_VFS)) {
 				// vfs 资源类型
 				result.addAll(VfsResourceMatchingDelegate.findMatchingResources(rootDirUrl, subPattern, getPathMatcher()));
-			} else if (ResourceUtils.isJarURL(rootDirUrl) || isJarResource(rootDirResource)) {
+			}
+			else if (ResourceUtils.isJarURL(rootDirUrl) || isJarResource(rootDirResource)) {
 				// jar 资源类型
 				result.addAll(doFindPathMatchingJarResources(rootDirResource, rootDirUrl, subPattern));
-			} else {
+			}
+			else {
 				// 其它资源类型
 				result.addAll(doFindPathMatchingFileResources(rootDirResource, subPattern));
 			}

@@ -61,7 +61,8 @@ public abstract class AbstractResource implements Resource {
 			try {
 				// 基于 File 进行判断
 				return getFile().exists();
-			} catch (IOException ex) {
+			}
+			catch (IOException ex) {
 				Log logger = LogFactory.getLog(getClass());
 				if (logger.isDebugEnabled()) {
 					logger.debug("Could not retrieve File for existence check of " + getDescription(), ex);
@@ -73,7 +74,8 @@ public abstract class AbstractResource implements Resource {
 		try {
 			getInputStream().close();
 			return true;
-		} catch (Throwable ex) {
+		}
+		catch (Throwable ex) {
 			Log logger = LogFactory.getLog(getClass());
 			if (logger.isDebugEnabled()) {
 				logger.debug("Could not retrieve InputStream for existence check of " + getDescription(), ex);

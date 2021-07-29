@@ -163,17 +163,20 @@ public class DefaultResourceLoader implements ResourceLoader {
 		if (location.startsWith("/")) {
 			// 其次，以 / 开头，返回 ClassPathContextResource 类型的资源
 			return getResourceByPath(location);
-		} else if (location.startsWith(CLASSPATH_URL_PREFIX)) {
+		}
+		else if (location.startsWith(CLASSPATH_URL_PREFIX)) {
 			// 再次，以 classpath: 开头，返回 ClassPathResource 类型的资源
 			return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX.length()), getClassLoader());
-		} else {
+		}
+		else {
 			// 然后，根据是否为文件 URL ，是则返回 FileUrlResource 类型的资源，否则返回 UrlResource 类型的资源
 			try {
 				// Try to parse the location as a URL...
 				// 尝试将位置解析为URL。。
 				URL url = new URL(location);
 				return (ResourceUtils.isFileURL(url) ? new FileUrlResource(url) : new UrlResource(url));
-			} catch (MalformedURLException ex) {
+			}
+			catch (MalformedURLException ex) {
 				// No URL -> resolve as resource path.
 				// 不是URL->解析为资源路径。最后，返回 ClassPathContextResource 类型的资源
 				return getResourceByPath(location);

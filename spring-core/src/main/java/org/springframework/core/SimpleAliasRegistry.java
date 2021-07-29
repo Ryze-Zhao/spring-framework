@@ -67,7 +67,8 @@ public class SimpleAliasRegistry implements AliasRegistry {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Alias definition '" + alias + "' ignored since it points to same name");
 				}
-			} else {
+			}
+			else {
 				// 获取 alias 已注册的 beanName
 				String registeredName = this.aliasMap.get(alias);
 				// 已存在
