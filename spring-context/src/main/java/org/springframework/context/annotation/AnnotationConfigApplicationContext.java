@@ -68,6 +68,10 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 		StartupStep createAnnotatedBeanDefReader = this.getApplicationStartup().start("spring.context.annotated-bean-reader.create");
 		this.reader = new AnnotatedBeanDefinitionReader(this);
 		createAnnotatedBeanDefReader.end();
+		/**
+		 * 可以用来扫描包或者类，继而转换成bd，但实际上我们扫描包不是scanner这个对象，是spring自己new的一个ClassPathBeanDefinitionScanner
+		 * 这里的scanner仅仅是为了程序员能够在外部调用AnnotationConfigApplicationContext对象scan方法
+		 */
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 
@@ -88,6 +92,8 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * {@link Configuration @Configuration} classes
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
+		//这里由于他有父类，故而会先调用父类的构造方法，然后才会调用自己的构造方法
+		//在自己构造方法中初始一个读取器和扫描器
 		this();
 		register(componentClasses);
 		refresh();
