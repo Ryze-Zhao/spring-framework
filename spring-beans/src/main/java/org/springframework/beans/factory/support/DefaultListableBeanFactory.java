@@ -182,7 +182,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	/**
 	 * Map of bean definition objects, keyed by bean name.
-	 * bean定义对象的映射，由bean名称键控。
+	 * bean定义对象的映射，由bean名称作为key。
 	 */
 	private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
 
