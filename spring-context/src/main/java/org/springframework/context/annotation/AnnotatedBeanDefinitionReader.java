@@ -68,6 +68,7 @@ public class AnnotatedBeanDefinitionReader {
 	 * @see #setEnvironment(Environment)
 	 */
 	public AnnotatedBeanDefinitionReader(BeanDefinitionRegistry registry) {
+		// get0rCreateEnvironment主要就是配置文件和属性/profiles和properties
 		this(registry, getOrCreateEnvironment(registry));
 	}
 
