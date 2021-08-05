@@ -12,8 +12,8 @@ import org.springframework.zhao.start.config.ZhaoConfig;
  */
 public class SpringStartWay {
     public static void main(String[] args) {
-	    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:application.xml");
-	    FileSystemXmlApplicationContext ctx = new FileSystemXmlApplicationContext("spring-config.xml");
+	    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring/start/bean/SpringConfig.xml");
+	    FileSystemXmlApplicationContext ctx = new FileSystemXmlApplicationContext("classpath:spring/start/bean/SpringConfig.xml");
 	    AnnotationConfigApplicationContext ac= new AnnotationConfigApplicationContext(ZhaoConfig.class);
     }
 }
