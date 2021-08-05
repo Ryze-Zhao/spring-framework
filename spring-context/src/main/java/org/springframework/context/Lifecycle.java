@@ -52,8 +52,8 @@ public interface Lifecycle {
 	/**
 	 * Start this component.
 	 * <p>Should not throw an exception if the component is already running.
-	 * <p>In the case of a container, this will propagate the start signal to all
-	 * components that apply.
+	 * <p>In the case of a container, this will propagate the start signal to all components that apply.
+	 * 启动此组件。 如果组件已在运行，则不应引发异常。 对于容器，这会将启动信号传播到所有应用的组件。
 	 * @see SmartLifecycle#isAutoStartup()
 	 */
 	void start();
@@ -70,6 +70,10 @@ public interface Lifecycle {
 	 * <p>Should not throw an exception if the component is not running (not started yet).
 	 * <p>In the case of a container, this will propagate the stop signal to all components
 	 * that apply.
+	 * 通常以同步方式停止此组件，以便在返回此方法时完全停止该组件。当需要异步停止行为时，应考虑实现SimultLIFECKEY及其停止（RunnEnable）变体。
+	 * 请注意，此停止通知不保证在销毁之前发出：在定期关闭时，Lifecycle Bean将在传播常规销毁回调之前首先收到停止通知；
+	 * 但是，在上下文的生命周期内进行热刷新或刷新尝试中止时，将调用给定bean的destroy方法，而不预先考虑停止信号。
+	 * 如果组件未运行（尚未启动），则不应引发异常。 对于容器，这将向所有应用的组件传播停止信号
 	 * @see SmartLifecycle#stop(Runnable)
 	 * @see org.springframework.beans.factory.DisposableBean#destroy()
 	 */
@@ -79,6 +83,7 @@ public interface Lifecycle {
 	 * Check whether this component is currently running.
 	 * <p>In the case of a container, this will return {@code true} only if <i>all</i>
 	 * components that apply are currently running.
+	 * 检查此组件当前是否正在运行。 对于容器，仅当应用的所有组件当前都在运行时，才会返回true
 	 * @return whether the component is currently running
 	 */
 	boolean isRunning();
