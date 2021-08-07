@@ -62,6 +62,7 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * <p>Does not consider any hierarchy this factory may participate in,
 	 * and ignores any singleton beans that have been registered by
 	 * other means than bean definitions.
+	 * 检查此bean工厂是否包含具有给定名称的bean定义。 不考虑该工厂可能参与的任何层次结构，并且忽略由bean定义的其他方法注册的任何单个bean。
 	 * @param beanName the name of the bean to look for
 	 * @return if this bean factory contains a bean definition with the given name
 	 * @see #containsBean
@@ -73,6 +74,7 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * <p>Does not consider any hierarchy this factory may participate in,
 	 * and ignores any singleton beans that have been registered by
 	 * other means than bean definitions.
+	 * 返回工厂中定义的bean数。 不考虑该工厂可能参与的任何层次结构，并且忽略由bean定义的其他方法注册的任何单个bean。
 	 * @return the number of beans defined in the factory
 	 */
 	int getBeanDefinitionCount();
@@ -82,6 +84,7 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * <p>Does not consider any hierarchy this factory may participate in,
 	 * and ignores any singleton beans that have been registered by
 	 * other means than bean definitions.
+	 * 返回在此工厂中定义的所有bean的名称。 不考虑该工厂可能参与的任何层次结构，并且忽略由bean定义的其他方法注册的任何单个bean。
 	 * @return the names of all beans defined in this factory,
 	 * or an empty array if none defined
 	 */
@@ -90,10 +93,12 @@ public interface ListableBeanFactory extends BeanFactory {
 	/**
 	 * Return a provider for the specified bean, allowing for lazy on-demand retrieval
 	 * of instances, including availability and uniqueness options.
-	 * @param requiredType type the bean must match; can be an interface or superclass
+	 * 返回指定bean的提供程序，允许延迟按需检索实例，包括可用性和唯一性选项。
+	 * @param requiredType type the bean must match; can be an interface or superclass	bean必须匹配的类型,可以是接口或超类
 	 * @param allowEagerInit whether stream-based access may initialize <i>lazy-init
 	 * singletons</i> and <i>objects created by FactoryBeans</i> (or by factory methods
 	 * with a "factory-bean" reference) for the type check
+	 *                       基于流的访问是否可以初始化由FactoryBeans（或由具有“FactoryBean”引用的工厂方法）创建的惰性init单例和对象，以进行类型检查
 	 * @return a corresponding provider handle
 	 * @since 5.3
 	 * @see #getBeanProvider(ResolvableType, boolean)
