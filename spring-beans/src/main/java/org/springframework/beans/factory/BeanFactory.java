@@ -276,7 +276,7 @@ public interface BeanFactory {
 	 * will be able to obtain an instance for the same name.
 	 * 这个bean工厂是否包含具有给定名称的bean定义或外部注册的单例实例？ 如果给定的名称是别名，它将被翻译回相应的规范bean名称。
 	 * 如果此工厂是分层的，则将询问任何父工厂是否在此工厂实例中找不到该bean。
-	 * 如果找到与给定名称匹配的bean定义或单例实例，则无论指定的bean定义是具体的还是抽象的、懒惰的还是急切的、范围内的还是非范围内的，
+	 * 如果找到与给定名称匹配的bean定义或单例实例，则无论指定的bean定义是具体的还是抽象的、懒惰的还是立即初始的、范围内的还是非范围内的，
 	 * 此方法都将返回true。因此，请注意，此方法返回的真值并不一定表示getBean将能够获得同名的实例。
 	 * @param name the name of the bean to query
 	 * @return whether a bean with the given name is present
@@ -294,8 +294,7 @@ public interface BeanFactory {
 	 * <p>Will ask the parent factory if the bean cannot be found in this factory instance.
 	 * 这个bean是共享的单例吗？也就是说，getBean是否总是返回相同的实例？ 注意：此方法返回false并不能清楚地指示独立实例。
 	 * 它表示非单例实例，也可能对应于作用域bean。使用isPrototype操作显式检查独立实例。
-	 * 将别名转换回相应的规范bean名称。 将
-	 * 询问父工厂是否在此工厂实例中找不到该bean。
+	 * 将别名转换回相应的规范bean名称。 将询问父工厂是否在此工厂实例中找不到该bean。
 	 * @param name the name of the bean to query
 	 * @return whether this bean corresponds to a singleton instance
 	 * @throws NoSuchBeanDefinitionException if there is no bean with the given name

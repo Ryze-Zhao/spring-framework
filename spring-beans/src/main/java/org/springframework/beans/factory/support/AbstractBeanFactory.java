@@ -120,57 +120,72 @@ import org.springframework.util.StringValueResolver;
  */
 public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory {
 
-	/** Parent bean factory, for bean inheritance support. */
+	/** Parent bean factory, for bean inheritance support.
+	 * 父bean工厂，用于bean继承支持 */
 	@Nullable
 	private BeanFactory parentBeanFactory;
 
-	/** ClassLoader to resolve bean class names with, if necessary. */
+	/** ClassLoader to resolve bean class names with, if necessary.
+	 * 必要时，使用ClassLoader解析bean类名。 */
 	@Nullable
 	private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
 
-	/** ClassLoader to temporarily resolve bean class names with, if necessary. */
+	/** ClassLoader to temporarily resolve bean class names with, if necessary.
+	 * ClassLoader临时解析bean类名，如有必要。 */
 	@Nullable
 	private ClassLoader tempClassLoader;
 
-	/** Whether to cache bean metadata or rather reobtain it for every access. */
+	/** Whether to cache bean metadata or rather reobtain it for every access.
+	 * 是缓存bean元数据，还是为每次访问重新获取它。 */
 	private boolean cacheBeanMetadata = true;
 
-	/** Resolution strategy for expressions in bean definition values. */
+	/** Resolution strategy for expressions in bean definition values.
+	 * bean定义值中表达式的解析策略 */
 	@Nullable
 	private BeanExpressionResolver beanExpressionResolver;
 
-	/** Spring ConversionService to use instead of PropertyEditors. */
+	/** Spring ConversionService to use instead of PropertyEditors.
+	 * 使用Spring转换服务代替PropertyEditor。 */
 	@Nullable
 	private ConversionService conversionService;
 
-	/** Custom PropertyEditorRegistrars to apply to the beans of this factory. */
+	/** Custom PropertyEditorRegistrars to apply to the beans of this factory.
+	 * 要应用于此工厂bean的自定义属性YeditorRegistrars。 */
 	private final Set<PropertyEditorRegistrar> propertyEditorRegistrars = new LinkedHashSet<>(4);
 
-	/** Custom PropertyEditors to apply to the beans of this factory. */
+	/** Custom PropertyEditors to apply to the beans of this factory.
+	 * 要应用于此工厂bean的自定义属性编辑器。 */
 	private final Map<Class<?>, Class<? extends PropertyEditor>> customEditors = new HashMap<>(4);
 
-	/** A custom TypeConverter to use, overriding the default PropertyEditor mechanism. */
+	/** A custom TypeConverter to use, overriding the default PropertyEditor mechanism.
+	 * 要使用的自定义类型转换器，覆盖默认的PropertyEditor机制。 */
 	@Nullable
 	private TypeConverter typeConverter;
 
-	/** String resolvers to apply e.g. to annotation attribute values. */
+	/** String resolvers to apply e.g. to annotation attribute values.
+	 * 应用于注释属性值等的字符串解析程序。 */
 	private final List<StringValueResolver> embeddedValueResolvers = new CopyOnWriteArrayList<>();
 
-	/** BeanPostProcessors to apply. */
+	/** BeanPostProcessors to apply.
+	 * 要应用的BeanPostProcessors */
 	private final List<BeanPostProcessor> beanPostProcessors = new BeanPostProcessorCacheAwareList();
 
-	/** Cache of pre-filtered post-processors. */
+	/** Cache of pre-filtered post-processors.
+	 * 预过滤后处理器的缓存 */
 	@Nullable
 	private volatile BeanPostProcessorCache beanPostProcessorCache;
 
-	/** Map from scope identifier String to corresponding Scope. */
+	/** Map from scope identifier String to corresponding Scope.
+	 * 从作用域标识符字符串映射到相应的作用域。 */
 	private final Map<String, Scope> scopes = new LinkedHashMap<>(8);
 
-	/** Security context used when running with a SecurityManager. */
+	/** Security context used when running with a SecurityManager.
+	 * 使用SecurityManager运行时使用的安全上下文。 */
 	@Nullable
 	private SecurityContextProvider securityContextProvider;
 
-	/** Map from bean name to merged RootBeanDefinition. */
+	/** Map from bean name to merged RootBeanDefinition.
+	 * 从bean名称映射到合并的RootBeanDefinition。 */
 	private final Map<String, RootBeanDefinition> mergedBeanDefinitions = new ConcurrentHashMap<>(256);
 
 	/** Names of beans that have already been created at least once.
@@ -182,7 +197,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	private final ThreadLocal<Object> prototypesCurrentlyInCreation =
 			new NamedThreadLocal<>("Prototype beans currently in creation");
 
-	/** Application startup metrics. **/
+	/** Application startup metrics.
+	 * 应用程序启动记录器。 **/
 	private ApplicationStartup applicationStartup = ApplicationStartup.DEFAULT;
 
 	/**
