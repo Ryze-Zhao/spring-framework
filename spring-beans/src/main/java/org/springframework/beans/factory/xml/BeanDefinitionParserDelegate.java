@@ -581,9 +581,11 @@ public class BeanDefinitionParserDelegate {
 		// 解析 scope 属性
 		if (ele.hasAttribute(SINGLETON_ATTRIBUTE)) {
 			error("Old 1.x 'singleton' attribute in use - upgrade to 'scope' declaration", ele);
-		} else if (ele.hasAttribute(SCOPE_ATTRIBUTE)) {
+		}
+		else if (ele.hasAttribute(SCOPE_ATTRIBUTE)) {
 			bd.setScope(ele.getAttribute(SCOPE_ATTRIBUTE));
-		} else if (containingBean != null) {
+		}
+		else if (containingBean != null) {
 			// Take default from containing bean in case of an inner bean definition.
 //			对于内部bean定义，使用包含bean的默认值。
 			bd.setScope(containingBean.getScope());
@@ -619,7 +621,8 @@ public class BeanDefinitionParserDelegate {
 				String[] patterns = StringUtils.commaDelimitedListToStringArray(candidatePattern);
 				bd.setAutowireCandidate(PatternMatchUtils.simpleMatch(patterns, beanName));
 			}
-		} else {
+		}
+		else {
 			bd.setAutowireCandidate(TRUE_VALUE.equals(autowireCandidate));
 		}
 
@@ -632,7 +635,8 @@ public class BeanDefinitionParserDelegate {
 		if (ele.hasAttribute(INIT_METHOD_ATTRIBUTE)) {
 			String initMethodName = ele.getAttribute(INIT_METHOD_ATTRIBUTE);
 			bd.setInitMethodName(initMethodName);
-		} else if (this.defaults.getInitMethod() != null) {
+		}
+		else if (this.defaults.getInitMethod() != null) {
 			bd.setInitMethodName(this.defaults.getInitMethod());
 			bd.setEnforceInitMethod(false);
 		}
@@ -641,7 +645,8 @@ public class BeanDefinitionParserDelegate {
 		if (ele.hasAttribute(DESTROY_METHOD_ATTRIBUTE)) {
 			String destroyMethodName = ele.getAttribute(DESTROY_METHOD_ATTRIBUTE);
 			bd.setDestroyMethodName(destroyMethodName);
-		} else if (this.defaults.getDestroyMethod() != null) {
+		}
+		else if (this.defaults.getDestroyMethod() != null) {
 			bd.setDestroyMethodName(this.defaults.getDestroyMethod());
 			bd.setEnforceDestroyMethod(false);
 		}
@@ -838,7 +843,8 @@ public class BeanDefinitionParserDelegate {
 				int index = Integer.parseInt(indexAttr);
 				if (index < 0) {
 					error("'index' cannot be lower than 0", ele);
-				} else {
+				}
+				else {
 					try {
 						// <1>
 						this.parseState.push(new ConstructorArgumentEntry(index));
@@ -856,7 +862,8 @@ public class BeanDefinitionParserDelegate {
 						// 不允许重复指定相同参数
 						if (bd.getConstructorArgumentValues().hasIndexedArgumentValue(index)) {
 							error("Ambiguous constructor-arg entries for index " + index, ele);
-						} else {
+						}
+						else {
 							// <4> 加入到 indexedArgumentValues 中
 							bd.getConstructorArgumentValues().addIndexedArgumentValue(index, valueHolder);
 						}
@@ -964,7 +971,8 @@ public class BeanDefinitionParserDelegate {
 						attribute.setSource(extractSource(attributeEle));
 						// 添加到 attributes 中
 						qualifier.addMetadataAttribute(attribute);
-					} else {
+					}
+					else {
 						error("Qualifier 'attribute' tag must have a 'name' and 'value'", attributeEle);
 						return;
 					}
