@@ -148,51 +148,51 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 
 
 	/**
-	 * Bean 名称
+	 * Bean 名称.
 	 */
 	@Nullable
 	private volatile Object beanClass;
 
 	/**
-	 * 默认作用域
+	 * 默认作用域.
 	 */
 	@Nullable
 	private String scope = SCOPE_DEFAULT;
 
 	/**
-	 * 默认是否超类
+	 * 默认是否超类.
 	 */
 	private boolean abstractFlag = false;
 
 	/**
-	 * 是否需加载
+	 * 是否需加载.
 	 */
 	@Nullable
 	private Boolean lazyInit;
 
 	/**
-	 * 注入模式：默认没有自动装配
+	 * 注入模式：默认没有自动装配.
 	 */
 	private int autowireMode = AUTOWIRE_NO;
 
 	/**
-	 * 默认没有依赖检查
+	 * 默认没有依赖检查.
 	 */
 	private int dependencyCheck = DEPENDENCY_CHECK_NONE;
 
 	/**
-	 * 依赖的 bean
+	 * 依赖的 bean.
 	 */
 	@Nullable
 	private String[] dependsOn;
 
 	/**
-	 * 默认为 autowire 的候选者
+	 * 默认为 autowire 的候选者.
 	 */
 	private boolean autowireCandidate = true;
 
 	/**
-	 * 默认不是首选
+	 * 默认不是首选.
 	 */
 	private boolean primary = false;
 
@@ -306,7 +306,8 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 			setEnforceDestroyMethod(originalAbd.isEnforceDestroyMethod());
 			setSynthetic(originalAbd.isSynthetic());
 			setResource(originalAbd.getResource());
-		} else {
+		}
+		else {
 			setConstructorArgumentValues(new ConstructorArgumentValues(original.getConstructorArgumentValues()));
 			setPropertyValues(new MutablePropertyValues(original.getPropertyValues()));
 			setLazyInit(original.isLazyInit());
@@ -386,7 +387,8 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 			}
 			setSynthetic(otherAbd.isSynthetic());
 			setResource(otherAbd.getResource());
-		} else {
+		}
+		else {
 			getConstructorArgumentValues().addArgumentValues(other.getConstructorArgumentValues());
 			getPropertyValues().addPropertyValues(other.getPropertyValues());
 			setLazyInit(other.isLazyInit());
@@ -431,7 +433,8 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 		Object beanClassObject = this.beanClass;
 		if (beanClassObject instanceof Class) {
 			return ((Class<?>) beanClassObject).getName();
-		} else {
+		}
+		else {
 			return (String) beanClassObject;
 		}
 	}
@@ -668,7 +671,8 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 				}
 			}
 			return AUTOWIRE_CONSTRUCTOR;
-		} else {
+		}
+		else {
 			return this.autowireMode;
 		}
 	}
@@ -1216,7 +1220,8 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 			throw new BeanDefinitionValidationException(
 					"Invalid method override: no method with name '" + mo.getMethodName() +
 							"' on class [" + getBeanClassName() + "]");
-		} else if (count == 1) {
+		}
+		else if (count == 1) {
 			// Mark override as not overloaded, to avoid the overhead of arg type checking.
 			mo.setOverloaded(false);
 		}

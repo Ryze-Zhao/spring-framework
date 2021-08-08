@@ -281,13 +281,15 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				if (isSingletonCurrentlyInCreation(beanName)) {
 					logger.trace("Returning eagerly cached instance of singleton bean '" + beanName +
 							"' that is not fully initialized yet - a consequence of a circular reference");
-				} else {
+				} 
+else {
 					logger.trace("Returning cached instance of singleton bean '" + beanName + "'");
 				}
 			}
 			// <2> 完成 FactoryBean 的相关处理，并用来获取 FactoryBean 的处理结果
 			beanInstance = getObjectForBeanInstance(sharedInstance, name, beanName, null);
-		} else {
+		} 
+else {
 			// Fail if we're already creating this bean instance:We're assumably within a circular reference.
 			// <3> 因为 Spring 只解决单例模式下得循环依赖，在原型模式下如果存在循环依赖则会抛出异常。
 			if (isPrototypeCurrentlyInCreation(beanName)) {
@@ -308,15 +310,18 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					// 若为 AbstractBeanFactory 类型，委托父类处理
 					return ((AbstractBeanFactory) parentBeanFactory).doGetBean(
 							nameToLookup, requiredType, args, typeCheckOnly);
-				} else if (args != null) {
+				} 
+else if (args != null) {
 					// Delegation to parent with explicit args.
 					// 委托给具有显式参数的父级。
 					return (T) parentBeanFactory.getBean(nameToLookup, args);
-				} else if (requiredType != null) {
+				} 
+else if (requiredType != null) {
 					// No args -> delegate to standard getBean method.
 					// 没有参数->委托给构造函数 getBean() 处理
 					return parentBeanFactory.getBean(nameToLookup, requiredType);
-				} else {
+				} 
+else {
 					// 没有 args，委托给标准的 getBean() 处理
 					return (T) parentBeanFactory.getBean(nameToLookup);
 				}
@@ -379,7 +384,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 						}
 					});
 					beanInstance = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
-				} else if (mbd.isPrototype()) {
+				} 
+else if (mbd.isPrototype()) {
 					// 原型模式
 					// It's a prototype -> create a new instance.
 					Object prototypeInstance = null;
@@ -394,7 +400,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					}
 					// <4> 从 Bean 实例中获取对象
 					beanInstance = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
-				} else {
+				} 
+else {
 					// 从指定的 scope 下创建 bean
 
 					// 获得 scopeName 对应的 Scope 对象
@@ -1946,7 +1953,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		// <3> 若 BeanDefinition 为 null，则从缓存中加载 Bean 对象
 		if (mbd != null) {
 			mbd.isFactoryBean = true;
-		} else {
+		} 
+else {
 			object = getCachedObjectForFactoryBean(beanName);
 		}
 		// 若 object 依然为空，则可以确认，beanInstance 一定是 FactoryBean 。从而，使用 FactoryBean 获得 Bean 对象

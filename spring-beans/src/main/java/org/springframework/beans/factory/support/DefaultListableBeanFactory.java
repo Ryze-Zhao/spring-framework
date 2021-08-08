@@ -255,7 +255,8 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	public void setSerializationId(@Nullable String serializationId) {
 		if (serializationId != null) {
 			serializableFactories.put(serializationId, new WeakReference<>(this));
-		} else if (this.serializationId != null) {
+		} 
+else if (this.serializationId != null) {
 			serializableFactories.remove(this.serializationId);
 		}
 		this.serializationId = serializationId;
@@ -1091,7 +1092,8 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					// 从 manualSingletonNames 移除 beanName
 					removeManualSingletonName(beanName);
 				}
-			} else {
+			} 
+else {
 				// Still in startup registration phase
 				// 添加到 BeanDefinition 到 beanDefinitionMap 中。
 				this.beanDefinitionMap.put(beanName, beanDefinition);

@@ -223,7 +223,7 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * the shutdown hook thread should be {@link #SHUTDOWN_HOOK_THREAD_NAME}.
 	 * 向JVM运行时注册一个关闭钩子，在JVM关闭时关闭此上下文，除非当时它已经关闭。 此方法可以多次调用。
 	 * 每个上下文实例将只注册一个关闭挂钩（最大值）。
-	 * 从SpringFramework 5.2开始，关闭钩子线程的名称应该是shutdown\uhook\uthread\uname
+	 * 从SpringFramework 5.2开始，关闭钩子线程的名称应该是 {@link #SHUTDOWN_HOOK_THREAD_NAME}.
 	 * @see java.lang.Runtime#addShutdownHook
 	 * @see #close()
 	 */

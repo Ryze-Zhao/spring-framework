@@ -348,7 +348,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 			logger.trace("Loading XML bean definitions from " + encodedResource);
 		}
 
-		// <1> 获取已经加载过的资源
+		// <Spring分析点2-1> 获取已经加载过的资源
 		Set<EncodedResource> currentResources = this.resourcesCurrentlyBeingLoaded.get();
 		if (!currentResources.add(encodedResource)) {
 			// 将当前资源加入记录缓存中。如果已存在，抛出异常
@@ -356,7 +356,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		}
 
 		try (InputStream inputStream = encodedResource.getResource().getInputStream()) {
-			// <2> 从 EncodedResource 获取封装的 Resource ，并从 Resource 中获取其中的 InputStream
+			// <Spring分析点2-2> 从 EncodedResource 获取封装的 Resource ，并从 Resource 中获取其中的 InputStream ，然后将 InputStream 封装为 InputSource
 			InputSource inputSource = new InputSource(inputStream);
 			if (encodedResource.getEncoding() != null) {
 				inputSource.setEncoding(encodedResource.getEncoding());
@@ -369,7 +369,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 					"IOException parsing XML document from " + encodedResource.getResource(), ex);
 		}
 		finally {
-			// <3> 从记录缓存中剔除该资源
+			// <Spring分析点2-3> 从记录缓存中剔除该资源
 			currentResources.remove(encodedResource);
 			if (currentResources.isEmpty()) {
 				this.resourcesCurrentlyBeingLoaded.remove();
@@ -416,9 +416,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	protected int doLoadBeanDefinitions(InputSource inputSource, Resource resource)
 			throws BeanDefinitionStoreException {
 		try {
-			// <1> 获取 XML Document 实例
+			// <Spring分析点3-1> 获取 XML Document 实例
 			Document doc = doLoadDocument(inputSource, resource);
-			// <2> 根据 Document 实例，注册 Bean 信息
+			// <Spring分析点3-2> 根据 Document 实例，注册 BeanDefinition 信息
 			int count = registerBeanDefinitions(doc, resource);
 			if (logger.isDebugEnabled()) {
 				logger.debug("Loaded " + count + " bean definitions from " + resource);
@@ -478,13 +478,13 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @see #detectValidationMode
 	 */
 	protected int getValidationModeForResource(Resource resource) {
-		// <1> 获取指定的验证模式
+		// <Spring分析点4-1> 获取指定的验证模式
 		int validationModeToUse = getValidationMode();
 		// 首先，如果手动指定，则直接返回
 		if (validationModeToUse != VALIDATION_AUTO) {
 			return validationModeToUse;
 		}
-		// 其次，自动获取验证模式
+		// <Spring分析点4-2> 其次，自动获取验证模式
 		int detectedMode = detectValidationMode(resource);
 		if (detectedMode != VALIDATION_AUTO) {
 			return detectedMode;
