@@ -128,18 +128,18 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 
 		// 记录老的 BeanDefinitionParserDelegate 对象
 		BeanDefinitionParserDelegate parent = this.delegate;
-		// <1> 创建 BeanDefinitionParserDelegate 对象，并进行设置到 delegate
+		// <Spring分析点8-1> 创建 BeanDefinitionParserDelegate 对象，并进行设置到 delegate
 		this.delegate = createDelegate(getReaderContext(), root, parent);
 
-		// <2> 检查 <beans /> 根标签的命名空间是否为空，或者是 http://www.springframework.org/schema/beans
+		// <Spring分析点8-2> 检查 <beans /> 根标签的命名空间是否为空，或者是 http://www.springframework.org/schema/beans
 		if (this.delegate.isDefaultNamespace(root)) {
-			// <2.1> 处理 profile 属性。可参见《Spring3自定义环境配置 <beans profile="">https://nassir.iteye.com/blog/1535799
+			// <Spring分析点8-2.1> 处理 profile 属性。
 			String profileSpec = root.getAttribute(PROFILE_ATTRIBUTE);
 			if (StringUtils.hasText(profileSpec)) {
-				// <2.2> 使用分隔符切分，可能有多个 profile 。
+				// <Spring分析点8-2.2> 使用分隔符切分，可能有多个 profile 。
 				String[] specifiedProfiles = StringUtils.tokenizeToStringArray(profileSpec, BeanDefinitionParserDelegate.MULTI_VALUE_ATTRIBUTE_DELIMITERS);
 				// We cannot use Profiles.of(...) since profile expressions are not supported in XML config. See SPR-12458 for details.
-				// <2.3> 如果所有 profile 都无效，则不进行注册
+				// <Spring分析点8-2.3> 如果所有 profile 都无效，则不进行注册
 				if (!getReaderContext().getEnvironment().acceptsProfiles(specifiedProfiles)) {
 					if (logger.isDebugEnabled()) {
 						logger.debug("Skipped XML bean definition file due to specified profiles [" + profileSpec +
@@ -150,11 +150,11 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			}
 		}
 
-		// <3> 解析前处理
+		// <Spring分析点8-3> 解析前处理
 		preProcessXml(root);
-		// <4> 解析
+		// <Spring分析点8-4> 解析
 		parseBeanDefinitions(root, this.delegate);
-		// <5> 解析后处理
+		// <Spring分析点8-5> 解析后处理
 		postProcessXml(root);
 		// 设置 delegate 回老的 BeanDefinitionParserDelegate 对象
 		this.delegate = parent;
@@ -175,7 +175,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * @param root the DOM root element of the document  root–文档的DOM根元素
 	 */
 	protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate) {
-		// <1> 如果根节点使用默认命名空间，执行默认解析
+		// 如果根节点使用默认命名空间，执行默认解析
 		if (delegate.isDefaultNamespace(root)) {
 			// 遍历子节点
 			NodeList nl = root.getChildNodes();
@@ -184,7 +184,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 				if (node instanceof Element) {
 					Element ele = (Element) node;
 					if (delegate.isDefaultNamespace(ele)) {
-						// <1> 如果该节点使用默认命名空间，执行默认解析
+						// <Spring分析点9-1> 如果该节点使用默认命名空间，执行默认解析
 						parseDefaultElement(ele, delegate);
 					} else {
 						// 如果该节点非默认命名空间，执行自定义解析
@@ -193,7 +193,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 				}
 			}
 		} else {
-			// <2> 如果根节点非默认命名空间，执行自定义解析
+			// <Spring分析点9-2> 如果根节点非默认命名空间，执行自定义解析
 			delegate.parseCustomElement(root);
 		}
 	}
