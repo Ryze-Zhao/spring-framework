@@ -410,20 +410,20 @@ public class BeanDefinitionParserDelegate {
 	 */
 	@Nullable
 	public BeanDefinitionHolder parseBeanDefinitionElement(Element ele, @Nullable BeanDefinition containingBean) {
-		// <1> 解析 id 和 name 属性
+		// <Spring分析点12-1> 解析 id 和 name 属性
 		String id = ele.getAttribute(ID_ATTRIBUTE);
 		String nameAttr = ele.getAttribute(NAME_ATTRIBUTE);
 
-		// <1> 计算别名集合
+		// <Spring分析点12-1> 计算别名集合
 		List<String> aliases = new ArrayList<>();
 		if (StringUtils.hasLength(nameAttr)) {
 			String[] nameArr = StringUtils.tokenizeToStringArray(nameAttr, MULTI_VALUE_ATTRIBUTE_DELIMITERS);
 			aliases.addAll(Arrays.asList(nameArr));
 		}
 
-		// <3.1> beanName ，优先，使用 id
+		// <Spring分析点12-3.1> beanName ，优先，使用 id
 		String beanName = id;
-		// <3.2> beanName ，其次，使用 aliases 的第一个
+		// <Spring分析点12-3.2> beanName ，其次，使用 aliases 的第一个
 		if (!StringUtils.hasText(beanName) && !aliases.isEmpty()) {
 			beanName = aliases.remove(0);
 			if (logger.isTraceEnabled()) {
@@ -432,23 +432,23 @@ public class BeanDefinitionParserDelegate {
 			}
 		}
 
-		// <2> 检查 beanName 的唯一性
+		// <Spring分析点12-2> 检查 beanName 的唯一性
 		if (containingBean == null) {
 			checkNameUniqueness(beanName, aliases, ele);
 		}
 
-		// <4> 解析属性，构造 AbstractBeanDefinition 对象
+		// <Spring分析点12-4> 解析属性，构造 AbstractBeanDefinition 对象
 		AbstractBeanDefinition beanDefinition = parseBeanDefinitionElement(ele, beanName, containingBean);
 		if (beanDefinition != null) {
-			// <3.3> beanName ，再次，使用 beanName 生成规则
+			// <Spring分析点12-3.3> beanName 再次，使用 beanName 生成规则
 			if (!StringUtils.hasText(beanName)) {
 				try {
 					if (containingBean != null) {
-						// <3.3> 生成唯一的 beanName
+						// <Spring分析点12-3.3> 生成唯一的 beanName
 						beanName = BeanDefinitionReaderUtils.generateBeanName(beanDefinition, this.readerContext.getRegistry(), true);
 					}
 					else {
-						// <3.3> 生成唯一的 beanName
+						// <Spring分析点12-3.3> 生成唯一的 beanName
 						beanName = this.readerContext.generateBeanName(beanDefinition);
 						// Register an alias for the plain bean class name, if still possible,if the generator returned the class name plus a suffix.This is expected for Spring 1.2/2.0 backwards compatibility.
 						// 如果生成器返回类名加上后缀，如果可能的话，为纯bean类名注册一个别名。
@@ -469,7 +469,7 @@ public class BeanDefinitionParserDelegate {
 					return null;
 				}
 			}
-			// <5> 创建 BeanDefinitionHolder 对象
+			// <Spring分析点12-5> 创建 BeanDefinitionHolder 对象
 			String[] aliasesArray = StringUtils.toStringArray(aliases);
 			return new BeanDefinitionHolder(beanDefinition, beanName, aliasesArray);
 		}
