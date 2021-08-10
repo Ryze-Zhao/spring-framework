@@ -532,18 +532,18 @@ public class BeanDefinitionParserDelegate {
 			// 下面的一堆是解析 <bean>......</bean> 内部的子元素，
 			// 解析出来以后的信息都放到 bd 的属性中
 
-			// 解析元数据 <meta />
+			// 解析元数据 <meta>
 			parseMetaElements(ele, bd);
-			// 解析 lookup-method 属性 <lookup-method />
+			// 解析 lookup-method 属性 <lookup-method>
 			parseLookupOverrideSubElements(ele, bd.getMethodOverrides());
-			// 解析 replaced-method 属性 <replaced-method />
+			// 解析 replaced-method 属性 <replaced-method>
 			parseReplacedMethodSubElements(ele, bd.getMethodOverrides());
 
-			// 解析构造函数参数 <constructor-arg />
+			// 解析构造函数参数 <constructor-arg>
 			parseConstructorArgElements(ele, bd);
-			// 解析 property 子元素 <property />
+			// 解析 property 子元素 <property>
 			parsePropertyElements(ele, bd);
-			// 解析 qualifier 子元素 <qualifier />
+			// 解析 qualifier 子元素 <qualifier>
 			parseQualifierElements(ele, bd);
 
 			bd.setResource(this.readerContext.getResource());
@@ -846,11 +846,11 @@ public class BeanDefinitionParserDelegate {
 				}
 				else {
 					try {
-						// <1>
+						// <Spring分析点13-1> 构造 ConstructorArgumentEntry 对象并将其加入到 ParseState 队列中。ConstructorArgumentEntry 表示构造函数的参数。
 						this.parseState.push(new ConstructorArgumentEntry(index));
-						// <2> 解析 ele 对应属性元素
+						// <Spring分析点13-2> 解析 ele 对应属性元素（调用 BeanDefinitionParserDelegate#parsePropertyValue(Element ele, BeanDefinition bd, String propertyName) 方法，解析 constructor-arg 子元素，返回结果值。）
 						Object value = parsePropertyValue(ele, bd, null);
-						// <3> 根据解析的属性元素构造一个 ValueHolder 对象
+						// <Spring分析点13-3> 根据解析的属性元素构造一个 ValueHolder 对象 （根据解析的结果值，构造ConstructorArgumentValues.ValueHolder 实例对象，并将 type、name 设置到 ValueHolder 中）
 						ConstructorArgumentValues.ValueHolder valueHolder = new ConstructorArgumentValues.ValueHolder(value);
 						if (StringUtils.hasLength(typeAttr)) {
 							valueHolder.setType(typeAttr);
@@ -859,12 +859,12 @@ public class BeanDefinitionParserDelegate {
 							valueHolder.setName(nameAttr);
 						}
 						valueHolder.setSource(extractSource(ele));
-						// 不允许重复指定相同参数
+						// 不允许重复指定相同参数 index
 						if (bd.getConstructorArgumentValues().hasIndexedArgumentValue(index)) {
 							error("Ambiguous constructor-arg entries for index " + index, ele);
 						}
 						else {
-							// <4> 加入到 indexedArgumentValues 中
+							// <Spring分析点13-4> 将valueHolder 加入到 indexedArgumentValues 中
 							bd.getConstructorArgumentValues().addIndexedArgumentValue(index, valueHolder);
 						}
 					}
@@ -997,7 +997,7 @@ public class BeanDefinitionParserDelegate {
 				"<constructor-arg> element");
 
 		// Should only have one child element: ref, value, list, etc.
-		// <1> 查找子节点中，是否有 ref、value、list 等元素
+		// <Spring分析点14-1> 查找子节点中，是否有 ref、value、list 等元素
 		NodeList nl = ele.getChildNodes();
 		Element subElement = null;
 		for (int i = 0; i < nl.getLength(); i++) {
@@ -1014,11 +1014,11 @@ public class BeanDefinitionParserDelegate {
 				}
 			}
 		}
-		// <1> 是否有 ref 属性
+		// <Spring分析点14-1> 是否有 ref 属性
 		boolean hasRefAttribute = ele.hasAttribute(REF_ATTRIBUTE);
-		// <1> 是否有 value 属性
+		// <Spring分析点14-1> 是否有 value 属性
 		boolean hasValueAttribute = ele.hasAttribute(VALUE_ATTRIBUTE);
-		// <1> 多个元素存在，报错，存在冲突。
+		// <Spring分析点14-1> 多个元素存在，报错，存在冲突。
 		if ((hasRefAttribute && hasValueAttribute) ||
 				((hasRefAttribute || hasValueAttribute) && subElement != null)) {
 			error(elementName +
@@ -1027,7 +1027,7 @@ public class BeanDefinitionParserDelegate {
 
 
 		if (hasRefAttribute) {
-			// <2> 将 ref 属性值，构造为 RuntimeBeanReference 实例对象
+			// <Spring分析点14-2> 将 ref 属性值，构造为 RuntimeBeanReference 实例对象
 			String refName = ele.getAttribute(REF_ATTRIBUTE);
 			if (!StringUtils.hasText(refName)) {
 				error(elementName + " contains empty 'ref' attribute", ele);
@@ -1037,13 +1037,13 @@ public class BeanDefinitionParserDelegate {
 			return ref;
 		}
 		else if (hasValueAttribute) {
-			// <3> 将 value 属性值，构造为 TypedStringValue 实例对象
+			// <Spring分析点14-3> 将 value 属性值，构造为 TypedStringValue 实例对象
 			TypedStringValue valueHolder = new TypedStringValue(ele.getAttribute(VALUE_ATTRIBUTE));
 			valueHolder.setSource(extractSource(ele));
 			return valueHolder;
 		}
 		else if (subElement != null) {
-			// <4> 解析子元素
+			// <Spring分析点14-4> 解析子元素
 			return parsePropertySubElement(subElement, bd);
 		} else {
 			// Neither child element nor "ref" or "value" attribute found.
@@ -1066,7 +1066,7 @@ public class BeanDefinitionParserDelegate {
 
 	/**
 	 * Parse a value, ref or collection sub-element of a property or constructor-arg element.
-	 * 分析属性或构造函数arg元素的value、ref或collection子元素。
+	 * 分析属性或constructor-arg元素的value、ref或collection子元素。
 	 *
 	 * @param ele subelement of property element; we don't know which yet   属性元素的子元素；我们还不知道是哪个
 	 * @param bd the current bean definition (if any)       当前bean定义（如果有的话）
