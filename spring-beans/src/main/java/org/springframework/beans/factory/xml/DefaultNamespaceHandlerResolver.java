@@ -129,17 +129,18 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 	@Override
 	@Nullable
 	public NamespaceHandler resolve(String namespaceUri) {
-		// <1> 获取所有已经配置的 Handler 映射
+		// <Spring分析点16-1> 获取所有已经配置的 Handler 映射
 		Map<String, Object> handlerMappings = getHandlerMappings();
-		// <2> 根据 namespaceUri 获取 handler 的信息
+		// <Spring分析点16-2> 根据 namespaceUri 获取 handler 的信息
 		Object handlerOrClassName = handlerMappings.get(namespaceUri);
 		if (handlerOrClassName == null) {
-			// <3.1> 不存在
+			// <Spring分析点16-3.1> 不存在
 			return null;
 		} else if (handlerOrClassName instanceof NamespaceHandler) {
-			// <3.2> 已经初始化
+			// <Spring分析点16-3.2> 已经初始化
 			return (NamespaceHandler) handlerOrClassName;
 		} else {
+			// <Spring分析点16-3.3> 需要进行初始化
 			String className = (String) handlerOrClassName;
 			try {
 				// 获得类，并创建 NamespaceHandler 对象
