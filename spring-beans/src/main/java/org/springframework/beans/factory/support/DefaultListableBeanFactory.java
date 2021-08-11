@@ -1028,7 +1028,7 @@ else if (this.serializationId != null) {
 		// 校验 beanName 与 beanDefinition 非空
 		Assert.hasText(beanName, "Bean name must not be empty");
 		Assert.notNull(beanDefinition, "BeanDefinition must not be null");
-		// <1> 校验 BeanDefinition 。
+		// <Spring分析点19-1> 校验 BeanDefinition 。
 		// 这是注册前的最后一次校验了，主要是对属性 methodOverrides 进行校验。
 		if (beanDefinition instanceof AbstractBeanDefinition) {
 			try {
@@ -1038,9 +1038,9 @@ else if (this.serializationId != null) {
 						"Validation of bean definition failed", ex);
 			}
 		}
-		// <2> 从缓存中获取指定 beanName 的 BeanDefinition
+		// <Spring分析点19-2> 从缓存中获取指定 beanName 的 BeanDefinition
 		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
-		// <3> 如果已经存在
+		// <Spring分析点19-3> 如果已经存在
 		if (existingDefinition != null) {
 			// 如果存在但是不允许覆盖，抛出异常
 			if (!isAllowBeanDefinitionOverriding()) {
@@ -1075,7 +1075,7 @@ else if (this.serializationId != null) {
 			// 允许覆盖，直接覆盖原有的 BeanDefinition 到 beanDefinitionMap 中。
 			this.beanDefinitionMap.put(beanName, beanDefinition);
 		}
-		// <4> 如果未存在
+		// <Spring分析点19-4> 如果未存在
 		else {
 			// 检测创建 Bean 阶段是否已经开启，如果开启了则需要对 beanDefinitionMap 进行并发控制
 			if (hasBeanCreationStarted()) {
@@ -1105,7 +1105,7 @@ else {
 			this.frozenBeanDefinitionNames = null;
 		}
 
-		// <5> 重新设置 beanName 对应的缓存
+		// <Spring分析点19-5> 重新设置 beanName 对应的缓存
 		if (existingDefinition != null || containsSingleton(beanName)) {
 			resetBeanDefinition(beanName);
 		}
