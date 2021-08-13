@@ -99,11 +99,11 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 	 * @see org.springframework.beans.factory.FactoryBean#getObject()
 	 */
 	protected Object getObjectFromFactoryBean(FactoryBean<?> factory, String beanName, boolean shouldPostProcess) {
-		// <1> 为单例模式且缓存中存在
+		// <Spring分析点22-1> 为单例模式且缓存中存在
 		if (factory.isSingleton() && containsSingleton(beanName)) {
-			// <1.1> 单例锁
+			// <Spring分析点22-1.1> 单例锁
 			synchronized (getSingletonMutex()) {
-				// <1.2> 从缓存中获取指定的 factoryBean
+				// <Spring分析点22-1.2> 从缓存中获取指定的 factoryBean
 				Object object = this.factoryBeanObjectCache.get(beanName);
 				if (object == null) {
 					// 为空，则从 FactoryBean 中获取对象
@@ -115,8 +115,8 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 					if (alreadyThere != null) {
 						object = alreadyThere;
 					} 
-else {
-						// <1.3> 需要后续处理
+					else {
+						// <Spring分析点22-1.3> 需要后续处理
 						if (shouldPostProcess) {
 							// 若该 Bean 处于创建中，则返回非处理对象，而不是存储它
 							if (isSingletonCurrentlyInCreation(beanName)) {
@@ -137,7 +137,7 @@ else {
 								afterSingletonCreation(beanName);
 							}
 						}
-						// <1.4> 添加到 factoryBeanObjectCache 中，进行缓存
+						// <Spring分析点22-1.4> 添加到 factoryBeanObjectCache 中，进行缓存
 						if (containsSingleton(beanName)) {
 							this.factoryBeanObjectCache.put(beanName, object);
 						}
@@ -146,7 +146,7 @@ else {
 				return object;
 			}
 		}
-		// <2>
+		// <Spring分析点22-2>
 		else {
 			// 为空，则从 FactoryBean 中获取对象
 			Object object = doGetObjectFromFactoryBean(factory, beanName);
@@ -180,14 +180,14 @@ else {
 			if (System.getSecurityManager() != null) {
 				AccessControlContext acc = getAccessControlContext();
 				try {
-					// <x> 从 FactoryBean 中，获得 Bean 对象
+					// <Spring分析点22-1.2-1> 从 FactoryBean 中，获得 Bean 对象
 					object = AccessController.doPrivileged((PrivilegedExceptionAction<Object>) factory::getObject, acc);
 				} catch (PrivilegedActionException pae) {
 					throw pae.getException();
 				}
 			} 
-else {
-				// <x> 从 FactoryBean 中，获得 Bean 对象
+			else {
+				// <Spring分析点22-1.2-1> 从 FactoryBean 中，获得 Bean 对象
 				object = factory.getObject();
 			}
 		} catch (FactoryBeanNotInitializedException ex) {
@@ -213,9 +213,10 @@ else {
 	 * The resulting object will get exposed for bean references.
 	 * <p>The default implementation simply returns the given object as-is.
 	 * Subclasses may override this, for example, to apply post-processors.
-	 * @param object the object obtained from the FactoryBean.
-	 * @param beanName the name of the bean
-	 * @return the object to expose
+	 * 后处理从FactoryBean获得的给定对象。结果对象将为bean引用公开。 默认实现只是按原样返回给定对象。例如，子类可以覆盖此项以应用后处理器。
+	 * @param object the object obtained from the FactoryBean.  从FactoryBean获得的对象
+	 * @param beanName the name of the bean bean的名称
+	 * @return the object to expose 要暴露的对象
 	 * @throws org.springframework.beans.BeansException if any post-processing failed
 	 */
 	protected Object postProcessObjectFromFactoryBean(Object object, String beanName) throws BeansException {

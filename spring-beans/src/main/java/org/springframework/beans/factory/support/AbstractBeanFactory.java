@@ -327,7 +327,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				}
 			}
 
-			// <Spring分析点20-5> 如果不是仅仅做类型检查则是创建bean，这里需要记录
+			// <Spring分析点20-5> 如果不是仅仅做类型检查，则是创建bean，这里需要记录
 			if (!typeCheckOnly) {
 				markBeanAsCreated(beanName);
 			}
@@ -348,16 +348,16 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				String[] dependsOn = mbd.getDependsOn();
 				if (dependsOn != null) {
 					for (String dep : dependsOn) {
-						// 若给定的依赖 bean 已经注册为依赖给定的 bean
+						// <Spring分析点23-1> 若给定的依赖 bean 已经注册为依赖给定的 bean
 						// 即循环依赖的情况，抛出 BeanCreationException 异常
 						if (isDependent(beanName, dep)) {
 							throw new BeanCreationException(mbd.getResourceDescription(), beanName,
 									"Circular depends-on relationship between '" + beanName + "' and '" + dep + "'");
 						}
-						// 缓存依赖调用
+						// <Spring分析点23-2>缓存依赖调用
 						registerDependentBean(dep, beanName);
 						try {
-							// 递归处理依赖 Bean
+							// <Spring分析点23-3>递归处理依赖 Bean
 							getBean(dep);
 						}
 						catch (NoSuchBeanDefinitionException ex) {
@@ -392,16 +392,16 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					// It's a prototype -> create a new instance.
 					Object prototypeInstance = null;
 					try {
-						// 加载前置处理
+						// <Spring分析点25-1>加载前置处理
 						beforePrototypeCreation(beanName);
-						// 创建 Bean 对象
+						// <Spring分析点25-2>创建 Bean 对象
 						prototypeInstance = createBean(beanName, mbd, args);
 					}
 					finally {
-						// 加载后缀处理
+						// <Spring分析点25-3>加载后缀处理
 						afterPrototypeCreation(beanName);
 					}
-					// 从 Bean 实例中获取对象
+					// <Spring分析点25-4>从 Bean 实例中获取对象
 					beanInstance = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
 				}
 				else {
@@ -1929,7 +1929,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			Object beanInstance, String name, String beanName, @Nullable RootBeanDefinition mbd) {
 
 		// Don't let calling code try to dereference the factory if the bean isn't a factory.
-		// <1> 若为工厂类引用（name 以 & 开头）
+		// <Spring分析点21-1> 若为工厂类引用（name 以 & 开头）
 		if (BeanFactoryUtils.isFactoryDereference(name)) {
 			// 如果是 NullBean，则直接返回
 			if (beanInstance instanceof NullBean) {
@@ -1948,18 +1948,19 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		// Now we have the bean instance, which may be a normal bean or a FactoryBean.
 		// If it's a FactoryBean, we use it to create a bean instance, unless the
 		// caller actually wants a reference to the factory.
-		// 到这里我们就有了一个 Bean 实例，当然该实例可能是会是是一个正常的 bean 又或者是一个 FactoryBean
+		// <Spring分析点21-2> 到这里我们就有了一个 Bean 实例，当然该实例可能是会是是一个正常的 bean 又或者是一个 FactoryBean
 		// 如果是 FactoryBean，我我们则创建该 Bean
+		// 如果 beanInstance 不为 FactoryBean 类型或者 name 也不是与工厂相关的，则直接返回 beanInstance 这个 Bean 对象。这里主要是对非 FactoryBean 类型处理
 		if (!(beanInstance instanceof FactoryBean)) {
 			return beanInstance;
 		}
 
 		Object object = null;
-		// <3> 若 BeanDefinition 为 null，则从缓存中加载 Bean 对象
+		// <Spring分析点21-3> 若 BeanDefinition 为 null，则从缓存中加载 Bean 对象
 		if (mbd != null) {
 			mbd.isFactoryBean = true;
 		}
-				else {
+		else {
 			object = getCachedObjectForFactoryBean(beanName);
 		}
 		// 若 object 依然为空，则可以确认，beanInstance 一定是 FactoryBean 。从而，使用 FactoryBean 获得 Bean 对象
@@ -2057,6 +2058,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * just amounts to a local hash lookup: The operation is therefore part of the
 	 * public interface there. The same implementation can serve for both this
 	 * template method and the public interface method in that case.
+	 * 检查此bean工厂是否包含具有给定名称的bean定义。不考虑该工厂可能参与的任何层次结构。当找不到缓存的singleton实例时由containsBean调用。
+	 * 根据具体bean工厂实现的性质，此操作可能代价高昂（例如，由于在外部注册表中查找目录）。
+	 * 然而，对于可列出的bean工厂，这通常只相当于本地哈希查找：因此，该操作是公共接口的一部分。
+	 * 在这种情况下，相同的实现可以用于此模板方法和公共接口方法。
 	 * @param beanName the name of the bean to look for
 	 * @return if this bean factory contains a bean definition with the given name
 	 * @see #containsBean
