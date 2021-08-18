@@ -267,7 +267,7 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * is in an appropriate state.
 	 *
 	 * 返回此应用程序上下文的内部bean工厂。可用于访问基础工厂的特定功能。
-	 * 注意：不要用这个来后处理豆子工厂；单例之前已经实例化过。
+	 * 注意：不要用这个来后处理bean工厂；单例之前已经实例化过。
 	 * 在接触bean之前，使用BeanFactory后处理器拦截BeanFactory设置过程。
 	 * 通常，只有在上下文处于活动状态时，即在refresh（）和close（）之间，才能访问此内部工厂。isActive（）标志可用于检查上下文是否处于适当的状态。
 	 *
