@@ -45,7 +45,7 @@ public interface InitializingBean {
 	 *
 	 * 包含BeanFactory的程序在设置了所有bean属性并满足BeanFactoryAware、ApplicationContextAware等条件后调用。
 	 * 此方法允许bean实例在设置了所有bean属性后执行其总体配置和最终初始化的验证。
-	 * 该方法在 豆工厂设置完了所有属性之后被调用 该方法允许 bean实例设置了所有 bean属性时执行初始化工作，
+	 * 该方法在 bean工厂设置完了所有属性之后被调用 该方法允许 bean实例设置了所有 bean属性时执行初始化工作，
 	 * 如果该过程出现了错误则需要抛出异常
 	 * @throws Exception in the event of misconfiguration (such as failure to set an essential property) or if initialization fails for any other reason
 	 *              如果配置错误（如未能设置基本属性）或由于任何其他原因初始化失

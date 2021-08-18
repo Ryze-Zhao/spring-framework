@@ -1635,7 +1635,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * Return an array of non-simple bean properties that are unsatisfied.
 	 * These are probably unsatisfied references to other beans in the
 	 * factory. Does not include simple properties like primitives or Strings.
-	 * 返回不满足的非简单bean属性数组。这些可能是不满意的参考其他豆在工厂。不包括基本体或字符串等简单属性。 参
+	 * 返回不满足的非简单bean属性数组。这些可能是不满意的参考其他bean在工厂。不包括基本体或字符串等简单属性。 参
 	 * @param mbd the merged bean definition the bean was created with	创建bean时使用的合并bean定义
 	 * @param bw the BeanWrapper the bean was created with	创建bean时使用的BeanWrapper
 	 * @return an array of bean property names
