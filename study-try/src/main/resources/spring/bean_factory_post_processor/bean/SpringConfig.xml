@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="student" class="org.springframework.zhao.bean_factory_post_processor.Student">
+		<property name="name" value="RyzeZhao$XML"/>
+		<property name="age" value="10"/>
+	</bean>
+
+	<bean class="org.springframework.zhao.bean_factory_post_processor.BeanFactoryPostProcessor_1"/>
+	<bean class="org.springframework.zhao.bean_factory_post_processor.BeanFactoryPostProcessor_2"/>
+</beans>
