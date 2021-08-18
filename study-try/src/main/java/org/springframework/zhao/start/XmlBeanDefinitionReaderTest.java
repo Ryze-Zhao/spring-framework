@@ -2,13 +2,8 @@ package org.springframework.zhao.start;
 
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.zhao.start.config.ZhaoConfig;
 import org.springframework.zhao.start.service.CityService;
-import org.springframework.zhao.start.service.CityServiceImpl;
 
 /**
  * 功能描述:Spring使用的三种方式
