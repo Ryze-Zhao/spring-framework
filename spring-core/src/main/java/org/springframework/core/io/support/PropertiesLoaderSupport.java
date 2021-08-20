@@ -43,19 +43,39 @@ public abstract class PropertiesLoaderSupport {
 	/** Logger available to subclasses. */
 	protected final Log logger = LogFactory.getLog(getClass());
 
+	/**
+	 * 本地属性，通过设置Properties对象直接设置进来的属性
+	 */
 	@Nullable
 	protected Properties[] localProperties;
 
+	/**
+	 * 本地属性，通过设置Properties对象直接设置进来的属性
+	 */
 	protected boolean localOverride = false;
 
+	/**
+	 * 本地属性，通过设置Properties对象直接设置进来的属性
+	 */
 	@Nullable
 	private Resource[] locations;
 
+	/**
+	 * 读取外来属性时遇到不存在的资源路径应该怎么办 ?
+	 * false : 输出一个日志，然后继续执行其他逻辑 (默认值)
+	 * true : 抛出异常
+	 */
 	private boolean ignoreResourceNotFound = false;
 
+	/**
+	 * 加载外来属性资源文件时使用的字符集
+	 */
 	@Nullable
 	private String fileEncoding;
 
+	/**
+	 * 外来属性加载工具
+	 */
 	private PropertiesPersister propertiesPersister = ResourcePropertiesPersister.INSTANCE;
 
 
@@ -140,18 +160,20 @@ public abstract class PropertiesLoaderSupport {
 
 
 	/**
-	 * Return a merged Properties instance containing both the
-	 * loaded properties and properties set on this FactoryBean.
+	 * Return a merged Properties instance containing both the loaded properties and properties set on this FactoryBean.
+	 * 返回一个合并属性实例，该实例包含加载的属性和在此FactoryBean上设置的属性。
 	 */
 	protected Properties mergeProperties() throws IOException {
 		Properties result = new Properties();
 
 		if (this.localOverride) {
 			// Load properties from file upfront, to let local properties override.
+			// localOverride == true, 先加载外来属性到结果对象
 			loadProperties(result);
 		}
 
 		if (this.localProperties != null) {
+			// 将本地属性合并到结果对象
 			for (Properties localProp : this.localProperties) {
 				CollectionUtils.mergePropertiesIntoMap(localProp, result);
 			}
@@ -159,6 +181,7 @@ public abstract class PropertiesLoaderSupport {
 
 		if (!this.localOverride) {
 			// Load properties from file afterwards, to let those properties override.
+			// localOverride == false, 后加载外来属性到结果对象
 			loadProperties(result);
 		}
 
@@ -167,21 +190,25 @@ public abstract class PropertiesLoaderSupport {
 
 	/**
 	 * Load properties into the given instance.
-	 * @param props the Properties instance to load into
+	 * 将属性加载到给定实例中。
+	 * @param props the Properties instance to load into    要加载到的属性实例
 	 * @throws IOException in case of I/O errors
 	 * @see #setLocations
 	 */
 	protected void loadProperties(Properties props) throws IOException {
 		if (this.locations != null) {
+			// 读取每一个属性文件资源
 			for (Resource location : this.locations) {
 				if (logger.isTraceEnabled()) {
 					logger.trace("Loading properties file from " + location);
 				}
 				try {
+					// 使用指定的字符集fileEncoding从外部资源路径location读取属性到props,使用的属性读取工具是 propertiesPersister
 					PropertiesLoaderUtils.fillProperties(
 							props, new EncodedResource(location, this.fileEncoding), this.propertiesPersister);
 				}
 				catch (FileNotFoundException | UnknownHostException | SocketException ex) {
+					// 出现异常时，如果ignoreResourceNotFound==true,则仅仅记录日志，继续读取下一个资源文件，否则直接抛出该异常
 					if (this.ignoreResourceNotFound) {
 						if (logger.isDebugEnabled()) {
 							logger.debug("Properties resource not found: " + ex.getMessage());

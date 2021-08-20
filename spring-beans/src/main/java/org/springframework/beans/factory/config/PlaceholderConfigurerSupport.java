@@ -91,36 +91,69 @@ import org.springframework.util.StringValueResolver;
 public abstract class PlaceholderConfigurerSupport extends PropertyResourceConfigurer
 		implements BeanNameAware, BeanFactoryAware {
 
-	/** Default placeholder prefix: {@value}. */
+	/**
+	 * Default placeholder prefix: {@value}.
+	 * 默认使用的占位符前缀
+	 */
 	public static final String DEFAULT_PLACEHOLDER_PREFIX = "${";
 
-	/** Default placeholder suffix: {@value}. */
+	/**
+	 * Default placeholder suffix: {@value}.
+	 * 默认使用的占位符后缀
+	 */
 	public static final String DEFAULT_PLACEHOLDER_SUFFIX = "}";
 
-	/** Default value separator: {@value}. */
+	/**
+	 * Default value separator: {@value}.
+	 * 默认使用的值分隔符
+	 */
 	public static final String DEFAULT_VALUE_SEPARATOR = ":";
 
 
-	/** Defaults to {@value #DEFAULT_PLACEHOLDER_PREFIX}. */
+	/**
+	 * Defaults to {@value #DEFAULT_PLACEHOLDER_PREFIX}.
+	 * 实例成员所用的占位符前缀
+	 */
 	protected String placeholderPrefix = DEFAULT_PLACEHOLDER_PREFIX;
 
-	/** Defaults to {@value #DEFAULT_PLACEHOLDER_SUFFIX}. */
+	/**
+	 * Defaults to {@value #DEFAULT_PLACEHOLDER_SUFFIX}.
+	 * 实例成员所用的占位符后缀
+	 */
 	protected String placeholderSuffix = DEFAULT_PLACEHOLDER_SUFFIX;
 
-	/** Defaults to {@value #DEFAULT_VALUE_SEPARATOR}. */
+	/**
+	 * Defaults to {@value #DEFAULT_VALUE_SEPARATOR}.
+	 * 实例成员所用的值分隔符
+	 */
 	@Nullable
 	protected String valueSeparator = DEFAULT_VALUE_SEPARATOR;
 
+	/**
+	 * 是否要对值做 trim
+	 */
 	protected boolean trimValues = false;
 
+	/**
+	 * 遇到占位符对应属性值为""或者null时的替代填充值
+	 */
 	@Nullable
 	protected String nullValue;
 
+	/**
+	 * 能解析的占位符是否抛出异常， false 表示抛出异常， true 表示不抛出异常
+	 */
 	protected boolean ignoreUnresolvablePlaceholders = false;
 
+	/**
+	 * 对应 BeanNameAware 接口方法setBeanName()用于记录当前bean的名称
+	 */
 	@Nullable
 	private String beanName;
 
+	/**
+	 * 对应 BeanFactoryAware 接口方法setBeanFactory()用于记录当前bean所在容器，也就是需要处理的bean定义所在的容器
+	 */
 	@Nullable
 	private BeanFactory beanFactory;
 
@@ -212,15 +245,28 @@ public abstract class PlaceholderConfigurerSupport extends PropertyResourceConfi
 	}
 
 
+	/**
+	 * 该方法是 PlaceholderConfigurerSupport 对容器中所有 bean 定义进行处理的核心逻辑方法，
+	 * 该方法留给具体实现子类使用，当然具体实现子类也可以重写该方法或者不使用该方法。
+	 *
+	 * Spring 提供的 PlaceholderConfigurerSupport 具体实现子类 PropertyPlaceholderConfigurer直接使用了该方法。
+	 *
+	 * 参数 beanFactoryToProcess ： 要处理的bean定义所属的容器
+	 * 参数 valueResolver : 属性值解析器
+	 */
 	protected void doProcessProperties(ConfigurableListableBeanFactory beanFactoryToProcess,
 			StringValueResolver valueResolver) {
 
+		//  BeanDefinitionVisitor 是一个专门为 PropertyPlaceholderConfigurer 设计的 bean 定义访问器，
+		//  主要是遍历 bean 定义中的属性值和构造函数参数值字符串，使用 valueResolver 解析相应值字符串中的占位符，结合给定的属性源，将占位符其替换为相应的属性值
 		BeanDefinitionVisitor visitor = new BeanDefinitionVisitor(valueResolver);
 
+		// 获取容器中所有的 bean 名称，这样可以访问到容器中所有的 bean 定义
 		String[] beanNames = beanFactoryToProcess.getBeanDefinitionNames();
 		for (String curName : beanNames) {
-			// Check that we're not parsing our own bean definition,
-			// to avoid failing on unresolvable placeholders in properties file locations.
+			// Check that we're not parsing our own bean definition,to avoid failing on unresolvable placeholders in properties file locations.
+			// this.beanName 记录了当前对象，也就是当前 PlaceholderConfigurerSupport 对象的bean 名称，
+			// 这里的 for 循环会使用 visitor 处理处理当前 PlaceholderConfigurerSupport 对象之外的所有 bean 定义
 			if (!(curName.equals(this.beanName) && beanFactoryToProcess.equals(this.beanFactory))) {
 				BeanDefinition bd = beanFactoryToProcess.getBeanDefinition(curName);
 				try {
@@ -233,9 +279,11 @@ public abstract class PlaceholderConfigurerSupport extends PropertyResourceConfi
 		}
 
 		// New in Spring 2.5: resolve placeholders in alias target names and aliases as well.
+		// bean 的别名，以及别名的目标bean名称中也可能使用占位符，这里也做处理
 		beanFactoryToProcess.resolveAliases(valueResolver);
 
 		// New in Spring 3.0: resolve placeholders in embedded values such as annotation attributes.
+		// 将这里所使用的值解析器 valueResolver 添加到容器，用于处理类似注解属性中的嵌入值。
 		beanFactoryToProcess.addEmbeddedValueResolver(valueResolver);
 	}
 

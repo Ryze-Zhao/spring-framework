@@ -81,15 +81,15 @@ public abstract class PropertyResourceConfigurer extends PropertiesLoaderSupport
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		try {
-			// <Spring分析点35-1> 返回合并的 Properties 实例
+			// <Spring分析点35-1> 返回合并的 Properties 实例，合并本地属性和外部指定的属性文件资源中的属性
 			Properties mergedProps = mergeProperties();
 
 			// Convert the merged properties, if necessary.
-			// <Spring分析点35-2> 转换合并属性
+			// <Spring分析点35-2> 将属性的值做转换(仅在必要的时候做)
 			convertProperties(mergedProps);
 
 			// Let the subclass process the properties.
-			// <Spring分析点35-3> 子类处理
+			// <Spring分析点35-3> 具体子类处理，对容器中的每个bean定义进行处理，也就是替换每个bean定义中的属性中的占位符
 			processProperties(beanFactory, mergedProps);
 		}
 		catch (IOException ex) {
@@ -98,10 +98,10 @@ public abstract class PropertyResourceConfigurer extends PropertiesLoaderSupport
 	}
 
 	/**
-	 * Convert the given merged properties, converting property values
-	 * if necessary. The result will then be processed.
-	 * <p>The default implementation will invoke {@link #convertPropertyValue}
-	 * for each property value, replacing the original with the converted value.
+	 * Convert the given merged properties, converting property values if necessary. The result will then be processed.
+	 * <p>The default implementation will invoke {@link #convertPropertyValue} for each property value, replacing the original with the converted value.
+	 * 转换给定的合并属性，必要时转换属性值。然后将对结果进行处理。
+	 * 默认实现将为每个属性值调用convertPropertyValue，用转换后的值替换原始值
 	 * @param props the Properties to convert
 	 * @see #processProperties
 	 */
@@ -110,6 +110,7 @@ public abstract class PropertyResourceConfigurer extends PropertiesLoaderSupport
 		while (propertyNames.hasMoreElements()) {
 			String propertyName = (String) propertyNames.nextElement();
 			String propertyValue = props.getProperty(propertyName);
+			// 对指定名称的属性的属性值进行必要的转换
 			String convertedValue = convertProperty(propertyName, propertyValue);
 			if (!ObjectUtils.nullSafeEquals(propertyValue, convertedValue)) {
 				props.setProperty(propertyName, convertedValue);
@@ -118,27 +119,29 @@ public abstract class PropertyResourceConfigurer extends PropertiesLoaderSupport
 	}
 
 	/**
-	 * Convert the given property from the properties source to the value
-	 * which should be applied.
+	 * Convert the given property from the properties source to the value which should be applied.
 	 * <p>The default implementation calls {@link #convertPropertyValue(String)}.
-	 * @param propertyName the name of the property that the value is defined for
-	 * @param propertyValue the original value from the properties source
-	 * @return the converted value, to be used for processing
+	 * 将属性源中的给定属性转换为应应用的值。 默认实现调用convertPropertyValue（字符串）。
+	 *
+	 * @param propertyName the name of the property that the value is defined for   为其定义值的属性的名称
+	 * @param propertyValue the original value from the properties source       属性源中的原始值
+	 * @return the converted value, to be used for processing       转换后的值，用于处理
 	 * @see #convertPropertyValue(String)
 	 */
 	protected String convertProperty(String propertyName, String propertyValue) {
+		// 对属性值的必要转换，这是一个默认实现，不做任何转换直接返回原值，实现类可以覆盖该方法
 		return convertPropertyValue(propertyValue);
 	}
 
 	/**
-	 * Convert the given property value from the properties source to the value
-	 * which should be applied.
+	 * Convert the given property value from the properties source to the value which should be applied.
 	 * <p>The default implementation simply returns the original value.
-	 * Can be overridden in subclasses, for example to detect
-	 * encrypted values and decrypt them accordingly.
-	 * @param originalValue the original value from the properties source
-	 * (properties file or local "properties")
-	 * @return the converted value, to be used for processing
+	 * Can be overridden in subclasses, for example to detect encrypted values and decrypt them accordingly.
+	 * 将属性源中的给定属性值转换为应应用的值。
+	 * 默认实现只返回原始值。
+	 * 可以在子类中重写，例如检测加密值并相应地解密它们。
+	 * @param originalValue the original value from the properties source (properties file or local "properties")   来自属性源（属性文件或本地“属性”）的原始值
+	 * @return the converted value, to be used for processing   转换后的值，用于处理
 	 * @see #setProperties
 	 * @see #setLocations
 	 * @see #setLocation
