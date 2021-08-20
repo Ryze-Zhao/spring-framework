@@ -67,12 +67,14 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 	/**
 	 * {@value} is the name given to the {@link PropertySource} for the set of
 	 * {@linkplain #mergeProperties() merged properties} supplied to this configurer.
+	 * “localProperties”是提供给此配置程序的合并属性集的PropertySource的名称。
 	 */
 	public static final String LOCAL_PROPERTIES_PROPERTY_SOURCE_NAME = "localProperties";
 
 	/**
 	 * {@value} is the name given to the {@link PropertySource} that wraps the
 	 * {@linkplain #setEnvironment environment} supplied to this configurer.
+	 * “environmentProperties”是为包装提供给此配置器的环境的PropertySource指定的名称。
 	 */
 	public static final String ENVIRONMENT_PROPERTIES_PROPERTY_SOURCE_NAME = "environmentProperties";
 
@@ -91,6 +93,7 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 	 * Customize the set of {@link PropertySources} to be used by this configurer.
 	 * <p>Setting this property indicates that environment property sources and
 	 * local properties should be ignored.
+	 * 自定义此配置程序要使用的属性资源集。 设置此属性表示应忽略环境属性源和本地属性
 	 * @see #postProcessBeanFactory
 	 */
 	public void setPropertySources(PropertySources propertySources) {
@@ -98,8 +101,8 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 	}
 
 	/**
-	 * {@code PropertySources} from the given {@link Environment}
-	 * will be searched when replacing ${...} placeholders.
+	 * {@code PropertySources} from the given {@link Environment} will be searched when replacing ${...} placeholders.
+	 * 替换${…}占位符时，将搜索给定环境中的PropertySources。
 	 * @see #setPropertySources
 	 * @see #postProcessBeanFactory
 	 */
@@ -123,10 +126,21 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 	 * <p>If {@link #setPropertySources} is called, <strong>environment and local properties will be
 	 * ignored</strong>. This method is designed to give the user fine-grained control over property
 	 * sources, and once set, the configurer makes no assumptions about adding additional sources.
+	 * 这是接口  BeanFactoryPostProcessor 约定的方法，会在容器启动过程中的后置处理阶段被调用
+	 *
+	 * 处理是通过替换bean定义中的${…}占位符来进行的，方法是根据此配置器的一组属性源解析每个占位符，
+	 * 其中包括： 所有环境属性源（如果存在环境） 已指定合并的本地属性（如果有） 通过调用setPropertySources设置的任何属性源
+	 * 如果调用setPropertySources，将忽略环境和本地属性。此方法旨在为用户提供对属性源的细粒度控制，一旦设置，配置程序就不会对添加其他源进行任何假设。
+	 * 覆盖： 类PropertyResourceConfigurator中的postProcessBeanFactory
+	 * 参数： beanFactory–应用程序上下文使用的bean工厂应用程序上下文使用的豆工厂
+	 * 抛出： BeanInitializationException–如果无法加载任何属性如果无法加载任何属性
+	 *
 	 */
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		if (this.propertySources == null) {
+			// 如果外部指定了 this.propertySources, 则直接使用它，否则
+			// 从当前 Spring 的 Environment 对象和自身的 #mergeProperties 方法调用返回的 Properties 对象构建属性源对象 this.propertySources
 			this.propertySources = new MutablePropertySources();
 			if (this.environment != null) {
 				this.propertySources.addLast(
@@ -154,6 +168,8 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 			}
 		}
 
+		// 构造一个基于特定属性源 this.propertySources 对属性值进行解析的属性值解析器PropertySourcesPropertyResolver,
+		// 对容器中所有的 bean 定义中的属性值，构造函数参数值，@Value 注解值进行属性占位符解析和替换
 		processProperties(beanFactory, new PropertySourcesPropertyResolver(this.propertySources));
 		this.appliedPropertySources = this.propertySources;
 	}
@@ -166,10 +182,16 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 	protected void processProperties(ConfigurableListableBeanFactory beanFactoryToProcess,
 			final ConfigurablePropertyResolver propertyResolver) throws BeansException {
 
+		// 设置属性值解析器所使用的占位符格式参数，缺省为:
+		// 占位符前缀 ${
+		// 占位符后缀 }
+		// 缺省值分隔符 :
 		propertyResolver.setPlaceholderPrefix(this.placeholderPrefix);
 		propertyResolver.setPlaceholderSuffix(this.placeholderSuffix);
 		propertyResolver.setValueSeparator(this.valueSeparator);
 
+		// 结合属性 this. ignoreUnresolvablePlaceholders 对 propertyResolver 作进一步封装，
+		// 封装出来一个 StringValueResolver valueResolver,这是最终要应用的属性值解析器
 		StringValueResolver valueResolver = strVal -> {
 			String resolved = (this.ignoreUnresolvablePlaceholders ?
 					propertyResolver.resolvePlaceholders(strVal) :
@@ -179,13 +201,14 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 			}
 			return (resolved.equals(this.nullValue) ? null : resolved);
 		};
-
+		// 调用基类  PlaceholderConfigurerSupport 实现的对容器中所有 bean定义进行遍历处理属性值中占位符解析的逻辑
 		doProcessProperties(beanFactoryToProcess, valueResolver);
 	}
 
 	/**
 	 * Implemented for compatibility with
 	 * {@link org.springframework.beans.factory.config.PlaceholderConfigurerSupport}.
+	 * 该方法是基类定义的方法，这里的实现直接抛出了异常，因为该实现类实际上使用了另外一个 processProperties 方法实现
 	 * @deprecated in favor of
 	 * {@link #processProperties(ConfigurableListableBeanFactory, ConfigurablePropertyResolver)}
 	 * @throws UnsupportedOperationException in this implementation
@@ -200,6 +223,7 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 	/**
 	 * Return the property sources that were actually applied during
 	 * {@link #postProcessBeanFactory(ConfigurableListableBeanFactory) post-processing}.
+	 * 返回在后处理过程中实际应用的属性源。
 	 * @return the property sources that were applied
 	 * @throws IllegalStateException if the property sources have not yet been applied
 	 * @since 4.0
