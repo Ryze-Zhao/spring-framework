@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="propertyConfig" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+		<property name="location">
+			<value>classpath:spring/demo/test1/Student.properties</value>
+		</property>
+	</bean>
+
+	<bean id="student" class="org.springframework.zhao.demo.Student">
+		<property name="name" value="RyzeZhao$XML"/>
+		<property name="age" value="10"/>
+		<property name="properties" value="${heheProperties}"/>
+
+	</bean>
+</beans>
