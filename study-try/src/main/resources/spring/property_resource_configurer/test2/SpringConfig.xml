@@ -5,11 +5,11 @@
 
 	<bean id="propertyConfig" class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
 		<property name="location">
-			<value>classpath:spring/demo/test2/Student.properties</value>
+			<value>classpath:spring/property_resource_configurer/test2/Student.properties</value>
 		</property>
 	</bean>
 
-	<bean id="student" class="org.springframework.zhao.demo.Student">
+	<bean id="student" class="org.springframework.zhao.property_resource_configurer.Student">
 		<property name="name" value="RyzeZhao$XML"/>
 		<property name="age" value="10"/>
 	</bean>
