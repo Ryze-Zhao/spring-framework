@@ -12,5 +12,6 @@
 	<bean id="student" class="org.springframework.zhao.property_resource_configurer.Student">
 		<property name="name" value="RyzeZhao$XML"/>
 		<property name="age" value="10"/>
+		<property name="properties" value="XML$properties"/>
 	</bean>
 </beans>
