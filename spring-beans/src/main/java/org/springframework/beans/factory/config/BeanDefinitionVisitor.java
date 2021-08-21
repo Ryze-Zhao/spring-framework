@@ -70,9 +70,9 @@ public class BeanDefinitionVisitor {
 
 
 	/**
-	 * Traverse the given BeanDefinition object and the MutablePropertyValues
-	 * and ConstructorArgumentValues contained in them.
-	 * @param beanDefinition the BeanDefinition object to traverse
+	 * Traverse the given BeanDefinition object and the MutablePropertyValues and ConstructorArgumentValues contained in them.
+	 * 遍历给定的BeanDefinition对象以及其中包含的可变属性值和构造函数参数值。
+	 * @param beanDefinition the BeanDefinition object to traverse	要遍历的beanDefinition对象
 	 * @see #resolveStringValue(String)
 	 */
 	public void visitBeanDefinition(BeanDefinition beanDefinition) {
@@ -143,9 +143,12 @@ public class BeanDefinitionVisitor {
 
 	protected void visitPropertyValues(MutablePropertyValues pvs) {
 		PropertyValue[] pvArray = pvs.getPropertyValues();
+		// 遍历 PropertyValue 数组
 		for (PropertyValue pv : pvArray) {
+			// 解析真值
 			Object newVal = resolveValue(pv.getValue());
 			if (!ObjectUtils.nullSafeEquals(newVal, pv.getValue())) {
+				// 设置到 PropertyValue 中
 				pvs.add(pv.getName(), newVal);
 			}
 		}
@@ -218,6 +221,7 @@ public class BeanDefinitionVisitor {
 				typedStringValue.setValue(visitedString);
 			}
 		}
+		// 由于 Properties 中的是 String，所以重点在此处
 		else if (value instanceof String) {
 			return resolveStringValue((String) value);
 		}
@@ -284,6 +288,7 @@ public class BeanDefinitionVisitor {
 
 	/**
 	 * Resolve the given String value, for example parsing placeholders.
+	 * 解析给定的字符串值，例如解析占位符。
 	 * @param strVal the original String value
 	 * @return the resolved String value
 	 */
@@ -293,8 +298,10 @@ public class BeanDefinitionVisitor {
 			throw new IllegalStateException("No StringValueResolver specified - pass a resolver " +
 					"object into the constructor or override the 'resolveStringValue' method");
 		}
+		// 解析真值
 		String resolvedValue = this.valueResolver.resolveStringValue(strVal);
 		// Return original String if not modified.
+		// 如果未修改，则返回原始字符串。
 		return (strVal.equals(resolvedValue) ? strVal : resolvedValue);
 	}
 
