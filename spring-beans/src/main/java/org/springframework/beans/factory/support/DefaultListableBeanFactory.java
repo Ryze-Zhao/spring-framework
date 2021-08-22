@@ -183,6 +183,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	/**
 	 * Map of bean definition objects, keyed by bean name.
 	 * bean定义对象的映射，由bean名称作为key。
+	 * 注册表，由 BeanDefinition 的标识 （beanName） 与其实例组成
 	 */
 	private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
 
@@ -207,6 +208,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	/**
 	 * List of bean definition names, in registration order.
 	 * bean定义名称列表，按注册顺序排列。
+	 * 标识（beanName）集合
 	 */
 	private volatile List<String> beanDefinitionNames = new ArrayList<>(256);
 
@@ -1093,7 +1095,7 @@ else if (this.serializationId != null) {
 					removeManualSingletonName(beanName);
 				}
 			} 
-else {
+			else {
 				// Still in startup registration phase
 				// 添加到 BeanDefinition 到 beanDefinitionMap 中。
 				this.beanDefinitionMap.put(beanName, beanDefinition);
