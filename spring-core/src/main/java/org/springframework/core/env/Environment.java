@@ -79,6 +79,7 @@ public interface Environment extends PropertyResolver {
 	 * {@link ConfigurableEnvironment#setActiveProfiles(String...)}.
 	 * <p>If no profiles have explicitly been specified as active, then any
 	 * {@linkplain #getDefaultProfiles() default profiles} will automatically be activated.
+	 * 返回此环境下激活的配置文件集
 	 * @see #getDefaultProfiles
 	 * @see ConfigurableEnvironment#setActiveProfiles
 	 * @see AbstractEnvironment#ACTIVE_PROFILES_PROPERTY_NAME
@@ -86,8 +87,8 @@ public interface Environment extends PropertyResolver {
 	String[] getActiveProfiles();
 
 	/**
-	 * Return the set of profiles to be active by default when no active profiles have
-	 * been set explicitly.
+	 * Return the set of profiles to be active by default when no active profiles have been set explicitly.
+	 * 如果未设置激活配置文件，则返回默认的激活的配置文件集
 	 * @see #getActiveProfiles
 	 * @see ConfigurableEnvironment#setDefaultProfiles
 	 * @see AbstractEnvironment#DEFAULT_PROFILES_PROPERTY_NAME
@@ -112,8 +113,8 @@ public interface Environment extends PropertyResolver {
 	boolean acceptsProfiles(String... profiles);
 
 	/**
-	 * Return whether the {@linkplain #getActiveProfiles() active profiles}
-	 * match the given {@link Profiles} predicate.
+	 * Return whether the {@linkplain #getActiveProfiles() active profiles} match the given {@link Profiles} predicate.
+	 * 返回活动配置文件是否与给定配置文件谓词匹配。
 	 */
 	boolean acceptsProfiles(Profiles profiles);
 
