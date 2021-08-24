@@ -258,7 +258,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		if (serializationId != null) {
 			serializableFactories.put(serializationId, new WeakReference<>(this));
 		} 
-else if (this.serializationId != null) {
+		else if (this.serializationId != null) {
 			serializableFactories.remove(this.serializationId);
 		}
 		this.serializationId = serializationId;
