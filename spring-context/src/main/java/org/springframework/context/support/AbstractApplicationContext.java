@@ -403,25 +403,32 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// Decorate event as an ApplicationEvent if necessary
 		ApplicationEvent applicationEvent;
+		// 如果发布的事件是一个ApplicationEvent，直接发布
 		if (event instanceof ApplicationEvent) {
 			applicationEvent = (ApplicationEvent) event;
 		}
 		else {
+			// 如果发布的事件不是一个ApplicationEvent，包装成一个PayloadApplicationEvent
 			applicationEvent = new PayloadApplicationEvent<>(this, event);
+			// 我们在应用程序中发布事件时，这个eventType必定为null
 			if (eventType == null) {
+				// 获取对应的事件类型
 				eventType = ((PayloadApplicationEvent<?>) applicationEvent).getResolvableType();
 			}
 		}
 
 		// Multicast right now if possible - or lazily once the multicaster is initialized
+		// 我们自定义调用时，这个earlyApplicationEvents必定为null
 		if (this.earlyApplicationEvents != null) {
 			this.earlyApplicationEvents.add(applicationEvent);
 		}
 		else {
+			// 获取事件发布器，发布对应的事件
 			getApplicationEventMulticaster().multicastEvent(applicationEvent, eventType);
 		}
 
 		// Publish event via parent context as well...
+		// 父容器中也需要发布事件
 		if (this.parent != null) {
 			if (this.parent instanceof AbstractApplicationContext) {
 				((AbstractApplicationContext) this.parent).publishEvent(event, eventType);
@@ -1062,9 +1069,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
-	 * Cancel this context's refresh attempt, resetting the {@code active} flag
-	 * after an exception got thrown.
-	 * @param ex the exception that led to the cancellation
+	 * Cancel this context's refresh attempt, resetting the {@code active} flag after an exception got thrown.
+	 * 取消此上下文的刷新尝试，在引发异常后重置活动标志。
+	 * @param ex the exception that led to the cancellation 导致取消的例外情况
 	 */
 	protected void cancelRefresh(BeansException ex) {
 		this.active.set(false);
@@ -1074,6 +1081,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * Reset Spring's common reflection metadata caches, in particular the
 	 * {@link ReflectionUtils}, {@link AnnotationUtils}, {@link ResolvableType}
 	 * and {@link CachedIntrospectionResults} caches.
+	 * 重置Spring的公共反射元数据缓存，特别是ReflectionUtils、AnnotationUtils、ResolvableType和CachedIntrospectionResults缓存。
 	 * @since 4.2
 	 * @see ReflectionUtils#clearCache()
 	 * @see AnnotationUtils#clearCache()
@@ -1081,6 +1089,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see CachedIntrospectionResults#clearClassLoader(ClassLoader)
 	 */
 	protected void resetCommonCaches() {
+		// 清除一些缓存
 		ReflectionUtils.clearCache();
 		AnnotationUtils.clearCache();
 		ResolvableType.clearCache();
@@ -1217,6 +1226,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * <p>Can be overridden to add context-specific bean destruction steps
 	 * right before or right after standard singleton destruction,
 	 * while the context's BeanFactory is still active.
+	 * 用于销毁此上下文管理的所有bean的模板方法。默认实现通过调用DisposableBean.destroy（）和/或指定的“destroy方法”销毁此上下文中所有缓存的单例。
+	 * 可以重写以在标准单例销毁之前或之后添加上下文特定的bean销毁步骤，而上下文的BeanFactory仍然处于活动状态
 	 * @see #getBeanFactory()
 	 * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#destroySingletons()
 	 */
