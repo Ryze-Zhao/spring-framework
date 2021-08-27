@@ -42,7 +42,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Scope identifier for the standard singleton scope: {@value}.<p>Note that extended bean factories might support further scopes.
-	 * 标准单例作用域的作用域标识符：{@value}。<p>请注意，扩展bean工厂可能支持更多的作用域。
+	 * 标准单例作用域的作用域标识符：{@value}。<p>请注意，扩展 `BeanFactory` 可能支持更多的作用域。
 	 *
 	 * @see #setScope
 	 * @see ConfigurableBeanFactory#SCOPE_SINGLETON
@@ -51,7 +51,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Scope identifier for the standard prototype scope: {@value}.<p>Note that extended bean factories might support further scopes.
-	 * 标准原型作用域的作用域标识符：{@value}。<p>请注意，扩展bean工厂可能支持更多的作用域。
+	 * 标准原型作用域的作用域标识符：{@value}。<p>请注意，扩展 `BeanFactory` 可能支持更多的作用域。
 	 *
 	 * @see #setScope
 	 * @see ConfigurableBeanFactory#SCOPE_PROTOTYPE
@@ -110,7 +110,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Specify the bean class name of this bean definition.<p>The class name can be modified during bean factory post-processing,typically replacing the original class name with a parsed variant of it.
-	 * 指定此bean定义的bean类名。<p>可以在bean工厂后处理过程中修改类名，通常用解析后的变体替换原始类名。
+	 * 指定此bean定义的bean类名。<p>可以在  `BeanFactoryPostProcessor` 过程中修改类名，通常用解析后的变体替换原始类名。
 	 *
 	 * @see #setParentName
 	 * @see #setFactoryBeanName
@@ -152,7 +152,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Set whether this bean should be lazily initialized.<p>If {@code false}, the bean will get instantiated on startup by bean factories that perform eager initialization of singletons.
-	 * 设置此bean是否应该延迟初始化。<p>如果{@code false}，则bean将在启动时由执行单例急切初始化的bean工厂实例化。
+	 * 设置此bean是否应该延迟初始化。<p>如果{@code false}，则bean将在启动时由执行单例急切初始化的 `BeanFactory` 实例化。
 	 */
 	void setLazyInit(boolean lazyInit);
 
@@ -164,7 +164,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Set the names of the beans that this bean depends on being initialized.The bean factory will guarantee that these beans get initialized first.
-	 * 设置此bean依赖于初始化的bean的名称。bean工厂将保证这些bean首先得到初始化。
+	 * 设置此bean依赖于初始化的bean的名称。 `BeanFactory` 将保证这些bean首先得到初始化。
 	 */
 	void setDependsOn(@Nullable String... dependsOn);
 
@@ -239,7 +239,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Return the constructor argument values for this bean.<p>The returned instance can be modified during bean factory post-processing.
-	 * 返回此bean的构造函数参数值。<p>返回的实例可以在bean工厂后处理期间修改。
+	 * 返回此bean的构造函数参数值。<p>返回的实例可以在  `BeanFactoryPostProcessor` 期间修改。
 	 *
 	 * @return the ConstructorArgumentValues object (never {@code null})
 	 */
@@ -257,7 +257,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Return the property values to be applied to a new instance of the bean.<p>The returned instance can be modified during bean factory post-processing.
-	 * 返回要应用于bean的新实例的属性值。<p>返回的实例可以在bean工厂后处理期间修改。
+	 * 返回要应用于bean的新实例的属性值。<p>返回的实例可以在  `BeanFactoryPostProcessor` 期间修改。
 	 *
 	 * @return the MutablePropertyValues object (never {@code null})
 	 */

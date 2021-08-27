@@ -152,10 +152,10 @@ public abstract class BeanDefinitionReaderUtils {
 
 	/**
 	 * Register the given bean definition with the given bean factory.
-	 * 向给定的bean工厂注册给定的bean定义。
+	 * 向给定的 `BeanFactory` 注册给定的bean定义。
 	 *
 	 * @param definitionHolder the bean definition including name and aliases   bean定义，包括名称和别名
-	 * @param registry         the bean factory to register with    要注册的bean工厂
+	 * @param registry         the bean factory to register with    要注册的 `BeanFactory`
 	 * @throws BeanDefinitionStoreException if registration failed  如果注册失败
 	 */
 	public static void registerBeanDefinition(BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry)

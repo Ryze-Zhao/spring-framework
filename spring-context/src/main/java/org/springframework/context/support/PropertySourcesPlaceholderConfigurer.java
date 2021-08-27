@@ -132,7 +132,7 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 	 * 其中包括： 所有环境属性源（如果存在环境） 已指定合并的本地属性（如果有） 通过调用setPropertySources设置的任何属性源
 	 * 如果调用setPropertySources，将忽略环境和本地属性。此方法旨在为用户提供对属性源的细粒度控制，一旦设置，配置程序就不会对添加其他源进行任何假设。
 	 * 覆盖： 类PropertyResourceConfigurator中的postProcessBeanFactory
-	 * 参数： beanFactory–应用程序上下文使用的bean工厂应用程序上下文使用的豆工厂
+	 * 参数： beanFactory– `ApplicationContext` 使用的 `BeanFactory`  `ApplicationContext` 使用的豆工厂
 	 * 抛出： BeanInitializationException–如果无法加载任何属性如果无法加载任何属性
 	 *
 	 */
@@ -177,7 +177,7 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 	/**
 	 * Visit each bean definition in the given bean factory and attempt to replace ${...} property
 	 * placeholders with values from the given properties.
-	 * 访问给定bean工厂中的每个bean定义，并尝试用给定属性中的值替换${…}属性占位符。
+	 * 访问给定 `BeanFactory` 中的每个bean定义，并尝试用给定属性中的值替换${…}属性占位符。
 	 */
 	protected void processProperties(ConfigurableListableBeanFactory beanFactoryToProcess,
 			final ConfigurablePropertyResolver propertyResolver) throws BeansException {

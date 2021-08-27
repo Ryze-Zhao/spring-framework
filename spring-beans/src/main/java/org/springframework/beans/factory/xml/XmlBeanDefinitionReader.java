@@ -151,7 +151,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 	/**
 	 * Create new XmlBeanDefinitionReader for the given bean factory.
-	 * 为给定的bean工厂创建新的XmlBeanDefinitionReader
+	 * 为给定的 `BeanFactory` 创建新的XmlBeanDefinitionReader
 	 *
 	 * @param registry the BeanFactory to load bean definitions into,in the form of a BeanDefinitionRegistry
 	 *                 以BeanDefinitionRegistry的形式将bean定义加载到的BeanFactory

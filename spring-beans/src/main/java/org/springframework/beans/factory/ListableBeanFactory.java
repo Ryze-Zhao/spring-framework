@@ -62,7 +62,7 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * <p>Does not consider any hierarchy this factory may participate in,
 	 * and ignores any singleton beans that have been registered by
 	 * other means than bean definitions.
-	 * 检查此bean工厂是否包含具有给定名称的bean定义。 不考虑该工厂可能参与的任何层次结构，并且忽略由bean定义的其他方法注册的任何单个bean。
+	 * 检查此 `BeanFactory` 是否包含具有给定名称的bean定义。 不考虑该工厂可能参与的任何层次结构，并且忽略由bean定义的其他方法注册的任何单个bean。
 	 * @param beanName the name of the bean to look for
 	 * @return if this bean factory contains a bean definition with the given name
 	 * @see #containsBean

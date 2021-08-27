@@ -220,7 +220,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 
 	/**
 	 * Parse an "import" element and load the bean definitions from the given resource into the bean factory.
-	 * 解析“import”元素并将bean定义从给定的资源加载到bean工厂中。
+	 * 解析“import”元素并将bean定义从给定的资源加载到 `BeanFactory` 中。
 	 */
 	protected void importBeanDefinitionResource(Element ele) {
 		// <Spring分析点10-1> 获取 <import> 中的 resource 属性值

@@ -1569,8 +1569,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * of the property type in the bean factory. This makes bean factories simple to
 	 * configure for small namespaces, but doesn't work as well as standard Spring
 	 * behavior for bigger applications.
-	 * 定义“autowire by type”（按类型的bean属性）行为的抽象方法。 这类似于picocontainerdefault，其中bean工厂中必须只有一个属性类型的bean。
-	 * 这使得bean工厂对于小名称空间的配置变得简单，但是对于更大的应用程序，它的工作方式不如标准的Spring行为。
+	 * 定义“autowire by type”（按类型的bean属性）行为的抽象方法。 这类似于picocontainerdefault，其中 `BeanFactory` 中必须只有一个属性类型的bean。
+	 * 这使得 `BeanFactory` 对于小名称空间的配置变得简单，但是对于更大的应用程序，它的工作方式不如标准的Spring行为。
 	 *
 	 * @param beanName the name of the bean to autowire by type	按类型自动关联的bean的名称
 	 * @param mbd the merged bean definition to update through autowiring	通过自动连线更新的合并bean定义
@@ -1744,7 +1744,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * Apply the given property values, resolving any runtime references
 	 * to other beans in this bean factory. Must use deep copy, so we
 	 * don't permanently modify this property.
-	 * 应用给定的属性值，解析对该bean工厂中其他bean的任何运行时引用。必须使用深度复制，因此我们不会永久修改此属性。
+	 * 应用给定的属性值，解析对该 `BeanFactory` 中其他bean的任何运行时引用。必须使用深度复制，因此我们不会永久修改此属性。
 	 * @param beanName the bean name passed for better exception information	为获得更好的异常信息而传递的bean名称
 	 * @param mbd the merged bean definition	合并bean定义
 	 * @param bw the BeanWrapper wrapping the target object	包装目标对象的BeanWrapper
@@ -1960,7 +1960,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	/**
 	 * Give a bean a chance to react now all its properties are set,and a chance to know about its owning bean factory (this object).
 	 * This means checking whether the bean implements InitializingBean or defines a custom init method, and invoking the necessary callback(s) if it does.
-	 * 给一个bean一个机会，现在它的所有属性都设置好了，并且有机会知道它所拥有的bean工厂（这个对象）。
+	 * 给一个bean一个机会，现在它的所有属性都设置好了，并且有机会知道它所拥有的 `BeanFactory` （这个对象）。
 	 * 这意味着检查bean是否实现了InitializingBean或定义了自定义的init方法，如果实现了，则调用必要的回调。
 	 * @param beanName the bean name in the factory (for debugging purposes)	工厂中的bean名称（用于调试）
 	 * @param bean the new bean instance we may need to initialize	我们可能需要初始化的新bean实例

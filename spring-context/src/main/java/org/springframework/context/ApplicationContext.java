@@ -60,7 +60,7 @@ public interface ApplicationContext extends EnvironmentCapable, ListableBeanFact
 
 	/**
 	 * Return the unique id of this application context.
-	 * 返回此应用程序上下文的唯一id。
+	 * 返回此 `ApplicationContext` 的唯一id。
 	 * @return the unique id of the context, or {@code null} if none 	上下文的唯一id，如果没有，则为null
 	 */
 	@Nullable
@@ -110,17 +110,17 @@ public interface ApplicationContext extends EnvironmentCapable, ListableBeanFact
 	 * all application context implementations will be required to comply.
 	 *
 	 * 为此上下文公开AutowireCapableBeanFactory功能。
-	 * 这通常不被应用程序代码使用，除非是为了初始化位于应用程序上下文之外的bean实例，对它们应用springbean生命周期（全部或部分）。
+	 * 这通常不被应用程序代码使用，除非是为了初始化位于 `ApplicationContext` 之外的bean实例，对它们应用springbean生命周期（全部或部分）。
 	 * 或者，ConfigurableApplicationContext接口公开的内部BeanFactory也提供对AutowireCapableBeanFactory接口的访问。
 	 * 本方法主要用作ApplicationContext接口上的一种方便、特定的工具。
-	 * 注意：从4.2开始，此方法将在应用程序上下文关闭后始终抛出IllegalStateException。
-	 * 在当前的Spring框架版本中，只有可刷新的应用程序上下文才会这样做；从4.2开始，所有应用程序上下文实现都需要遵守。
+	 * 注意：从4.2开始，此方法将在 `ApplicationContext` 关闭后始终抛出IllegalStateException。
+	 * 在当前的Spring框架版本中，只有可刷新的 `ApplicationContext` 才会这样做；从4.2开始，所有 `ApplicationContext` 实现都需要遵守。
 	 *
 	 * @return the AutowireCapableBeanFactory for this context	此上下文的AutowireCapableBeanFactory
 	 * @throws IllegalStateException if the context does not support the
 	 * {@link AutowireCapableBeanFactory} interface, or does not hold an
 	 * autowire-capable bean factory yet (e.g. if {@code refresh()} has
-	 * never been called), or if the context has been closed already	如果上下文不支持AutowireCapableBeanFactory接口，或者尚未拥有支持autowire的bean工厂（例如，如果从未调用过refresh（）），或者如果上下文已经关闭
+	 * never been called), or if the context has been closed already	如果上下文不支持AutowireCapableBeanFactory接口，或者尚未拥有支持autowire的 `BeanFactory` （例如，如果从未调用过refresh()），或者如果上下文已经关闭
 	 * @see ConfigurableApplicationContext#refresh()
 	 * @see ConfigurableApplicationContext#getBeanFactory()
 	 */

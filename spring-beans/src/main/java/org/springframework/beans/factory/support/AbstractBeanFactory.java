@@ -121,7 +121,7 @@ import org.springframework.util.StringValueResolver;
 public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory {
 
 	/** Parent bean factory, for bean inheritance support.
-	 * 父bean工厂，用于bean继承支持 */
+	 * 父 `BeanFactory` ，用于bean继承支持 */
 	@Nullable
 	private BeanFactory parentBeanFactory;
 
@@ -2058,9 +2058,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * just amounts to a local hash lookup: The operation is therefore part of the
 	 * public interface there. The same implementation can serve for both this
 	 * template method and the public interface method in that case.
-	 * 检查此bean工厂是否包含具有给定名称的bean定义。不考虑该工厂可能参与的任何层次结构。当找不到缓存的singleton实例时由containsBean调用。
-	 * 根据具体bean工厂实现的性质，此操作可能代价高昂（例如，由于在外部注册表中查找目录）。
-	 * 然而，对于可列出的bean工厂，这通常只相当于本地哈希查找：因此，该操作是公共接口的一部分。
+	 * 检查此 `BeanFactory` 是否包含具有给定名称的bean定义。不考虑该工厂可能参与的任何层次结构。当找不到缓存的singleton实例时由containsBean调用。
+	 * 根据具体 `BeanFactory` 实现的性质，此操作可能代价高昂（例如，由于在外部注册表中查找目录）。
+	 * 然而，对于可列出的 `BeanFactory` ，这通常只相当于本地哈希查找：因此，该操作是公共接口的一部分。
 	 * 在这种情况下，相同的实现可以用于此模板方法和公共接口方法。
 	 * @param beanName the name of the bean to look for
 	 * @return if this bean factory contains a bean definition with the given name

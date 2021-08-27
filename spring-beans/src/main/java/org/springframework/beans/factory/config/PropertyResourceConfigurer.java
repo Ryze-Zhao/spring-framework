@@ -72,10 +72,10 @@ public abstract class PropertyResourceConfigurer extends PropertiesLoaderSupport
 	/**
 	 * {@linkplain #mergeProperties Merge}, {@linkplain #convertProperties convert} and
 	 * {@linkplain #processProperties process} properties against the given bean factory.
-	 * 针对给定的bean工厂合并、转换和处理属性。 指定人： 接口BeanFactory后处理器中的后处理BeanFactory 
+	 * 针对给定的 `BeanFactory` 合并、转换和处理属性。 指定人： 接口 `BeanFactoryPostProcessor` 中的后处理BeanFactory
 	 * 
 	 *
-	 * 参数： beanFactory–应用程序上下文使用的bean工厂应用程序上下文使用的bean工厂
+	 * 参数： beanFactory– `ApplicationContext` 使用的 `BeanFactory`  `ApplicationContext` 使用的 `BeanFactory`
 	 * @throws BeanInitializationException if any properties cannot be loaded	如果无法加载任何属性
 	 */
 	@Override
@@ -155,7 +155,7 @@ public abstract class PropertyResourceConfigurer extends PropertiesLoaderSupport
 	/**
 	 * Apply the given Properties to the given BeanFactory.
 	 * 将给定的属性应用于给定的BeanFactory。
-	 * @param beanFactory the BeanFactory used by the application context	应用程序上下文使用的beanFactory
+	 * @param beanFactory the BeanFactory used by the application context	 `ApplicationContext` 使用的beanFactory
 	 * @param props the Properties to apply		要应用的属性
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 */

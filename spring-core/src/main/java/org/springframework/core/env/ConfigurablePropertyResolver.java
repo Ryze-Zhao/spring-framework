@@ -98,7 +98,7 @@ public interface ConfigurablePropertyResolver extends PropertyResolver {
 	 * Specify which properties must be present, to be verified by
 	 * {@link #validateRequiredProperties()}.
 	 *
-	 * 指定必须存在哪些属性，以便由validateRequiredProperties（）验证
+	 * 指定必须存在哪些属性，以便由validateRequiredProperties()验证
 	 */
 	void setRequiredProperties(String... requiredProperties);
 

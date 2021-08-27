@@ -570,7 +570,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			/*
 			 * <Spring分析点38-2> 获取BeanFactory工厂 及 装载BeanDefinition 信息
 			 *
-			 * <Spring分析点38-2.1> 获取BeanFactory,内部调用refreshBeanFactory()和getBeanFactory()均由子类实现，告知子类刷新Bean工厂(设置序列号ID--> 参考GenericApplicationContext)
+			 * <Spring分析点38-2.1> 获取BeanFactory,内部调用refreshBeanFactory()和getBeanFactory()均由子类实现，告知子类刷新 `BeanFactory` (设置序列号ID--> 参考GenericApplicationContext)
 			 * <Spring分析点38-2.2> 将配置文件、注解 解析为各个 BeanDefinition ，并注册到 BeanFactory 中，这一步 Bean 还没有初始化，只是将配置信息都提取成 BeanDefinition，
 			 * 并将这些 BeanDefinition 都保存到了 Map 中(核心是一个 key为beanName，value为 BeanDefinition 的 Map)
 			 */
@@ -578,7 +578,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 			// Prepare the bean factory for use in this context.
 			/*
-			 * <Spring分析点38-3> 对前一步获取的 BeanFactory 进行 填充 预准备工作(初始化Bean工厂,设置基础属性)；
+			 * <Spring分析点38-3> 对前一步获取的 BeanFactory 进行 填充 预准备工作(初始化 `BeanFactory` ,设置基础属性)；
 			 *
 			 * <Spring分析点38-3.1> ClassLoader
 			 * <Spring分析点38-3.2> SPEL(SPring表达式)解析器
@@ -761,7 +761,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	/**
 	 * Tell the subclass to refresh the internal bean factory.
-	 * 告诉子类刷新内部bean工厂。
+	 * 告诉子类刷新内部 `BeanFactory` 。
 	 * @return the fresh BeanFactory instance
 	 * @see #refreshBeanFactory()
 	 * @see #getBeanFactory()
@@ -841,9 +841,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * initialization. All bean definitions will have been loaded, but no beans
 	 * will have been instantiated yet. This allows for registering special
 	 * BeanPostProcessors etc in certain ApplicationContext implementations.
-	 * 在标准初始化之后修改应用程序上下文的内部bean工厂。所有bean定义都已加载，但尚未实例化任何bean。
+	 * 在标准初始化之后修改 `ApplicationContext` 的内部 `BeanFactory` 。所有bean定义都已加载，但尚未实例化任何bean。
 	 * 这允许在某些ApplicationContext实现中注册特殊的BeanPostProcessor等。
-	 * @param beanFactory the bean factory used by the application context  应用程序上下文使用的bean工厂
+	 * @param beanFactory the bean factory used by the application context   `ApplicationContext` 使用的 `BeanFactory`
 	 */
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 	}
@@ -1005,7 +1005,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	/**
 	 * Finish the initialization of this context's bean factory, initializing all remaining singleton beans.
-	 * 完成此上下文bean工厂的初始化，初始化所有剩余的单例bean。
+	 * 完成此上下文 `BeanFactory` 的初始化，初始化所有剩余的单例bean。
 	 */
 	protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
 		// Initialize conversion service for this context.
@@ -1041,7 +1041,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	/**
 	 * Finish the refresh of this context, invoking the LifecycleProcessor's onRefresh() method and publishing the
 	 * {@link org.springframework.context.event.ContextRefreshedEvent}.
-	 * 完成此上下文的刷新，调用LifecycleProcessor的onRefresh（）方法并发布ContextRefreshedEvent
+	 * 完成此上下文的刷新，调用LifecycleProcessor的onRefresh()方法并发布ContextRefreshedEvent
 	 */
 	@SuppressWarnings("deprecation")
 	protected void finishRefresh() {
@@ -1226,7 +1226,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * <p>Can be overridden to add context-specific bean destruction steps
 	 * right before or right after standard singleton destruction,
 	 * while the context's BeanFactory is still active.
-	 * 用于销毁此上下文管理的所有bean的模板方法。默认实现通过调用DisposableBean.destroy（）和/或指定的“destroy方法”销毁此上下文中所有缓存的单例。
+	 * 用于销毁此上下文管理的所有bean的模板方法。默认实现通过调用DisposableBean.destroy()和/或指定的“destroy方法”销毁此上下文中所有缓存的单例。
 	 * 可以重写以在标准单例销毁之前或之后添加上下文特定的bean销毁步骤，而上下文的BeanFactory仍然处于活动状态
 	 * @see #getBeanFactory()
 	 * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#destroySingletons()

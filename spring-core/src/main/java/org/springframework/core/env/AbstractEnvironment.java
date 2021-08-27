@@ -264,7 +264,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * is empty, check for the presence of {@link #doGetActiveProfilesProperty()}
 	 * and assign its value to the set of active profiles.
 	 * 返回通过setActiveProfiles显式设置的活动配置文件集，或者如果当前活动配置文件集为空，
-	 * 请检查是否存在DoGetActiveProfileProperty（），并将其值分配给活动配置文件集。
+	 * 请检查是否存在DoGetActiveProfileProperty()，并将其值分配给活动配置文件集。
 	 * @see #getActiveProfiles()
 	 * @see #doGetActiveProfilesProperty()
 	 */

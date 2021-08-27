@@ -43,7 +43,7 @@ public interface BeanDefinitionReader {
 	 * Return the bean factory to register the bean definitions with.
 	 * <p>The factory is exposed through the BeanDefinitionRegistry interface,
 	 * encapsulating the methods that are relevant for bean definition handling.
-	 * 返回bean工厂以注册bean定义。 工厂通过BeanDefinitionRegistry接口公开，封装了与bean定义处理相关的方法。
+	 * 返回 `BeanFactory` 以注册bean定义。 工厂通过BeanDefinitionRegistry接口公开，封装了与bean定义处理相关的方法。
 	 */
 	BeanDefinitionRegistry getRegistry();
 

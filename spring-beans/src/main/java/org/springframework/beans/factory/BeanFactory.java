@@ -253,7 +253,7 @@ public interface BeanFactory {
 	 *                     bean必须匹配的类型；可以是泛型类型声明。
 	 *                     请注意，与反射注入点相比，此处不支持集合类型。
 	 *                     要以编程方式检索与特定类型匹配的bean列表，请在此处指定实际bean类型作为参数，
-	 *                     然后使用ObjectProvider.orderedStream（）或其惰性流/迭代选项。
+	 *                     然后使用ObjectProvider.orderedStream()或其惰性流/迭代选项。
 	 * @return a corresponding provider handle
 	 * @since 5.1
 	 * @see ObjectProvider#iterator()
@@ -274,7 +274,7 @@ public interface BeanFactory {
 	 * or abstract, lazy or eager, in scope or not. Therefore, note that a {@code true}
 	 * return value from this method does not necessarily indicate that {@link #getBean}
 	 * will be able to obtain an instance for the same name.
-	 * 这个bean工厂是否包含具有给定名称的bean定义或外部注册的单例实例？ 如果给定的名称是别名，它将被翻译回相应的规范bean名称。
+	 * 这个 `BeanFactory` 是否包含具有给定名称的bean定义或外部注册的单例实例？ 如果给定的名称是别名，它将被翻译回相应的规范bean名称。
 	 * 如果此工厂是分层的，则将询问任何父工厂是否在此工厂实例中找不到该bean。
 	 * 如果找到与给定名称匹配的bean定义或单例实例，则无论指定的bean定义是具体的还是抽象的、懒惰的还是立即初始的、范围内的还是非范围内的，
 	 * 此方法都将返回true。因此，请注意，此方法返回的真值并不一定表示getBean将能够获得同名的实例。
@@ -374,7 +374,7 @@ public interface BeanFactory {
 	 * <p>Translates aliases back to the corresponding canonical bean name.
 	 * <p>Will ask the parent factory if the bean cannot be found in this factory instance.
 	 * 确定具有给定名称的bean的类型。更具体地说，确定getBean将为给定名称返回的对象类型。
-	 * 对于FactoryBean，返回由FactoryBean.getObjectType（）公开的FactoryBean创建的对象类型。
+	 * 对于FactoryBean，返回由FactoryBean.getObjectType()公开的FactoryBean创建的对象类型。
 	 * 这可能会导致初始化以前未初始化的FactoryBean（请参阅getType（String，boolean））。
 	 * 将别名转换回相应的规范bean名称。 将询问父工厂是否在此工厂实例中找不到该bean。
 	 * @param name the name of the bean to query
@@ -397,7 +397,7 @@ public interface BeanFactory {
 	 * <p>Translates aliases back to the corresponding canonical bean name.
 	 * <p>Will ask the parent factory if the bean cannot be found in this factory instance.
 	 * 确定具有给定名称的bean的类型。更具体地说，确定getBean将为给定名称返回的对象类型。
-	 * 对于FactoryBean，返回由FactoryBean.getObjectType（）公开的FactoryBean创建的对象类型。
+	 * 对于FactoryBean，返回由FactoryBean.getObjectType()公开的FactoryBean创建的对象类型。
 	 * 根据allowFactoryBeanInit标志，如果没有可用的早期类型信息，这可能会导致初始化以前未初始化的FactoryBean。
 	 * 将别名转换回相应的规范bean名称。
 	 * 将询问父工厂是否在此工厂实例中找不到该bean。

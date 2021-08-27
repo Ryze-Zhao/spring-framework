@@ -72,7 +72,7 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	 * Set the parent of this bean factory.
 	 * <p>Note that the parent cannot be changed: It should only be set outside
 	 * a constructor if it isn't available at the time of factory instantiation.
-	 * 设置父级bean工厂
+	 * 设置父级 `BeanFactory`
 	 * @param parentBeanFactory the parent BeanFactory
 	 * @throws IllegalStateException if this factory is already associated with
 	 * a parent BeanFactory
@@ -306,7 +306,7 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	/**
 	 * Set the {@code ApplicationStartup} for this bean factory.
 	 * <p>This allows the application context to record metrics during application startup.
-	 * 设置此bean工厂的应用程序启动。 这允许应用程序上下文在应用程序启动期间记录度量。
+	 * 设置此 `BeanFactory` 的应用程序启动。 这允许 `ApplicationContext` 在应用程序启动期间记录度量。
 	 * @param applicationStartup the new application startup		新的应用程序启动
 	 * @since 5.3
 	 */
@@ -314,7 +314,7 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 
 	/**
 	 * Return the {@code ApplicationStartup} for this bean factory.
-	 * 返回此bean工厂的应用程序启动。
+	 * 返回此 `BeanFactory` 的应用程序启动。
 	 * @since 5.3
 	 */
 	ApplicationStartup getApplicationStartup();
