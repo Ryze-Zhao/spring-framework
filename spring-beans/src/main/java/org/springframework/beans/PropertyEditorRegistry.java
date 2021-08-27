@@ -38,6 +38,7 @@ public interface PropertyEditorRegistry {
 
 	/**
 	 * Register the given custom property editor for all properties of the given type.
+	 * 为给定类型的所有属性注册给定的自定义属性编辑器
 	 * @param requiredType the type of the property
 	 * @param propertyEditor the editor to register
 	 */
@@ -70,11 +71,13 @@ public interface PropertyEditorRegistry {
 
 	/**
 	 * Find a custom property editor for the given type and property.
-	 * @param requiredType the type of the property (can be {@code null} if a property
-	 * is given but should be specified in any case for consistency checking)
-	 * @param propertyPath the path of the property (name or nested path), or
-	 * {@code null} if looking for an editor for all properties of the given type
-	 * @return the registered editor, or {@code null} if none
+	 * 查找给定类型和属性的自定义属性编辑器。
+	 *
+	 * @param requiredType the type of the property (can be {@code null} if a property is given but should be specified in any case for consistency checking)
+	 *                      属性的类型（如果给定属性，则可以为null，但在任何情况下都应指定以进行一致性检查）
+	 * @param propertyPath the path of the property (name or nested path), or{@code null} if looking for an editor for all properties of the given type
+	 *                      属性的路径（名称或嵌套路径），如果查找给定类型的所有属性的编辑器，则为null
+	 * @return the registered editor, or {@code null} if none   注册的编辑器，如果没有，则为null
 	 */
 	@Nullable
 	PropertyEditor findCustomEditor(@Nullable Class<?> requiredType, @Nullable String propertyPath);
