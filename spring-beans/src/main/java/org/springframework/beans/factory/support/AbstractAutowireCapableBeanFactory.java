@@ -1869,6 +1869,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 	/**
 	 * Convert the given value for the specified target property.
+	 * 转换指定目标属性的给定值。
 	 */
 	@Nullable
 	private Object convertForProperty(

@@ -530,8 +530,9 @@ public class GenericConversionService implements ConfigurableConversionService {
 		 * Find a {@link GenericConverter} given a source and target type.
 		 * <p>This method will attempt to match all possible converters by working
 		 * through the class and interface hierarchy of the types.
-		 * @param sourceType the source type
-		 * @param targetType the target type
+		 * 查找给定源和目标类型的GenericConverter。 此方法将尝试通过处理类型的类和接口层次结构来匹配所有可能的转换器。
+		 * @param sourceType the source type    源类型
+		 * @param targetType the target type    目标类型
 		 * @return a matching {@link GenericConverter}, or {@code null} if none found
 		 */
 		@Nullable
@@ -556,6 +557,7 @@ public class GenericConversionService implements ConfigurableConversionService {
 				TypeDescriptor targetType, ConvertiblePair convertiblePair) {
 
 			// Check specifically registered converters
+			// 检查专门注册的转换器
 			ConvertersForPair convertersForPair = this.converters.get(convertiblePair);
 			if (convertersForPair != null) {
 				GenericConverter converter = convertersForPair.getConverter(sourceType, targetType);
@@ -564,6 +566,7 @@ public class GenericConversionService implements ConfigurableConversionService {
 				}
 			}
 			// Check ConditionalConverters for a dynamic match
+			// 检查条件转换器是否存在动态匹配
 			for (GenericConverter globalConverter : this.globalConverters) {
 				if (((ConditionalConverter) globalConverter).matches(sourceType, targetType)) {
 					return globalConverter;

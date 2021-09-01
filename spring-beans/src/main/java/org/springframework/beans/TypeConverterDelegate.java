@@ -99,15 +99,16 @@ class TypeConverterDelegate {
 	}
 
 	/**
-	 * Convert the value to the required type (if necessary from a String),
-	 * for the specified property.
-	 * @param propertyName name of the property
-	 * @param oldValue the previous value, if available (may be {@code null})
-	 * @param newValue the proposed new value
-	 * @param requiredType the type we must convert to
-	 * (or {@code null} if not known, for example in case of a collection element)
-	 * @param typeDescriptor the descriptor for the target property or field
-	 * @return the new value, possibly the result of type conversion
+	 * Convert the value to the required type (if necessary from a String),for the specified property.
+	 * 将指定属性的值转换为所需类型（如果需要，从字符串转换）。
+	 *
+	 * @param propertyName name of the property 属性的名称
+	 * @param oldValue the previous value, if available (may be {@code null})   以前的值（如果可用）（可能为空）
+	 * @param newValue the proposed new value   建议的新值
+	 * @param requiredType the type we must convert to(or {@code null} if not known, for example in case of a collection element)
+	 *                      我们必须转换为的类型（如果未知，则为null，例如在集合元素的情况下）
+	 * @param typeDescriptor the descriptor for the target property or field    目标属性或字段的描述符
+	 * @return the new value, possibly the result of type conversion    新值，可能是类型转换的结果
 	 * @throws IllegalArgumentException if type conversion failed
 	 */
 	@SuppressWarnings("unchecked")
