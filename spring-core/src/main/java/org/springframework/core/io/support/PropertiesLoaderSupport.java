@@ -44,37 +44,37 @@ public abstract class PropertiesLoaderSupport {
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	/**
-	 * 本地属性，通过设置Properties对象直接设置进来的属性
+	 * 本地属性，通过设置Properties对象直接设置进来的属性.
 	 */
 	@Nullable
 	protected Properties[] localProperties;
 
 	/**
-	 * 本地属性，通过设置Properties对象直接设置进来的属性
+	 * 本地属性，通过设置Properties对象直接设置进来的属性.
 	 */
 	protected boolean localOverride = false;
 
 	/**
-	 * 本地属性，通过设置Properties对象直接设置进来的属性
+	 * 本地属性，通过设置Properties对象直接设置进来的属性.
 	 */
 	@Nullable
 	private Resource[] locations;
 
 	/**
-	 * 读取外来属性时遇到不存在的资源路径应该怎么办 ?
+	 * 读取外来属性时遇到不存在的资源路径应该怎么办 ?.
 	 * false : 输出一个日志，然后继续执行其他逻辑 (默认值)
 	 * true : 抛出异常
 	 */
 	private boolean ignoreResourceNotFound = false;
 
 	/**
-	 * 加载外来属性资源文件时使用的字符集
+	 * 加载外来属性资源文件时使用的字符集.
 	 */
 	@Nullable
 	private String fileEncoding;
 
 	/**
-	 * 外来属性加载工具
+	 * 外来属性加载工具.
 	 */
 	private PropertiesPersister propertiesPersister = ResourcePropertiesPersister.INSTANCE;
 
