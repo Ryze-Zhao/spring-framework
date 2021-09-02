@@ -43,11 +43,12 @@ import org.springframework.core.convert.TypeDescriptor;
 public interface ConditionalConverter {
 
 	/**
-	 * Should the conversion from {@code sourceType} to {@code targetType} currently under
-	 * consideration be selected?
-	 * @param sourceType the type descriptor of the field we are converting from
-	 * @param targetType the type descriptor of the field we are converting to
-	 * @return true if conversion should be performed, false otherwise
+	 * Should the conversion from {@code sourceType} to {@code targetType} currently under consideration be selected?
+	 * 是否应选择当前正在考虑的从sourceType到targetType的转换？
+	 *
+	 * @param sourceType the type descriptor of the field we are converting from    从中转换的字段的类型描述符
+	 * @param targetType the type descriptor of the field we are converting to  我们要转换到的字段的类型描述符
+	 * @return true if conversion should be performed, false otherwise  如果应执行转换，则为true，否则为false
 	 */
 	boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType);
 
