@@ -25,13 +25,16 @@ import org.springframework.util.Assert;
  * A {@link Converter} that delegates to a
  * {@link org.springframework.core.serializer.Serializer}
  * to convert an object to a byte array.
+ * SerializingConverter：把任意一个对象，转换成byte[]数组，唯独这一个是public的，其它的都是Spring内置的
  *
  * @author Gary Russell
  * @author Mark Fisher
  * @since 3.0.5
  */
 public class SerializingConverter implements Converter<Object, byte[]> {
-
+    /**
+     * 序列化器：DefaultSerializer   就是new ObjectOutputStream(outputStream).writeObject(object) 就是简单的把对象写到输出流里.
+     */
 	private final Serializer<Object> serializer;
 
 
@@ -53,10 +56,12 @@ public class SerializingConverter implements Converter<Object, byte[]> {
 
 	/**
 	 * Serializes the source object and returns the byte array result.
+	 * 序列化源对象并返回byte[]数组
 	 */
 	@Override
 	public byte[] convert(Object source) {
 		try  {
+			// 把此输出流转为byte[]数组
 			return this.serializer.serializeToByteArray(source);
 		}
 		catch (Throwable ex) {

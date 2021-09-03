@@ -37,8 +37,10 @@ public interface Converter<S, T> {
 
 	/**
 	 * Convert the source object of type {@code S} to target type {@code T}.
-	 * @param source the source object to convert, which must be an instance of {@code S} (never {@code null})
-	 * @return the converted object, which must be an instance of {@code T} (potentially {@code null})
+	 * 将S类型的源对象转换为T类型的目标对象。
+	 *
+	 * @param source the source object to convert, which must be an instance of {@code S} (never {@code null})      要转换的源对象，必须是S的实例（从不为null）
+	 * @return the converted object, which must be an instance of {@code T} (potentially {@code null})      转换的对象，必须是T的实例（可能为null）
 	 * @throws IllegalArgumentException if the source cannot be converted to the desired target type
 	 */
 	@Nullable

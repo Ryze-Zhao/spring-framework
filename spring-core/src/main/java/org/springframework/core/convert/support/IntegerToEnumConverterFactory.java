@@ -29,12 +29,20 @@ import org.springframework.core.convert.converter.ConverterFactory;
 @SuppressWarnings({"rawtypes", "unchecked"})
 final class IntegerToEnumConverterFactory implements ConverterFactory<Integer, Enum> {
 
+	/**
+	 * ConversionUtils.getEnumType表示拿出枚举的class类型.
+	 * @author : HeHaoZhao
+	 */
 	@Override
 	public <T extends Enum> Converter<Integer, T> getConverter(Class<T> targetType) {
 		return new IntegerToEnum(ConversionUtils.getEnumType(targetType));
 	}
 
-
+	/**
+	 * 内部类的实现.
+	 * 把Integer转为Enum的子类型,相当于根据Integer找到一个enum（注意此处根据index来找的）
+	 * @author : HeHaoZhao
+	 */
 	private static class IntegerToEnum<T extends Enum> implements Converter<Integer, T> {
 
 		private final Class<T> enumType;

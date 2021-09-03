@@ -30,6 +30,9 @@ import org.springframework.lang.Nullable;
  * {@link java.beans.PropertyEditor PropertyEditors} which aren't thread-safe,
  * TypeConverters themselves are <em>not</em> to be considered as thread-safe either.
  *
+ * 定义类型转换方法的接口。通常（但不一定）与PropertyEditorRegistry接口一起实现
+ * 通常接口TypeConverter的实现是基于非线程安全的PropertyEditors类，因此也不是线程安全的
+ *
  * @author Juergen Hoeller
  * @since 2.0
  * @see SimpleTypeConverter
@@ -41,6 +44,8 @@ public interface TypeConverter {
 	 * Convert the value to the required type (if necessary from a String).
 	 * <p>Conversions from String to any type will typically use the {@code setAsText}
 	 * method of the PropertyEditor class, or a Spring Converter in a ConversionService.
+	 * 将参数中的value转换成requiredType类型
+	 * 从String到任何类型的转换通常使用PropertyEditor类的setAsText方法或ConversionService中的Spring Converter
 	 * @param value the value to convert
 	 * @param requiredType the type we must convert to
 	 * (or {@code null} if not known, for example in case of a collection element)
@@ -58,6 +63,8 @@ public interface TypeConverter {
 	 * Convert the value to the required type (if necessary from a String).
 	 * <p>Conversions from String to any type will typically use the {@code setAsText}
 	 * method of the PropertyEditor class, or a Spring Converter in a ConversionService.
+	 * 意义同上，增加了作为转换目标的方法参数，主要用于分析泛型类型，可能是null
+	 *
 	 * @param value the value to convert
 	 * @param requiredType the type we must convert to
 	 * (or {@code null} if not known, for example in case of a collection element)
@@ -78,6 +85,8 @@ public interface TypeConverter {
 	 * Convert the value to the required type (if necessary from a String).
 	 * <p>Conversions from String to any type will typically use the {@code setAsText}
 	 * method of the PropertyEditor class, or a Spring Converter in a ConversionService.
+	 * 意义同上，增加了转换目标的反射field
+	 *
 	 * @param value the value to convert
 	 * @param requiredType the type we must convert to
 	 * (or {@code null} if not known, for example in case of a collection element)

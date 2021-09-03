@@ -48,6 +48,7 @@ public class DefaultConversionService extends GenericConversionService {
 	 * Create a new {@code DefaultConversionService} with the set of
 	 * {@linkplain DefaultConversionService#addDefaultConverters(ConverterRegistry) default converters}.
 	 * 使用默认转换器集创建新的DefaultConversionService。
+	 * 空构造，那就注册到自己上，因为自己也是个ConverterRegistry
 	 */
 	public DefaultConversionService() {
 		addDefaultConverters(this);
