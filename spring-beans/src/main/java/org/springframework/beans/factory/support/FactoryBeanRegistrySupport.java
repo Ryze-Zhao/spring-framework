@@ -129,10 +129,12 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 								// 对从 FactoryBean 获取的对象进行后处理
 								// 生成的对象将暴露给 bean 引用
 								object = postProcessObjectFromFactoryBean(object, beanName);
-							} catch (Throwable ex) {
+							}
+							catch (Throwable ex) {
 								throw new BeanCreationException(beanName,
 										"Post-processing of FactoryBean's singleton object failed", ex);
-							} finally {
+							}
+							finally {
 								// 单例 Bean 的后置处理
 								afterSingletonCreation(beanName);
 							}
@@ -156,7 +158,8 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 					// 对从 FactoryBean 获取的对象进行后处理
 					// 生成的对象将暴露给 bean 引用
 					object = postProcessObjectFromFactoryBean(object, beanName);
-				} catch (Throwable ex) {
+				}
+				catch (Throwable ex) {
 					throw new BeanCreationException(beanName, "Post-processing of FactoryBean's object failed", ex);
 				}
 			}
@@ -182,7 +185,8 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 				try {
 					// <Spring分析点22-1.2-1> 从 FactoryBean 中，获得 Bean 对象
 					object = AccessController.doPrivileged((PrivilegedExceptionAction<Object>) factory::getObject, acc);
-				} catch (PrivilegedActionException pae) {
+				}
+				catch (PrivilegedActionException pae) {
 					throw pae.getException();
 				}
 			} 
@@ -190,9 +194,11 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 				// <Spring分析点22-1.2-1> 从 FactoryBean 中，获得 Bean 对象
 				object = factory.getObject();
 			}
-		} catch (FactoryBeanNotInitializedException ex) {
+		}
+		catch (FactoryBeanNotInitializedException ex) {
 			throw new BeanCurrentlyInCreationException(beanName, ex.toString());
-		} catch (Throwable ex) {
+		}
+		catch (Throwable ex) {
 			throw new BeanCreationException(beanName, "FactoryBean threw exception on object creation", ex);
 		}
 

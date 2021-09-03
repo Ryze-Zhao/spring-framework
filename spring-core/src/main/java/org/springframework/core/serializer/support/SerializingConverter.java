@@ -32,9 +32,9 @@ import org.springframework.util.Assert;
  * @since 3.0.5
  */
 public class SerializingConverter implements Converter<Object, byte[]> {
-    /**
-     * 序列化器：DefaultSerializer   就是new ObjectOutputStream(outputStream).writeObject(object) 就是简单的把对象写到输出流里.
-     */
+	/**
+	* 序列化器：DefaultSerializer   就是new ObjectOutputStream(outputStream).writeObject(object) 就是简单的把对象写到输出流里.
+	*/
 	private final Serializer<Object> serializer;
 
 

@@ -50,7 +50,7 @@ final class ArrayToObjectConverter implements ConditionalGenericConverter {
 	}
 
 	/**
-	 * 实现ConditionalConverter的方法，最终是委托给了ConversionService#canConvert方法
+	 * 实现ConditionalConverter的方法，最终是委托给了ConversionService#canConvert方法.
 	 */
 	@Override
 	public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {

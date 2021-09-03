@@ -1009,7 +1009,8 @@ public class BeanDefinitionParserDelegate {
 				// 子元素是我们要找的。
 				if (subElement != null) {
 					error(elementName + " must not contain more than one sub-element", ele);
-				} else {
+				}
+				else {
 					subElement = (Element) node;
 				}
 			}
@@ -1045,7 +1046,8 @@ public class BeanDefinitionParserDelegate {
 		else if (subElement != null) {
 			// <Spring分析点14-4> 解析子元素
 			return parsePropertySubElement(subElement, bd);
-		} else {
+		}
+		else {
 			// Neither child element nor "ref" or "value" attribute found.
 			// 既没有找到子元素，也没有找到“ref”或“value”属性。
 			error(elementName + " must specify a ref or value", ele);
@@ -1143,7 +1145,8 @@ public class BeanDefinitionParserDelegate {
 		else if (nodeNameEquals(ele, PROPS_ELEMENT)) {
 			// props 标签
 			return parsePropsElement(ele);
-		} else {
+		}
+		else {
 			// 未知标签
 			error("Unknown property sub-element: [" + ele.getNodeName() + "]", ele);
 			return null;
@@ -1569,9 +1572,11 @@ public class BeanDefinitionParserDelegate {
 				if (decorated != null) {
 					return decorated;
 				}
-			} else if (namespaceUri.startsWith("http://www.springframework.org/schema/")) {
+			}
+			else if (namespaceUri.startsWith("http://www.springframework.org/schema/")) {
 				error("Unable to locate Spring NamespaceHandler for XML schema namespace [" + namespaceUri + "]", node);
-			} else {
+			}
+			else {
 				// A custom namespace, not to be handled by Spring - maybe "xml:...".
 				// 一个自定义名称空间，不由Spring处理-可能是“xml:…”。
 				if (logger.isDebugEnabled()) {

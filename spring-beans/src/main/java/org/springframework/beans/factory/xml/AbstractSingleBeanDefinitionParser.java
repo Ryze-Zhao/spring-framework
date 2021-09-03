@@ -71,7 +71,8 @@ public abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDef
 		Class<?> beanClass = getBeanClass(element);
 		if (beanClass != null) {
 			builder.getRawBeanDefinition().setBeanClass(beanClass);
-		} else {
+		}
+		else {
 			// beanClass 为 null，意味着子类并没有重写 getBeanClass() 方法，则尝试去判断是否重写了 getBeanClassName()
 			String beanClassName = getBeanClassName(element);
 			if (beanClassName != null) {

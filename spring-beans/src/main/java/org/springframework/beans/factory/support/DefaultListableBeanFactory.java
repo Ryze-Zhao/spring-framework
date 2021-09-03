@@ -128,7 +128,8 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		try {
 			javaxInjectProviderClass =
 					ClassUtils.forName("javax.inject.Provider", DefaultListableBeanFactory.class.getClassLoader());
-		} catch (ClassNotFoundException ex) {
+		}
+		catch (ClassNotFoundException ex) {
 			// JSR-330 API not available - Provider interface simply not supported then.
 			javaxInjectProviderClass = null;
 		}
@@ -1046,7 +1047,8 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		if (beanDefinition instanceof AbstractBeanDefinition) {
 			try {
 				((AbstractBeanDefinition) beanDefinition).validate();
-			} catch (BeanDefinitionValidationException ex) {
+			}
+			catch (BeanDefinitionValidationException ex) {
 				throw new BeanDefinitionStoreException(beanDefinition.getResourceDescription(), beanName,
 						"Validation of bean definition failed", ex);
 			}

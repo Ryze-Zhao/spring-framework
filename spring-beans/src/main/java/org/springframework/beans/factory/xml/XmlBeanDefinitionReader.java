@@ -107,7 +107,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	private static final Constants constants = new Constants(XmlBeanDefinitionReader.class);
 
 	/**
-	 * 验证模式。默认为自动模式。
+	 * 验证模式。默认为自动模式.
 	 */
 	private int validationMode = VALIDATION_AUTO;
 
@@ -128,7 +128,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	private DocumentLoader documentLoader = new DefaultDocumentLoader();
 
 	/**
-	 * EntityResolver 解析器
+	 * EntityResolver 解析器.
 	 */
 	@Nullable
 	private EntityResolver entityResolver;
@@ -136,7 +136,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	private ErrorHandler errorHandler = new SimpleSaxErrorHandler(logger);
 
 	/**
-	 * XML 验证模式探测器
+	 * XML 验证模式探测器.
 	 */
 	private final XmlValidationModeDetector validationModeDetector = new XmlValidationModeDetector();
 

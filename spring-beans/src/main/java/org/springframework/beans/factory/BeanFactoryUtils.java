@@ -56,8 +56,9 @@ public abstract class BeanFactoryUtils {
 	 * Cache from name with factory bean prefix to stripped name without dereference.
 	 * 缓存 {@link #transformedBeanName(String)} 已经转换好的结果。
 	 *
-	 * @see BeanFactory#FACTORY_BEAN_PREFIX
 	 * @since 5.1
+	 * @see BeanFactory#FACTORY_BEAN_PREFIX
+	 *
 	 */
 	private static final Map<String, String> transformedBeanNameCache = new ConcurrentHashMap<>();
 

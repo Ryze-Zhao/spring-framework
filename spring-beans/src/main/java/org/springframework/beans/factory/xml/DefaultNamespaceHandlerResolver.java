@@ -136,10 +136,12 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 		if (handlerOrClassName == null) {
 			// <Spring分析点16-3.1> 不存在
 			return null;
-		} else if (handlerOrClassName instanceof NamespaceHandler) {
+		}
+		else if (handlerOrClassName instanceof NamespaceHandler) {
 			// <Spring分析点16-3.2> 已经初始化
 			return (NamespaceHandler) handlerOrClassName;
-		} else {
+		}
+		else {
 			// <Spring分析点16-3.3> 需要进行初始化
 			String className = (String) handlerOrClassName;
 			try {
@@ -155,10 +157,12 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 				// 添加到缓存
 				handlerMappings.put(namespaceUri, namespaceHandler);
 				return namespaceHandler;
-			} catch (ClassNotFoundException ex) {
+			}
+			catch (ClassNotFoundException ex) {
 				throw new FatalBeanException("Could not find NamespaceHandler class [" + className +
 						"] for namespace [" + namespaceUri + "]", ex);
-			} catch (LinkageError err) {
+			}
+			catch (LinkageError err) {
 				throw new FatalBeanException("Unresolvable class definition for NamespaceHandler class [" +
 						className + "] for namespace [" + namespaceUri + "]", err);
 			}
@@ -190,7 +194,8 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 						handlerMappings = new ConcurrentHashMap<>(mappings.size());
 						CollectionUtils.mergePropertiesIntoMap(mappings, handlerMappings);
 						this.handlerMappings = handlerMappings;
-					} catch (IOException ex) {
+					}
+					catch (IOException ex) {
 						throw new IllegalStateException(
 								"Unable to load NamespaceHandler mappings from location [" + this.handlerMappingsLocation + "]", ex);
 					}

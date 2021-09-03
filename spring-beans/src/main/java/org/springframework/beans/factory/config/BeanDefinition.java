@@ -352,14 +352,14 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Return whether this a <b>Singleton</b>, with a single, shared instance returned on all calls.
-	 * 返回是否是一个<b>单例<b>，所有调用都返回一个共享实例。
+	 * 返回是否是一个<b>单例</b>，所有调用都返回一个共享实例。
 	 * @see #SCOPE_SINGLETON
 	 */
 	boolean isSingleton();
 
 	/**
 	 * Return whether this a <b>Prototype</b>, with an independent instance returned for each call.
-	 * 返回是否是一个<b>原型<b>，并为每个调用返回一个独立的实例。
+	 * 返回是否是一个<b>原型</b>，并为每个调用返回一个独立的实例。
 	 * @since 3.0
 	 * @see #SCOPE_PROTOTYPE
 	 */

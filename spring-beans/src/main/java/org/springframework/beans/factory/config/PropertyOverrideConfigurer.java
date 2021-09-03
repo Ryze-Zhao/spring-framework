@@ -71,7 +71,7 @@ public class PropertyOverrideConfigurer extends PropertyResourceConfigurer {
 	public static final String DEFAULT_BEAN_NAME_SEPARATOR = ".";
 
 	/**
-	 * Bean 名字的分隔符
+	 * Bean 名字的分隔符.
 	 */
 	private String beanNameSeparator = DEFAULT_BEAN_NAME_SEPARATOR;
 

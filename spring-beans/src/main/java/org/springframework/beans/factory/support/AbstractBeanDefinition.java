@@ -199,7 +199,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	private final Map<String, AutowireCandidateQualifier> qualifiers = new LinkedHashMap<>();
 
 	/**
-	 * 创建 Bean 的 Supplier 对象
+	 * 创建 Bean 的 Supplier 对象.
 	 */
 	@Nullable
 	private Supplier<?> instanceSupplier;
@@ -815,9 +815,10 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * potential annotation-driven injection will still apply as usual.
 	 * 指定用于创建bean实例的回调，作为声明性指定工厂方法的替代方法。
 	 * 如果设置了这样的回调，它将覆盖任何其他构造函数或工厂方法元数据。然而，bean属性填充和潜在的注释驱动注入仍将照常应用。
+	 *
+	 * @since 5.0
 	 * @see #setConstructorArgumentValues(ConstructorArgumentValues)
 	 * @see #setPropertyValues(MutablePropertyValues)
-	 * @since 5.0
 	 */
 	public void setInstanceSupplier(@Nullable Supplier<?> instanceSupplier) {
 		this.instanceSupplier = instanceSupplier;

@@ -453,7 +453,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	}
 
 	/**
-	 * 检查需要的类型是否符合 bean 的实际类型
+	 * 检查需要的类型是否符合 bean 的实际类型.
 	 */
 	@SuppressWarnings("unchecked")
 	<T> T adaptBeanInstance(String name, Object bean, @Nullable Class<?> requiredType) {

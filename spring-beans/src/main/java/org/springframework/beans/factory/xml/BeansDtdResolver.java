@@ -45,12 +45,12 @@ import org.springframework.lang.Nullable;
 public class BeansDtdResolver implements EntityResolver {
 
 	/**
-	 * DTD 文件的后缀
+	 * DTD 文件的后缀.
 	 */
 	private static final String DTD_EXTENSION = ".dtd";
 
 	/**
-	 * Spring Bean DTD 的文件名
+	 * Spring Bean DTD 的文件名.
 	 */
 	private static final String DTD_NAME = "spring-beans";
 

@@ -130,29 +130,29 @@ public abstract class PlaceholderConfigurerSupport extends PropertyResourceConfi
 	protected String valueSeparator = DEFAULT_VALUE_SEPARATOR;
 
 	/**
-	 * 是否要对值做 trim
+	 * 是否要对值做 trim.
 	 */
 	protected boolean trimValues = false;
 
 	/**
-	 * 遇到占位符对应属性值为""或者null时的替代填充值
+	 * 遇到占位符对应属性值为""或者null时的替代填充值.
 	 */
 	@Nullable
 	protected String nullValue;
 
 	/**
-	 * 能解析的占位符是否抛出异常， false 表示抛出异常， true 表示不抛出异常
+	 * 能解析的占位符是否抛出异常， false 表示抛出异常， true 表示不抛出异常.
 	 */
 	protected boolean ignoreUnresolvablePlaceholders = false;
 
 	/**
-	 * 对应 BeanNameAware 接口方法setBeanName()用于记录当前bean的名称
+	 * 对应 BeanNameAware 接口方法setBeanName()用于记录当前bean的名称.
 	 */
 	@Nullable
 	private String beanName;
 
 	/**
-	 * 对应 BeanFactoryAware 接口方法setBeanFactory()用于记录当前bean所在容器，也就是需要处理的bean定义所在的容器
+	 * 对应 BeanFactoryAware 接口方法setBeanFactory()用于记录当前bean所在容器，也就是需要处理的bean定义所在的容器.
 	 */
 	@Nullable
 	private BeanFactory beanFactory;
@@ -246,6 +246,7 @@ public abstract class PlaceholderConfigurerSupport extends PropertyResourceConfi
 
 
 	/**
+	 * .
 	 * 该方法是 PlaceholderConfigurerSupport 对容器中所有 bean 定义进行处理的核心逻辑方法，
 	 * 该方法留给具体实现子类使用，当然具体实现子类也可以重写该方法或者不使用该方法。
 	 *

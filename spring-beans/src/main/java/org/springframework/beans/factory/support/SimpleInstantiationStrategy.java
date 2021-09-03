@@ -120,7 +120,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 	}
 
 	/**
-	 * 指定构造方法
+	 * 指定构造方法.
 	 * @param bd the bean definition
 	 * @param beanName the name of the bean when it is created in this context.
 	 * The name can be {@code null} if we are autowiring a bean which doesn't

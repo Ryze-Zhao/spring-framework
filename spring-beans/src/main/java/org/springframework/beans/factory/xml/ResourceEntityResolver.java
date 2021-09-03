@@ -118,7 +118,8 @@ public class ResourceEntityResolver extends DelegatingEntityResolver {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Found XML entity [" + systemId + "]: " + resource);
 				}
-			}else if (systemId.endsWith(DTD_SUFFIX) || systemId.endsWith(XSD_SUFFIX)) {
+			}
+			else if (systemId.endsWith(DTD_SUFFIX) || systemId.endsWith(XSD_SUFFIX)) {
 				// External dtd/xsd lookup via https even for canonical http declaration
 				// 通过https进行外部dtd或xsd查找，即使对于规范的http声明也是如此
 				String url = systemId;

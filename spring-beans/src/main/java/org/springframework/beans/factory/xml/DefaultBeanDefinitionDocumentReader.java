@@ -186,13 +186,15 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 					if (delegate.isDefaultNamespace(ele)) {
 						// <Spring分析点9-1> 如果该节点使用默认命名空间，执行默认解析
 						parseDefaultElement(ele, delegate);
-					} else {
+					}
+					else {
 						// 如果该节点非默认命名空间，执行自定义解析
 						delegate.parseCustomElement(ele);
 					}
 				}
 			}
-		} else {
+		}
+		else {
 			// <Spring分析点9-2> 如果根节点非默认命名空间，执行自定义解析
 			delegate.parseCustomElement(root);
 		}
@@ -267,7 +269,8 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 				getReaderContext().error(
 						"Failed to import bean definitions from URL location [" + location + "]", ele, ex);
 			}
-		}else {
+		}
+		else {
 			// <Spring分析点10-5> 相对路径
 
 			// No URL -> considering resource location as relative to the current file.
@@ -281,7 +284,8 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 					importCount = getReaderContext().getReader().loadBeanDefinitions(relativeResource);
 					// 添加到 actualResources 中
 					actualResources.add(relativeResource);
-				} else {
+				}
+				else {
 					// 若Resource不存在，那么构造一个绝对 location，并使用StringUtils.applyRelativePath(baseLocation, location)计算绝对路径
 					// 获得根路径地址
 					String baseLocation = getReaderContext().getResource().getURL().toString();

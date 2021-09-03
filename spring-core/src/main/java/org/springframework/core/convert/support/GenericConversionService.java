@@ -316,7 +316,7 @@ public class GenericConversionService implements ConfigurableConversionService {
 	// Internal helpers
 
 	/**
-	 * 拿到泛型类型们
+	 * 拿到泛型类型们.
 	 */
 	@Nullable
 	private ResolvableType[] getRequiredTypeInfo(Class<?> converterClass, Class<?> genericIfc) {

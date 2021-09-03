@@ -90,7 +90,8 @@ public class DelegatingEntityResolver implements EntityResolver {
 			if (systemId.endsWith(DTD_SUFFIX)) {
 				// DTD 模式
 				return this.dtdResolver.resolveEntity(publicId, systemId);
-			}else if (systemId.endsWith(XSD_SUFFIX)) {
+			}
+			else if (systemId.endsWith(XSD_SUFFIX)) {
 				// DTD 模式
 				return this.schemaResolver.resolveEntity(publicId, systemId);
 			}

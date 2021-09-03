@@ -70,7 +70,7 @@ public class PluggableSchemaResolver implements EntityResolver {
 	private final ClassLoader classLoader;
 
 	/**
-	 * Schema 文件地址
+	 * Schema 文件地址.
 	 */
 	private final String schemaMappingsLocation;
 
