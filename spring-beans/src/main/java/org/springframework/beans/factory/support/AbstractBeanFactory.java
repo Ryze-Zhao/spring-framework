@@ -150,11 +150,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	private ConversionService conversionService;
 
 	/** Custom PropertyEditorRegistrars to apply to the beans of this factory.
-	 * 要应用于此工厂bean的自定义属性YeditorRegistrars。 */
+	 * 要应用于此FactoryBean的自定义属性YeditorRegistrars。 */
 	private final Set<PropertyEditorRegistrar> propertyEditorRegistrars = new LinkedHashSet<>(4);
 
 	/** Custom PropertyEditors to apply to the beans of this factory.
-	 * 要应用于此工厂bean的自定义属性编辑器。 */
+	 * 要应用于此FactoryBean的自定义属性编辑器。 */
 	private final Map<Class<?>, Class<? extends PropertyEditor>> customEditors = new HashMap<>(4);
 
 	/** A custom TypeConverter to use, overriding the default PropertyEditor mechanism.

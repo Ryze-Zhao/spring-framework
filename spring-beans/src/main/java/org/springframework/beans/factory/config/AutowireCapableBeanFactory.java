@@ -116,7 +116,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * e.g. "com.mypackage.MyClass.ORIGINAL", in order to enforce the given instance
 	 * to be returned, i.e. no proxies etc.
 	 * 初始化现有bean实例时“原始实例”约定的后缀：附加到完全限定的bean类名上，
-	 * 例如“com.mypackage.MyClass.original”，以强制返回给定实例，即没有代理。
+	 * 例如“com.mypackage.MyClass.original”，以强制返回给定实例，即没有代理的实例。
 	 * @since 5.1
 	 * @see #initializeBean(Object, String)
 	 * @see #applyBeanPostProcessorsBeforeInitialization(Object, String)

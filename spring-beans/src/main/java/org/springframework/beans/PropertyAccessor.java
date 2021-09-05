@@ -36,13 +36,13 @@ public interface PropertyAccessor {
 
 	/**
 	 * Path separator for nested properties.Follows normal Java conventions: getFoo().getBar() would be "foo.bar".
-	 * 嵌套属性的路径分隔符。遵循正常的Java约定：getFoo（）.getBar（）将是“foo.bar”。
+	 * 嵌套属性的路径分隔符。遵循正常的Java约定：getFoo().getBar()将是“foo.bar”。
 	 */
 	String NESTED_PROPERTY_SEPARATOR = ".";
 
 	/**
 	 * Path separator for nested properties.Follows normal Java conventions: getFoo().getBar() would be "foo.bar".
-	 * 嵌套属性的路径分隔符。遵循正常的Java约定：getFoo（）.getBar（）将是“foo.bar”。
+	 * 嵌套属性的路径分隔符。遵循正常的Java约定：getFoo().getBar()将是“foo.bar”。
 	 */
 	char NESTED_PROPERTY_SEPARATOR_CHAR = '.';
 

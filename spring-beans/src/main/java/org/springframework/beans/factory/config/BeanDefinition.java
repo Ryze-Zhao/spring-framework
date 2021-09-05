@@ -124,7 +124,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * even be empty in case of a factory bean reference that a method is called on.Hence, do <i>not</i> consider this to be the definitive bean type at runtime but
 	 * rather only use it for parsing purposes at the individual bean definition level.
 	 * 返回此bean定义的当前bean类名。<p>请注意，它不必是运行时使用的实际类名子定义重写从其父级继承类名的情况。而且，这可能只是调用工厂方法的类，也可能是
-	 * 在工厂bean引用的情况下，即使是调用方法，也可以是空的。因此，【不要】认为这是运行时的最终bean类型，而是仅在单个bean定义级别将其用于解析目的。
+	 * 在FactoryBean引用的情况下，即使是调用方法，也可以是空的。因此，【不要】认为这是运行时的最终bean类型，而是仅在单个bean定义级别将其用于解析目的。
 	 *
 	 *
 	 * @see #getParentName()
@@ -206,7 +206,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Specify the factory bean to use, if any.This the name of the bean to call the specified factory method on.
-	 * 指定要使用的工厂bean（如果有）。这是要调用指定工厂方法的bean的名称。
+	 * 指定要使用的FactoryBean（如果有）。这是要调用指定工厂方法的bean的名称。
 	 *
 	 * @see #setFactoryMethodName
 	 */
@@ -214,7 +214,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Return the factory bean name, if any.
-	 * 返回工厂bean名称（如果有）。
+	 * 返回FactoryBean名称（如果有）。
 	 */
 	@Nullable
 	String getFactoryBeanName();
@@ -223,7 +223,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * Specify a factory method, if any. This method will be invoked with constructor arguments, or with no arguments if none are specified.
 	 * The method will be invoked on the specified factory bean, if any,or otherwise as a static method on the local bean class.
 	 * 指定工厂方法（如果有）。此方法将通过调用构造函数参数，如果未指定参数，则不带参数。
-	 * 方法将在指定的工厂bean上调用，如果有的话，或者作为本地bean类上的静态方法。
+	 * 方法将在指定的FactoryBean上调用，如果有的话，或者作为本地bean类上的静态方法。
 	 *
 	 * @see #setFactoryBeanName
 	 * @see #setBeanClassName
