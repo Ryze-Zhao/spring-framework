@@ -57,7 +57,7 @@ public interface ConfigurableWebApplicationContext extends WebApplicationContext
 	/**
 	 * Set the ServletContext for this web application context.
 	 * <p>Does not cause an initialization of the context: refresh needs to be called after the setting of all configuration properties.
-	 * 为此web `ApplicationContext` 设置ServletContext。 不会导致上下文初始化：在设置所有配置属性后需要调用刷新
+	 * 为此`WebApplicationContext` 设置ServletContext。 不会导致上下文初始化：在设置所有配置属性后需要调用刷新
 	 *
 	 * @see #refresh()
 	 */
@@ -66,7 +66,7 @@ public interface ConfigurableWebApplicationContext extends WebApplicationContext
 	/**
 	 * Set the ServletConfig for this web application context.
 	 * Only called for a WebApplicationContext that belongs to a specific Servlet.
-	 * 为此web `ApplicationContext` 设置ServletContext。 不会导致上下文初始化：在设置所有配置属性后需要调用刷新
+	 * 为此`WebApplicationContext` 设置ServletContext。 不会导致上下文初始化：在设置所有配置属性后需要调用刷新
 	 *
 	 * @see #refresh()
 	 */
@@ -74,7 +74,7 @@ public interface ConfigurableWebApplicationContext extends WebApplicationContext
 
 	/**
 	 * Return the ServletConfig for this web application context, if any.
-	 * 返回此web `ApplicationContext` 的ServletConfig（如果有）。
+	 * 返回此`WebApplicationContext` 的ServletConfig（如果有）。
 	 *
 	 */
 	@Nullable
@@ -83,14 +83,14 @@ public interface ConfigurableWebApplicationContext extends WebApplicationContext
 	/**
 	 * Set the namespace for this web application context,to be used for building a default context config location.
 	 * The root web application context does not have a namespace.
-	 * 设置此web `ApplicationContext` 的命名空间，以用于构建默认上下文配置位置。根web `ApplicationContext` 没有命名空间
+	 * 设置此`WebApplicationContext` 的命名空间，以用于构建默认上下文配置位置。根`WebApplicationContext` 没有命名空间
 	 *
 	 */
 	void setNamespace(@Nullable String namespace);
 
 	/**
 	 * Return the namespace for this web application context, if any.
-	 * 返回此web `ApplicationContext` 的命名空间（如果有）
+	 * 返回此`WebApplicationContext` 的命名空间（如果有）
 	 */
 	@Nullable
 	String getNamespace();
@@ -99,21 +99,21 @@ public interface ConfigurableWebApplicationContext extends WebApplicationContext
 	 * Set the config locations for this web application context in init-param style,
 	 * i.e. with distinct locations separated by commas, semicolons or whitespace.
 	 * <p>If not set, the implementation is supposed to use a default for the given namespace or the root web application context, as appropriate.
-	 * 以init param样式设置此web `ApplicationContext` 的配置位置，即使用逗号、分号或空格分隔的不同位置。
-	 * 如果未设置，则实现应该使用给定命名空间或根web `ApplicationContext` 的默认值（视情况而定）
+	 * 以init param样式设置此`WebApplicationContext` 的配置位置，即使用逗号、分号或空格分隔的不同位置。
+	 * 如果未设置，则实现应该使用给定命名空间或根`WebApplicationContext` 的默认值（视情况而定）
 	 */
 	void setConfigLocation(String configLocation);
 
 	/**
 	 * Set the config locations for this web application context.
 	 * <p>If not set, the implementation is supposed to use a default for the given namespace or the root web application context, as appropriate.
-	 * 设置此web `ApplicationContext` 的配置位置。 如果未设置，则实现应该使用给定命名空间或根web `ApplicationContext` 的默认值（视情况而定）。
+	 * 设置此`WebApplicationContext` 的配置位置。 如果未设置，则实现应该使用给定命名空间或根`WebApplicationContext` 的默认值（视情况而定）。
 	 */
 	void setConfigLocations(String... configLocations);
 
 	/**
 	 * Return the config locations for this web application context,or {@code null} if none specified.
-	 * 返回此web `ApplicationContext` 的配置位置，如果未指定，则返回null
+	 * 返回此`WebApplicationContext` 的配置位置，如果未指定，则返回null
 	 */
 	@Nullable
 	String[] getConfigLocations();
