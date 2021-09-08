@@ -118,8 +118,8 @@ public class DefaultResourceLoader implements ResourceLoader {
 	}
 
 	/**
-	 * Return the collection of currently registered protocol resolvers,
-	 * allowing for introspection as well as modification.
+	 * Return the collection of currently registered protocol resolvers, allowing for introspection as well as modification.
+	 * 返回当前注册的协议解析程序集合，允许进行内省和修改。
 	 * @since 4.3
 	 */
 	public Collection<ProtocolResolver> getProtocolResolvers() {
@@ -189,8 +189,9 @@ public class DefaultResourceLoader implements ResourceLoader {
 	 * <p>The default implementation supports class path locations. This should
 	 * be appropriate for standalone implementations but can be overridden,
 	 * e.g. for implementations targeted at a Servlet container.
-	 * @param path the path to the resource
-	 * @return the corresponding Resource handle
+	 * 返回给定路径上资源的资源句柄。 默认实现支持类路径位置。这应该适用于独立实现，但可以覆盖，例如，针对Servlet容器的实现。
+	 * @param path the path to the resource     资源的路径
+	 * @return the corresponding Resource handle    相应的资源句柄
 	 * @see ClassPathResource
 	 * @see org.springframework.context.support.FileSystemXmlApplicationContext#getResourceByPath
 	 * @see org.springframework.web.context.support.XmlWebApplicationContext#getResourceByPath
