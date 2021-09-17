@@ -1422,11 +1422,12 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	}
 
 	/**
-	 * Return a RootBeanDefinition for the given top-level bean, by merging with
-	 * the parent if the given bean's definition is a child bean definition.
-	 * @param beanName the name of the bean definition
-	 * @param bd the original bean definition (Root/ChildBeanDefinition)
-	 * @return a (potentially merged) RootBeanDefinition for the given bean
+	 * Return a RootBeanDefinition for the given top-level bean, by merging with the parent if the given bean's definition is a child bean definition.
+	 * 如果给定bean的定义是子bean定义，则通过与父bean合并，返回给定顶级bean的RootBeanDefinition。
+	 *
+	 * @param beanName the name of the bean definition  bean定义的名称
+	 * @param bd the original bean definition (Root/ChildBeanDefinition)    原始bean定义（根/子bean定义）
+	 * @return a (potentially merged) RootBeanDefinition for the given bean     给定bean的（可能合并的）RootBean定义
 	 * @throws BeanDefinitionStoreException in case of an invalid bean definition
 	 */
 	protected RootBeanDefinition getMergedBeanDefinition(String beanName, BeanDefinition bd)
