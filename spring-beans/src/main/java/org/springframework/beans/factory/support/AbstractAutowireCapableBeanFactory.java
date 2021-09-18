@@ -1407,12 +1407,18 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * <p>This corresponds to constructor injection: In this mode, a Spring
 	 * bean factory is able to host components that expect constructor-based
 	 * dependency resolution.
-	 * @param beanName the name of the bean
-	 * @param mbd the bean definition for the bean
-	 * @param ctors the chosen candidate constructors
+	 * “autowire构造函数”（按类型包含构造函数参数）行为。如果指定了显式构造函数参数值，
+	 * 将所有剩余参数与bean工厂中的bean相匹配，也将应用此函数。
+	 * 这与构造函数注入相对应：在这种模式下，Springbean工厂能够托管期望基于构造函数的依赖项解析的组件。
+	 *
+	 *
+	 * @param beanName the name of the bean     bean的名称
+	 * @param mbd the bean definition for the bean      bean的bean定义
+	 * @param ctors the chosen candidate constructors       选定的候选构造函数
 	 * @param explicitArgs argument values passed in programmatically via the getBean method,
 	 * or {@code null} if none (-> use constructor argument values from bean definition)
-	 * @return a BeanWrapper for the new instance
+	 *                     通过getBean方法以编程方式传入的参数值，如果没有，则为null（->使用bean定义中的构造函数参数值）
+	 * @return a BeanWrapper for the new instance   新实例的BeanWrapper
 	 */
 	protected BeanWrapper autowireConstructor(
 			String beanName, RootBeanDefinition mbd, @Nullable Constructor<?>[] ctors, @Nullable Object[] explicitArgs) {

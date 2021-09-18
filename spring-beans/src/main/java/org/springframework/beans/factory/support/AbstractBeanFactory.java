@@ -1588,11 +1588,13 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * Resolve the bean class for the specified bean definition,
 	 * resolving a bean class name into a Class reference (if necessary)
 	 * and storing the resolved Class in the bean definition for further use.
-	 * @param mbd the merged bean definition to determine the class for
-	 * @param beanName the name of the bean (for error handling purposes)
+	 * 为指定的bean定义解析bean类，将bean类名解析为类引用（如果需要），并将解析的类存储在bean定义中以供进一步使用。
+	 *
+	 * @param mbd the merged bean definition to determine the class for     用于确定类的合并bean定义
+	 * @param beanName the name of the bean (for error handling purposes)       bean的名称（用于错误处理）
 	 * @param typesToMatch the types to match in case of internal type matching purposes
-	 * (also signals that the returned {@code Class} will never be exposed to application code)
-	 * @return the resolved bean class (or {@code null} if none)
+	 * (also signals that the returned {@code Class} will never be exposed to application code)     在内部类型匹配的情况下要匹配的类型（也表示返回的类永远不会暴露于应用程序代码）
+	 * @return the resolved bean class (or {@code null} if none)        已解析的bean类（如果没有，则为null）
 	 * @throws CannotLoadBeanClassException if we failed to load the class
 	 */
 	@Nullable
