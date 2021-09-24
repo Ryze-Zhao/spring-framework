@@ -105,7 +105,7 @@ public class RyzeService implements
 
 	@PreDestroy
 	public void preDestroy() {
-		System.out.println("执行@preDestroy注解的方法");
+		System.out.println("执行@PreDestroy注解的方法");
 	}
 
 	@Override

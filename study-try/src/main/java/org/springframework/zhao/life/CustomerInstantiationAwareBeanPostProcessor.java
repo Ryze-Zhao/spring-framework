@@ -61,6 +61,4 @@ public class CustomerInstantiationAwareBeanPostProcessor implements Instantiatio
 		System.out.println("执行InstantiationAwareBeanPostProcessor#postProcessAfterInitialization：：beanName=" + beanName);
 		return bean;
 	}
-
-
 }

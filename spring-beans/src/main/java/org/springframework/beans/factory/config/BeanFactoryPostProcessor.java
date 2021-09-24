@@ -52,6 +52,7 @@ import org.springframework.beans.BeansException;
  * programmatically registered post-processors. Furthermore, the
  * {@link org.springframework.core.annotation.Order @Order} annotation is not
  * taken into account for {@code BeanFactoryPostProcessor} beans.
+ * 始终需要注意的是 BeanFactoryPostProcessor 是与 BeanDefinition 打交道的，如果想要与 Bean 打交道，请使用 BeanPostProcessor
  *
  * @author Juergen Hoeller
  * @author Sam Brannen
