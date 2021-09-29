@@ -162,10 +162,11 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 
 	/**
 	 * Register one or more component classes to be processed.
-	 * <p>Note that {@link #refresh()} must be called in order for the context
-	 * to fully process the new classes.
+	 * <p>Note that {@link #refresh()} must be called in order for the context to fully process the new classes.
+	 * 注册一个或多个要处理的组件类。
+	 * 请注意，必须调用refresh（），ApplicationContext 才能完全处理新类。
 	 * @param componentClasses one or more component classes &mdash; for example,
-	 * {@link Configuration @Configuration} classes
+	 * {@link Configuration @Configuration} classes 在接口注释ConfigRegistry中注册，一个或多个组件类-例如@Configuration类
 	 * @see #scan(String...)
 	 * @see #refresh()
 	 */
