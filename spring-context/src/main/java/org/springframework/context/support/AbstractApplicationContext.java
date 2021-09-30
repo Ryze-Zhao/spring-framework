@@ -783,18 +783,19 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Tell the internal bean factory to use the context's class loader etc.
 		// 设置BeanFactory的ClassLoader
 		beanFactory.setBeanClassLoader(getClassLoader());
-		// 判断是否需要加载Spring-Spel表达式解析器.默认加载
+		// 判断并设置加载BeanFactory的Spel表达式解析器（默认加载）
 		if (!shouldIgnoreSpel) {
 			beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver(beanFactory.getBeanClassLoader()));
 		}
-		// 添加属性编辑器用于自定义属性设置覆盖
+		// 添加一个默认的PropertyEditor用于 自定义属性 设置操作
 		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));
 
 		// Configure the bean factory with context callbacks.
 		// 添加默认注册Bean前加入BeanPostProcessor用于Bean初始化前进行操作: 如果Bean实现了某个Aware则调用对应方法.
 		// 可查看ApplicationContextAwareProcessor.ApplicationContextAwareProcessor方法,自定义Bean可进行拓展
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
-		// 忽略一些系统级接口依赖,这些方法在上面的Processor中检查回调中会执行.
+		// 忽略一些系统级接口依赖,这些方法在上面的ApplicationContextAwareProcessor中检查回调中会执行.
+		// 忽略自动装配依赖的接口，因为在doCreateBean时，会在ApplicationContextAwareProcessor这个PostProcessor中已经手工注入；注意忽略的是XXXAware里的setXXX的方法，而不是XXXAware本身
 		beanFactory.ignoreDependencyInterface(EnvironmentAware.class);
 		beanFactory.ignoreDependencyInterface(EmbeddedValueResolverAware.class);
 		beanFactory.ignoreDependencyInterface(ResourceLoaderAware.class);
@@ -824,7 +825,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Register default environment beans.
-		// 检查并加入一些默认的初始化环境Bean
+		// 检查并加入一些默认的初始化环境Bean到 一级缓存 singletonObjects 中
 		if (!beanFactory.containsLocalBean(ENVIRONMENT_BEAN_NAME)) {
 			beanFactory.registerSingleton(ENVIRONMENT_BEAN_NAME, getEnvironment());
 		}
