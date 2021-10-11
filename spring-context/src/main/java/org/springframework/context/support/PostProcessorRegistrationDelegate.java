@@ -479,16 +479,18 @@ final class PostProcessorRegistrationDelegate {
 
 	/**
 	 * Register the given BeanPostProcessor beans.
+	 * 注册传入的BeanPostProcessor
 	 */
-	private static void registerBeanPostProcessors(
-			ConfigurableListableBeanFactory beanFactory, List<BeanPostProcessor> postProcessors) {
-
+	private static void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFactory, List<BeanPostProcessor> postProcessors) {
 		if (beanFactory instanceof AbstractBeanFactory) {
 			// Bulk addition is more efficient against our CopyOnWriteArrayList there
+			// 与CopyOnWriteArrayList相比，批量添加性能更高
 			((AbstractBeanFactory) beanFactory).addBeanPostProcessors(postProcessors);
 		}
 		else {
+			// 遍历传入的List<BeanPostProcessor> postProcessors
 			for (BeanPostProcessor postProcessor : postProcessors) {
+				// 将BeanPostProcessor添加到BeanFactory中的List<BeanPostProcessor> beanPostProcessors缓存
 				beanFactory.addBeanPostProcessor(postProcessor);
 			}
 		}
