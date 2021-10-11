@@ -152,7 +152,7 @@ public abstract class PlaceholderConfigurerSupport extends PropertyResourceConfi
 	private String beanName;
 
 	/**
-	 * 对应 BeanFactoryAware 接口方法setBeanFactory()用于记录当前bean所在容器，也就是需要处理的bean定义所在的容器.
+	 * 对应 BeanFactoryAware 接口方法setBeanFactory()用于记录当前bean所在容器，也就是需要处理的BeanDefinition所在的容器.
 	 */
 	@Nullable
 	private BeanFactory beanFactory;
@@ -252,7 +252,7 @@ public abstract class PlaceholderConfigurerSupport extends PropertyResourceConfi
 	 *
 	 * Spring 提供的 PlaceholderConfigurerSupport 具体实现子类 PropertyPlaceholderConfigurer直接使用了该方法。
 	 *
-	 * 参数 beanFactoryToProcess ： 要处理的bean定义所属的容器
+	 * 参数 beanFactoryToProcess ： 要处理的BeanDefinition所属的容器
 	 * 参数 valueResolver : 属性值解析器
 	 */
 	protected void doProcessProperties(ConfigurableListableBeanFactory beanFactoryToProcess,

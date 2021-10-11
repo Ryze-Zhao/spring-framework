@@ -154,7 +154,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * 为给定的 `BeanFactory` 创建新的XmlBeanDefinitionReader
 	 *
 	 * @param registry the BeanFactory to load bean definitions into,in the form of a BeanDefinitionRegistry
-	 *                 以BeanDefinitionRegistry的形式将bean定义加载到的BeanFactory
+	 *                 以BeanDefinitionRegistry的形式将BeanDefinition加载到的BeanFactory
 	 */
 	public XmlBeanDefinitionReader(BeanDefinitionRegistry registry) {
 		super(registry);
@@ -319,11 +319,11 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 	/**
 	 * Load bean definitions from the specified XML file.
-	 * 从指定的XML文件加载bean定义。
+	 * 从指定的XML文件加载BeanDefinition。
 	 * 在接口BeanDefinitionReader中加载BeanDefinitions
 	 *
 	 * @param resource the resource descriptor for the XML file              resource–XML文件的资源描述符
-	 * @return the number of bean definitions found                  找到的bean定义数
+	 * @return the number of bean definitions found                  找到的BeanDefinition数
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors  BeanDefinitionStoreException–在加载或解析错误的情况
 	 */
 	@Override
@@ -333,12 +333,12 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 	/**
 	 * Load bean definitions from the specified XML file.
-	 * 从指定的XML文件加载bean定义。
+	 * 从指定的XML文件加载BeanDefinition。
 	 *
 	 * @param encodedResource the resource descriptor for the XML file,allowing to specify an encoding to use for parsing the file
 	 *                        encodedResource–XML文件的资源描述符，允许指定用于解析文件的编码
 	 * @return the number of bean definitions found
-	 *          找到的bean定义数
+	 *          找到的BeanDefinition数
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
 	 *           BeanDefinitionStoreException–在加载或解析错误的情况
 	 */
@@ -404,7 +404,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 	/**
 	 * Actually load bean definitions from the specified XML file.
-	 * 从指定的XML文件实际加载bean定义
+	 * 从指定的XML文件实际加载BeanDefinition
 	 *
 	 * @param inputSource the SAX InputSource to read from
 	 * @param resource the resource descriptor for the XML file
@@ -538,7 +538,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * Called by {@code loadBeanDefinitions}.
 	 * <p>Creates a new instance of the parser class and invokes
 	 * {@code registerBeanDefinitions} on it.
-	 * 注册给定DOM文档中包含的bean定义，由loadBeanDefinitions调用，创建parser类的新实例并对其调用registerBeanDefinitions
+	 * 注册给定DOM文档中包含的BeanDefinition，由loadBeanDefinitions调用，创建parser类的新实例并对其调用registerBeanDefinitions
 	 *
 	 * @param doc      the DOM document
 	 * @param resource the resource descriptor (for context information)
@@ -564,7 +564,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * Create the {@link BeanDefinitionDocumentReader} to use for actually
 	 * reading bean definitions from an XML document.
 	 * <p>The default implementation instantiates the specified "documentReaderClass".
-	 * 创建BeanDefinitionDocumentReader，用于从XML文档中实际读取bean定义。 默认实现实例化指定的“documentReaderClass”
+	 * 创建BeanDefinitionDocumentReader，用于从XML文档中实际读取BeanDefinition。 默认实现实例化指定的“documentReaderClass”
 	 * @see #setDocumentReaderClass
 	 */
 	protected BeanDefinitionDocumentReader createBeanDefinitionDocumentReader() {

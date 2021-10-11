@@ -52,7 +52,7 @@ public abstract class BeanDefinitionReaderUtils {
 	 * @param className   the name of the bean class, if any bean类的名称，如果有的话
 	 * @param classLoader the ClassLoader to use for loading bean classes 用于加载bean类的类加载器（可以是{@code null}，以便只按名称注册bean类）
 	 *                    (can be {@code null} to just register bean classes by name)
-	 * @return the bean definition 返回bean定义
+	 * @return the bean definition 返回BeanDefinition
 	 * @throws ClassNotFoundException if the bean class could not be loaded 如果无法加载bean类，则引发ClassNotFoundException
 	 */
 	public static AbstractBeanDefinition createBeanDefinition(
@@ -152,16 +152,16 @@ public abstract class BeanDefinitionReaderUtils {
 
 	/**
 	 * Register the given bean definition with the given bean factory.
-	 * 向给定的 `BeanFactory` 注册给定的bean定义。
+	 * 向给定的 `BeanFactory` 注册给定的BeanDefinition。
 	 *
-	 * @param definitionHolder the bean definition including name and aliases   bean定义，包括名称和别名
+	 * @param definitionHolder the bean definition including name and aliases   BeanDefinition，包括名称和别名
 	 * @param registry         the bean factory to register with    要注册的 `BeanFactory`
 	 * @throws BeanDefinitionStoreException if registration failed  如果注册失败
 	 */
 	public static void registerBeanDefinition(BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry)
 			throws BeanDefinitionStoreException {
 		// Register bean definition under primary name.
-		// 在全名称下注册bean定义
+		// 在全名称下注册BeanDefinition
 		String beanName = definitionHolder.getBeanName();
 		registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());
 

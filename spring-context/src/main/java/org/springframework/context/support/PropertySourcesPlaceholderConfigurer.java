@@ -128,7 +128,7 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 	 * sources, and once set, the configurer makes no assumptions about adding additional sources.
 	 * 这是接口  BeanFactoryPostProcessor 约定的方法，会在容器启动过程中的后置处理阶段被调用
 	 *
-	 * 处理是通过替换bean定义中的${…}占位符来进行的，方法是根据此配置器的一组属性源解析每个占位符，
+	 * 处理是通过替换BeanDefinition中的${…}占位符来进行的，方法是根据此配置器的一组属性源解析每个占位符，
 	 * 其中包括： 所有环境属性源（如果存在环境） 已指定合并的本地属性（如果有） 通过调用setPropertySources设置的任何属性源
 	 * 如果调用setPropertySources，将忽略环境和本地属性。此方法旨在为用户提供对属性源的细粒度控制，一旦设置，配置程序就不会对添加其他源进行任何假设。
 	 * 覆盖： 类PropertyResourceConfigurator中的postProcessBeanFactory
@@ -177,7 +177,7 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 	/**
 	 * Visit each bean definition in the given bean factory and attempt to replace ${...} property
 	 * placeholders with values from the given properties.
-	 * 访问给定 `BeanFactory` 中的每个bean定义，并尝试用给定属性中的值替换${…}属性占位符。
+	 * 访问给定 `BeanFactory` 中的每个BeanDefinition，并尝试用给定属性中的值替换${…}属性占位符。
 	 */
 	protected void processProperties(ConfigurableListableBeanFactory beanFactoryToProcess,
 			final ConfigurablePropertyResolver propertyResolver) throws BeansException {
@@ -201,7 +201,7 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 			}
 			return (resolved.equals(this.nullValue) ? null : resolved);
 		};
-		// 调用基类  PlaceholderConfigurerSupport 实现的对容器中所有 bean定义进行遍历处理属性值中占位符解析的逻辑
+		// 调用基类  PlaceholderConfigurerSupport 实现的对容器中所有 BeanDefinition进行遍历处理属性值中占位符解析的逻辑
 		doProcessProperties(beanFactoryToProcess, valueResolver);
 	}
 

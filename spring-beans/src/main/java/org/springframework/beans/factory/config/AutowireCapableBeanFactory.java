@@ -171,15 +171,15 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * <b>Note: This method requires a bean definition for the given name!</b>
 	 *
 	 * 配置给定的原始bean：自动连接bean属性、应用bean属性值、应用工厂回调（如setBeanName和setBeanFactory），以及应用所有bean后处理器（包括可能包装给定原始bean的后处理器）。
-	 * 这实际上是initializeBean提供的超集，完全应用了相应bean定义指定的配置。
-	 * 注意：此方法需要给定名称的bean定义！
+	 * 这实际上是initializeBean提供的超集，完全应用了相应BeanDefinition指定的配置。
+	 * 注意：此方法需要给定名称的BeanDefinition！
 	 *
 	 * @param existingBean the existing bean instance		现有的bean实例
 	 * @param beanName the name of the bean, to be passed to it if necessary
-	 * (a bean definition of that name has to be available)		bean的名称，必要时传递给它（必须提供该名称的bean定义）
+	 * (a bean definition of that name has to be available)		bean的名称，必要时传递给它（必须提供该名称的BeanDefinition）
 	 * @return the bean instance to use, either the original or a wrapped one	要使用的bean实例，可以是原始实例，也可以是包装的实例
 	 * @throws org.springframework.beans.factory.NoSuchBeanDefinitionException
-	 * if there is no bean definition with the given name	如果没有具有给定名称的bean定义
+	 * if there is no bean definition with the given name	如果没有具有给定名称的BeanDefinition
 	 * @throws BeansException if the initialization failed	如果初始化失败
 	 * @see #initializeBean
 	 */

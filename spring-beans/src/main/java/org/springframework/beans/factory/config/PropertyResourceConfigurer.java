@@ -89,7 +89,7 @@ public abstract class PropertyResourceConfigurer extends PropertiesLoaderSupport
 			convertProperties(mergedProps);
 
 			// Let the subclass process the properties.
-			// <Spring分析点35-3> 具体子类处理，对容器中的每个bean定义进行处理，也就是替换每个bean定义中的属性中的占位符
+			// <Spring分析点35-3> 具体子类处理，对容器中的每个BeanDefinition进行处理，也就是替换每个BeanDefinition中的属性中的占位符
 			processProperties(beanFactory, mergedProps);
 		}
 		catch (IOException ex) {

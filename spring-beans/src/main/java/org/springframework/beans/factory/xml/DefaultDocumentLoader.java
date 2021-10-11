@@ -121,7 +121,7 @@ public class DefaultDocumentLoader implements DocumentLoader {
 
 	/**
 	 * Create a JAXP DocumentBuilder that this bean definition reader will use for parsing XML documents. Can be overridden in subclasses, adding further initialization of the builder.
-	 * 创建一个JAXP文档生成器，这个bean定义读取器将用于解析XML文档。可以在子类中重写，从而添加生成器的进一步初始化。
+	 * 创建一个JAXP文档生成器，这个BeanDefinition读取器将用于解析XML文档。可以在子类中重写，从而添加生成器的进一步初始化。
 	 * @param factory the JAXP DocumentBuilderFactory that the DocumentBuilder
 	 * should be created with
 	 * @param entityResolver the SAX EntityResolver to use

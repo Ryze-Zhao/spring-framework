@@ -171,7 +171,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	/**
 	 * Resolver to use for checking if a bean definition is an autowire candidate.
-	 * 用于检查bean定义是否是autowire候选的解析器。
+	 * 用于检查BeanDefinition是否是autowire候选的解析器。
 	 */
 	private AutowireCandidateResolver autowireCandidateResolver = SimpleAutowireCandidateResolver.INSTANCE;
 
@@ -183,7 +183,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	/**
 	 * Map of bean definition objects, keyed by bean name.
-	 * bean定义对象的映射，由bean名称作为key。
+	 * BeanDefinition对象的映射，由bean名称作为key。
 	 * 注册表，由 BeanDefinition 的标识 （beanName） 与其实例组成
 	 */
 	private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
@@ -208,7 +208,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	/**
 	 * List of bean definition names, in registration order.
-	 * bean定义名称列表，按注册顺序排列。
+	 * BeanDefinition名称列表，按注册顺序排列。
 	 * 标识（beanName）集合
 	 */
 	private volatile List<String> beanDefinitionNames = new ArrayList<>(256);
@@ -221,14 +221,14 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	/**
 	 * Cached array of bean definition names in case of frozen configuration.
-	 * 冻结配置时bean定义名称的缓存数组。
+	 * 冻结配置时BeanDefinition名称的缓存数组。
 	 */
 	@Nullable
 	private volatile String[] frozenBeanDefinitionNames;
 
 	/**
 	 * Whether bean definition metadata may be cached for all beans.
-	 * 是否可以为所有bean缓存bean定义元数据。
+	 * 是否可以为所有bean缓存BeanDefinition元数据。
 	 */
 	private volatile boolean configurationFrozen;
 
@@ -281,7 +281,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	 * If not, an exception will be thrown. This also applies to overriding aliases.
 	 * <p>Default is "true".
 	 *
-	 * 设置是否允许它通过注册具有相同名称的不同定义来覆盖bean定义，并自动替换前者。否则，将引发异常。这也适用于替代别名。 默认值为“true”
+	 * 设置是否允许它通过注册具有相同名称的不同定义来覆盖BeanDefinition，并自动替换前者。否则，将引发异常。这也适用于替代别名。 默认值为“true”
 	 * @see #registerBeanDefinition
 	 */
 	public void setAllowBeanDefinitionOverriding(boolean allowBeanDefinitionOverriding) {
@@ -290,7 +290,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	/**
 	 * Return whether it should be allowed to override bean definitions by registering a different definition with the same name, automatically replacing the former.
-	 * 返回是否允许它通过注册具有相同名称的不同定义来覆盖bean定义，并自动替换前者。
+	 * 返回是否允许它通过注册具有相同名称的不同定义来覆盖BeanDefinition，并自动替换前者。
 	 * @since 4.1.2
 	 */
 	public boolean isAllowBeanDefinitionOverriding() {
@@ -305,8 +305,8 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	 * In particular, by-type lookups will then simply ignore bean definitions
 	 * without resolved class name, instead of loading the bean classes on
 	 * demand just to perform a type check.
-	 * 设置是否允许工厂急切地加载bean类，即使对于标记为“lazy init”的bean定义也是如此。 默认值为“true”。
-	 * 关闭此标志以抑制惰性init bean的类加载，除非显式请求此类bean。特别是，按类型查找将忽略没有解析类名的bean定义，而不是按需加载bean类来执行类型检查
+	 * 设置是否允许工厂急切地加载bean类，即使对于标记为“lazy init”的BeanDefinition也是如此。 默认值为“true”。
+	 * 关闭此标志以抑制惰性init bean的类加载，除非显式请求此类bean。特别是，按类型查找将忽略没有解析类名的BeanDefinition，而不是按需加载bean类来执行类型检查
 	 * @see AbstractBeanDefinition#setLazyInit
 	 */
 	public void setAllowEagerClassLoading(boolean allowEagerClassLoading) {

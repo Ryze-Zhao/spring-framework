@@ -97,20 +97,20 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Set the name of the parent definition of this bean definition, if any.
-	 * 设置此bean定义的父定义的名称（如果有）。
+	 * 设置此BeanDefinition的父定义的名称（如果有）。
 	 */
 	void setParentName(@Nullable String parentName);
 
 	/**
 	 * Return the name of the parent definition of this bean definition, if any.
-	 * 返回此bean定义的父定义的名称（如果有）。
+	 * 返回此BeanDefinition的父定义的名称（如果有）。
 	 */
 	@Nullable
 	String getParentName();
 
 	/**
 	 * Specify the bean class name of this bean definition.<p>The class name can be modified during bean factory post-processing,typically replacing the original class name with a parsed variant of it.
-	 * 指定此bean定义的bean类名。<p>可以在  `BeanFactoryPostProcessor` 过程中修改类名，通常用解析后的变体替换原始类名。
+	 * 指定此BeanDefinition的bean类名。<p>可以在  `BeanFactoryPostProcessor` 过程中修改类名，通常用解析后的变体替换原始类名。
 	 *
 	 * @see #setParentName
 	 * @see #setFactoryBeanName
@@ -123,8 +123,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * case of a child definition overriding/inheriting the class name from its parent.Also, this may just be the class that a factory method is called on, or it may
 	 * even be empty in case of a factory bean reference that a method is called on.Hence, do <i>not</i> consider this to be the definitive bean type at runtime but
 	 * rather only use it for parsing purposes at the individual bean definition level.
-	 * 返回此bean定义的当前bean类名。<p>请注意，它不必是运行时使用的实际类名子定义重写从其父级继承类名的情况。而且，这可能只是调用工厂方法的类，也可能是
-	 * 在FactoryBean引用的情况下，即使是调用方法，也可以是空的。因此，【不要】认为这是运行时的最终bean类型，而是仅在单个bean定义级别将其用于解析目的。
+	 * 返回此BeanDefinition的当前bean类名。<p>请注意，它不必是运行时使用的实际类名子定义重写从其父级继承类名的情况。而且，这可能只是调用工厂方法的类，也可能是
+	 * 在FactoryBean引用的情况下，即使是调用方法，也可以是空的。因此，【不要】认为这是运行时的最终bean类型，而是仅在单个BeanDefinition级别将其用于解析目的。
 	 *
 	 *
 	 * @see #getParentName()
@@ -247,7 +247,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Return if there are constructor argument values defined for this bean.
-	 * 如果有为此bean定义的构造函数参数值，则返回。
+	 * 如果有为此BeanDefinition的构造函数参数值，则返回。
 	 *
 	 * @since 5.0.2
 	 */
@@ -265,7 +265,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Return if there are property values defined for this bean.
-	 * 如果有为此bean定义的属性值，则返回。
+	 * 如果有为此BeanDefinition的属性值，则返回。
 	 *
 	 * @since 5.0.2
 	 */
@@ -324,14 +324,14 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Set a human-readable description of this bean definition.
-	 * 设置此bean定义的可读描述。
+	 * 设置此BeanDefinition的可读描述。
 	 * @since 5.1
 	 */
 	void setDescription(@Nullable String description);
 
 	/**
 	 * Return a human-readable description of this bean definition.
-	 * 返回此bean定义的可读描述
+	 * 返回此BeanDefinition的可读描述
 	 */
 	@Nullable
 	String getDescription();
@@ -342,8 +342,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	/**
 	 * Return a resolvable type for this bean definition,based on the bean class or other specific metadata.
 	 * <p>This is typically fully resolved on a runtime-merged bean definition but not necessarily on a configuration-time definition instance.
-	 * 基于bean类或其他特定元数据，返回此bean定义的可解析类型。
-	 * <p>这通常在运行时合并的bean定义上完全解决，但不一定在配置时定义实例上解决。
+	 * 基于bean类或其他特定元数据，返回此BeanDefinition的可解析类型。
+	 * <p>这通常在运行时合并的BeanDefinition上完全解决，但不一定在配置时定义实例上解决。
 	 * @return the resolvable type (potentially {@link ResolvableType#NONE})
 	 * @since 5.2
 	 * @see ConfigurableBeanFactory#getMergedBeanDefinition
@@ -373,7 +373,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Return a description of the resource that this bean definition came from (for the purpose of showing context in case of errors).
-	 * 返回此bean定义所来自的资源的描述（用于在出现错误时显示上下文）。
+	 * 返回此BeanDefinition所来自的资源的描述（用于在出现错误时显示上下文）。
 	 */
 	@Nullable
 	String getResourceDescription();
@@ -381,7 +381,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	/**
 	 * Return the originating BeanDefinition, or {@code null} if none.<p>Allows for retrieving the decorated bean definition, if any.
 	 * <p>Note that this method returns the immediate originator. Iterate through the originator chain to find the original BeanDefinition as defined by the user.
-	 * 返回原始bean定义，如果没有，{@code null}。<p>允许检索修饰bean定义（如果有的话）。
+	 * 返回原始BeanDefinition，如果没有，{@code null}。<p>允许检索修饰BeanDefinition（如果有的话）。
 	 * <p>请注意，此方法返回直接发起人。遍历发起者链以查找用户定义的原始BeanDefinition。
 	 */
 	@Nullable

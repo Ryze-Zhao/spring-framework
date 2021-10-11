@@ -501,7 +501,7 @@ public class BeanDefinitionParserDelegate {
 
 	/**
 	 * Parse the bean definition itself, without regard to name or aliases. May return {@code null} if problems occurred during the parsing of the bean definition.
-	 * 解析bean定义本身，而不考虑名称或别名。如果在解析bean定义期间出现问题，则可能返回null。
+	 * 解析BeanDefinition本身，而不考虑名称或别名。如果在解析BeanDefinition期间出现问题，则可能返回null。
 	 */
 	@Nullable
 	public AbstractBeanDefinition parseBeanDefinitionElement(Element ele, String beanName, @Nullable BeanDefinition containingBean) {
@@ -573,8 +573,8 @@ public class BeanDefinitionParserDelegate {
 	 *
 	 * @param ele            bean declaration element bean声明元素
 	 * @param beanName       bean name
-	 * @param containingBean containing bean definition 包含bean定义
-	 * @return a bean definition initialized according to the bean element attributes 根据bean元素属性初始化的bean定义
+	 * @param containingBean containing bean definition 包含BeanDefinition
+	 * @return a bean definition initialized according to the bean element attributes 根据bean元素属性初始化的BeanDefinition
 	 */
 	public AbstractBeanDefinition parseBeanDefinitionAttributes(Element ele, String beanName,
 	                                                            @Nullable BeanDefinition containingBean, AbstractBeanDefinition bd) {
@@ -587,7 +587,7 @@ public class BeanDefinitionParserDelegate {
 		}
 		else if (containingBean != null) {
 			// Take default from containing bean in case of an inner bean definition.
-//			对于内部bean定义，使用包含bean的默认值。
+//			对于内部BeanDefinition，使用包含bean的默认值。
 			bd.setScope(containingBean.getScope());
 		}
 
@@ -664,10 +664,10 @@ public class BeanDefinitionParserDelegate {
 
 	/**
 	 * Create a bean definition for the given class name and parent name.
-	 * 为给定的类名和父名称创建bean定义。
+	 * 为给定的类名和父名称创建BeanDefinition。
 	 * @param className the name of the bean class  className–bean类的名称
 	 * @param parentName the name of the bean's parent bean  parentName–bean的父bean的名称
-	 * @return the newly created bean definition 新创建的bean定义
+	 * @return the newly created bean definition 新创建的BeanDefinition
 	 * @throws ClassNotFoundException if bean class resolution was attempted but failed ClassNotFoundException–如果尝试了bean类解析但失败
 	 */
 	protected AbstractBeanDefinition createBeanDefinition(@Nullable String className, @Nullable String parentName) throws ClassNotFoundException {
@@ -1071,7 +1071,7 @@ public class BeanDefinitionParserDelegate {
 	 * 分析属性或constructor-arg元素的value、ref或collection子元素。
 	 *
 	 * @param ele subelement of property element; we don't know which yet   属性元素的子元素；我们还不知道是哪个
-	 * @param bd the current bean definition (if any)       当前bean定义（如果有的话）
+	 * @param bd the current bean definition (if any)       当前BeanDefinition（如果有的话）
 	 * @param defaultValueType the default type (class name) for any    可能创建的任何
 	 * {@code <value>} tag that might be created    标记的默认类型（类名）
 	 */
@@ -1517,12 +1517,12 @@ public class BeanDefinitionParserDelegate {
 
 	/**
 	 * Decorate the given bean definition through a namespace handler, if applicable.
-	 * 如果适用，通过名称空间处理程序修饰给定的bean定义。
+	 * 如果适用，通过名称空间处理程序修饰给定的BeanDefinition。
 	 *
 	 * @param ele          the current element   当前元素
-	 * @param originalDef  the current bean definition   当前bean定义
-	 * @param containingBd the containing bean definition (if any)  包含bean定义（如果有的话）
-	 * @return the decorated bean definition 装饰bean定义
+	 * @param originalDef  the current bean definition   当前BeanDefinition
+	 * @param containingBd the containing bean definition (if any)  包含BeanDefinition（如果有的话）
+	 * @return the decorated bean definition 装饰BeanDefinition
 	 */
 	public BeanDefinitionHolder decorateBeanDefinitionIfRequired(
 			Element ele, BeanDefinitionHolder originalDef, @Nullable BeanDefinition containingBd) {
@@ -1551,11 +1551,11 @@ public class BeanDefinitionParserDelegate {
 
 	/**
 	 * Decorate the given bean definition through a namespace handler,if applicable.
-	 * 如果适用，通过名称空间处理程序修饰给定的bean定义。
+	 * 如果适用，通过名称空间处理程序修饰给定的BeanDefinition。
 	 * @param node the current child node   当前子节点
-	 * @param originalDef the current bean definition   当前bean定义
-	 * @param containingBd the containing bean definition (if any)  包含bean定义（如果有的话)
-	 * @return the decorated bean definition    装饰bean定义
+	 * @param originalDef the current bean definition   当前BeanDefinition
+	 * @param containingBd the containing bean definition (if any)  包含BeanDefinition（如果有的话)
+	 * @return the decorated bean definition    装饰BeanDefinition
 	 */
 	public BeanDefinitionHolder decorateIfRequired(
 			Node node, BeanDefinitionHolder originalDef, @Nullable BeanDefinition containingBd) {

@@ -58,7 +58,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 
 	/**
 	 * 默认构造方法.
-	 * @param bd the bean definition	bean定义
+	 * @param bd the bean definition	BeanDefinition
 	 * @param beanName the name of the bean when it is created in this context.
 	 * The name can be {@code null} if we are autowiring a bean which doesn't belong to the factory.
 	 *                 在此上下文中创建bean时的名称。如果我们正在自动连接一个不属于工厂的bean，那么这个名称可以为null。

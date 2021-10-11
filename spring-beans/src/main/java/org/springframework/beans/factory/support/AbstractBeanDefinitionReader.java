@@ -201,14 +201,14 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 	 * Load bean definitions from the specified resource location.
 	 * <p>The location can also be a location pattern, provided that the ResourceLoader of this bean definition reader is a ResourcePatternResolver.
 	 *
-	 * 从指定的资源位置加载bean定义。 如果这个bean定义读取器的ResourceLoader是resourcepatternsolver，那么位置也可以是位置模式。
+	 * 从指定的资源位置加载BeanDefinition。 如果这个BeanDefinition读取器的ResourceLoader是resourcepatternsolver，那么位置也可以是位置模式。
 	 *
 	 *
 	 * @param location the resource location, to be loaded with the ResourceLoader (or ResourcePatternResolver) of this bean definition reader
-	 *                 location–要使用此bean定义读取器的ResourceLoader（或ResourcePatternResolver）加载的资源位置
+	 *                 location–要使用此BeanDefinition读取器的ResourceLoader（或ResourcePatternResolver）加载的资源位置
 	 * @param actualResources a Set to be filled with the actual Resource objects that have been resolved during the loading process. May be {@code null} to indicate that the caller is not interested in those Resource objects.
 	 *                 actualResources–要填充在加载过程中解析的实际资源对象的集合。可以为null，表示调用者对这些资源对象不感兴趣。
-	 * @return the number of bean definitions found     找到的bean定义数
+	 * @return the number of bean definitions found     找到的BeanDefinition数
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors BeanDefinitionStoreException–在加载或解析错误的情况下
 	 * @see #getResourceLoader()
 	 * @see #loadBeanDefinitions(org.springframework.core.io.Resource)

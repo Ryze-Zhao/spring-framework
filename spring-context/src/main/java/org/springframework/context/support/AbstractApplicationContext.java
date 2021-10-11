@@ -848,7 +848,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * initialization. All bean definitions will have been loaded, but no beans
 	 * will have been instantiated yet. This allows for registering special
 	 * BeanPostProcessors etc in certain ApplicationContext implementations.
-	 * 在标准初始化之后修改 `ApplicationContext` 的内部 `BeanFactory` 。所有bean定义都已加载，但尚未实例化任何bean。
+	 * 在标准初始化之后修改 `ApplicationContext` 的内部 `BeanFactory` 。所有BeanDefinition都已加载，但尚未实例化任何bean。
 	 * 这允许在某些ApplicationContext实现中注册特殊的BeanPostProcessor等。
 	 * @param beanFactory the bean factory used by the application context   `ApplicationContext` 使用的 `BeanFactory`
 	 */
@@ -861,7 +861,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * 实例化并调用所有注册的BeanFactoryPostProcessor bean，如果给定，则遵循显式顺序。 必须在单例实例化之前调用。
 	 */
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
-		// Spring扫描加载完毕所有的BeanDefinition(扫描出来的各种注解和config配置的Bean定义)后，
+		// Spring扫描加载完毕所有的BeanDefinition(扫描出来的各种注解和config配置的BeanDefinition)后，
 		// 调用执行默认的和自定义的 BeanDefinitionRegistryPostProcessor接口 和 BeanFactoryPostProcessor接口 实现类
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 

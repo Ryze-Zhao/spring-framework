@@ -140,7 +140,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	private boolean cacheBeanMetadata = true;
 
 	/** Resolution strategy for expressions in bean definition values.
-	 * bean定义值中表达式的解析策略 */
+	 * BeanDefinition值中表达式的解析策略 */
 	@Nullable
 	private BeanExpressionResolver beanExpressionResolver;
 
@@ -1401,13 +1401,13 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	/**
 	 * Return a merged RootBeanDefinition, traversing the parent bean definition
 	 * if the specified bean corresponds to a child bean definition.
-	 * 返回合并的RootBeanDefinition，如果指定的bean对应于子bean定义，则遍历父bean定义。
+	 * 返回合并的RootBeanDefinition，如果指定的bean对应于子BeanDefinition，则遍历父BeanDefinition。
 	 * @param beanName the name of the bean to retrieve the merged definition for
 	 *                 为其检索合并定义的bean的名称
 	 * @return a (potentially merged) RootBeanDefinition for the given bean
-	 * 					给定bean的（可能合并的）rootbean定义
+	 * 					给定bean的（可能合并的）rootBeanDefinition
 	 * @throws NoSuchBeanDefinitionException if there is no bean with the given name 如果没有具有给定名称的bean
-	 * @throws BeanDefinitionStoreException in case of an invalid bean definition 如果bean定义无效
+	 * @throws BeanDefinitionStoreException in case of an invalid bean definition 如果BeanDefinition无效
 	 */
 	protected RootBeanDefinition getMergedLocalBeanDefinition(String beanName) throws BeansException {
 		// Quick check on the concurrent map first, with minimal locking.
@@ -1423,11 +1423,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 	/**
 	 * Return a RootBeanDefinition for the given top-level bean, by merging with the parent if the given bean's definition is a child bean definition.
-	 * 如果给定bean的定义是子bean定义，则通过与父bean合并，返回给定顶级bean的RootBeanDefinition。
+	 * 如果给定bean的定义是子BeanDefinition，则通过与父bean合并，返回给定顶级bean的RootBeanDefinition。
 	 *
-	 * @param beanName the name of the bean definition  bean定义的名称
-	 * @param bd the original bean definition (Root/ChildBeanDefinition)    原始bean定义（根/子bean定义）
-	 * @return a (potentially merged) RootBeanDefinition for the given bean     给定bean的（可能合并的）RootBean定义
+	 * @param beanName the name of the bean definition  BeanDefinition的名称
+	 * @param bd the original bean definition (Root/ChildBeanDefinition)    原始BeanDefinition（根/子BeanDefinition）
+	 * @return a (potentially merged) RootBeanDefinition for the given bean     给定bean的（可能合并的）RootBeanDefinition
 	 * @throws BeanDefinitionStoreException in case of an invalid bean definition
 	 */
 	protected RootBeanDefinition getMergedBeanDefinition(String beanName, BeanDefinition bd)
@@ -1543,8 +1543,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 	/**
 	 * Check the given merged bean definition,potentially throwing validation exceptions.
-	 * 检查给定的合并bean定义，可能引发验证异常。
-	 * @param mbd the merged bean definition to check	要检查的合并bean定义
+	 * 检查给定的合并BeanDefinition，可能引发验证异常。
+	 * @param mbd the merged bean definition to check	要检查的合并BeanDefinition
 	 * @param beanName the name of the bean
 	 * @param args the arguments for bean creation, if any	bean创建的参数
 	 * @throws BeanDefinitionStoreException in case of validation failure	验证失败时
@@ -1558,7 +1558,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 	/**
 	 * Remove the merged bean definition for the specified bean,recreating it on next access.
-	 * 删除指定bean的合并bean定义，在下次访问时重新创建它。
+	 * 删除指定bean的合并BeanDefinition，在下次访问时重新创建它。
 	 * @param beanName the bean name to clear the merged definition for beanName–清除合并定义的bean名称
 	 */
 	protected void clearMergedBeanDefinition(String beanName) {
@@ -1588,9 +1588,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * Resolve the bean class for the specified bean definition,
 	 * resolving a bean class name into a Class reference (if necessary)
 	 * and storing the resolved Class in the bean definition for further use.
-	 * 为指定的bean定义解析bean类，将bean类名解析为类引用（如果需要），并将解析的类存储在bean定义中以供进一步使用。
+	 * 为指定的BeanDefinition解析bean类，将bean类名解析为类引用（如果需要），并将解析的类存储在BeanDefinition中以供进一步使用。
 	 *
-	 * @param mbd the merged bean definition to determine the class for     用于确定类的合并bean定义
+	 * @param mbd the merged bean definition to determine the class for     用于确定类的合并BeanDefinition
 	 * @param beanName the name of the bean (for error handling purposes)       bean的名称（用于错误处理）
 	 * @param typesToMatch the types to match in case of internal type matching purposes
 	 * (also signals that the returned {@code Class} will never be exposed to application code)     在内部类型匹配的情况下要匹配的类型（也表示返回的类永远不会暴露于应用程序代码）
@@ -1925,7 +1925,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @param beanInstance the shared bean instance     共享bean实例
 	 * @param name the name that may include factory dereference prefix 可能包含工厂取消引用前缀的名称
 	 * @param beanName the canonical bean name  规范的bean名称
-	 * @param mbd the merged bean definition    合并bean定义
+	 * @param mbd the merged bean definition    合并BeanDefinition
 	 * @return the object to expose for the bean    为bean公开的对象
 	 */
 	protected Object getObjectForBeanInstance(
@@ -2061,7 +2061,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * just amounts to a local hash lookup: The operation is therefore part of the
 	 * public interface there. The same implementation can serve for both this
 	 * template method and the public interface method in that case.
-	 * 检查此 `BeanFactory` 是否包含具有给定名称的bean定义。不考虑该工厂可能参与的任何层次结构。当找不到缓存的singleton实例时由containsBean调用。
+	 * 检查此 `BeanFactory` 是否包含具有给定名称的BeanDefinition。不考虑该工厂可能参与的任何层次结构。当找不到缓存的singleton实例时由containsBean调用。
 	 * 根据具体 `BeanFactory` 实现的性质，此操作可能代价高昂（例如，由于在外部注册表中查找目录）。
 	 * 然而，对于可列出的 `BeanFactory` ，这通常只相当于本地哈希查找：因此，该操作是公共接口的一部分。
 	 * 在这种情况下，相同的实现可以用于此模板方法和公共接口方法。
@@ -2098,9 +2098,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * The bean definition will already have been merged with the parent definition
 	 * in case of a child definition.
 	 * <p>All bean retrieval methods delegate to this method for actual bean creation.
-	 * 为给定的合并bean定义（和参数）创建bean实例。在子定义的情况下，bean定义已经与父定义合并。 所有bean检索方法都委托给这个方法来实际创建bean。
+	 * 为给定的合并BeanDefinition（和参数）创建bean实例。在子定义的情况下，BeanDefinition已经与父定义合并。 所有bean检索方法都委托给这个方法来实际创建bean。
 	 * @param beanName the name of the bean
-	 * @param mbd the merged bean definition for the bean	bean的合并bean定义
+	 * @param mbd the merged bean definition for the bean	bean的合并BeanDefinition
 	 * @param args explicit arguments to use for constructor or factory method invocation	用于构造函数或工厂方法调用的显式参数
 	 * @return a new instance of the bean	bean的新实例
 	 * @throws BeanCreationException if the bean could not be created

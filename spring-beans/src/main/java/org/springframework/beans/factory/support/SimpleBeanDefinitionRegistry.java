@@ -38,7 +38,7 @@ public class SimpleBeanDefinitionRegistry extends SimpleAliasRegistry implements
 
 	/**
 	 * Map of bean definition objects, keyed by bean name.
-	 * bean定义对象的映射，由bean名称键入。
+	 * BeanDefinition对象的映射，由bean名称键入。
 	 */
 	private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(64);
 

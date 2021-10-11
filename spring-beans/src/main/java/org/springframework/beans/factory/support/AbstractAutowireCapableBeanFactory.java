@@ -562,7 +562,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * 实际创建指定的bean。此时已经进行了创建前处理，例如，在实例化回调之前检查后处理。
 	 * 区分默认bean实例化、使用工厂方法和自动连接构造函数。
 	 * @param beanName the name of the bean		bean的名称
-	 * @param mbd the merged bean definition for the bean		bean的合并bean定义
+	 * @param mbd the merged bean definition for the bean		bean的合并BeanDefinition
 	 * @param args explicit arguments to use for constructor or factory method invocation	用于构造函数或工厂方法调用的显式参数
 	 * @return a new instance of the bean		bean的一个新实例
 	 * @throws BeanCreationException if the bean could not be created		如果无法创建bean
@@ -1145,7 +1145,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * Apply before-instantiation post-processors, resolving whether there is a before-instantiation shortcut for the specified bean.
 	 * 在实例化后处理器之前应用，解析指定bean是否有实例化前快捷方式。
 	 * @param beanName the name of the bean
-	 * @param mbd the bean definition for the bean	bean的bean定义
+	 * @param mbd the bean definition for the bean	bean的BeanDefinition
 	 * @return the shortcut-determined bean instance, or {@code null} if none	快捷方式确定了bean实例，如果没有，则为nul
 	 */
 	@Nullable
@@ -1193,7 +1193,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * Create a new instance for the specified bean, using an appropriate instantiation strategy:factory method, constructor autowiring, or simple instantiation.
 	 * 使用适当的实例化策略为指定的bean创建一个新实例：工厂方法、构造函数自动连接或简单实例化。
 	 * @param beanName the name of the bean     bean的名称
-	 * @param mbd the bean definition for the bean      bean的bean定义
+	 * @param mbd the bean definition for the bean      bean的BeanDefinition
 	 * @param args explicit arguments to use for constructor or factory method invocation       用于构造函数或工厂方法调用的显式参数
 	 * @return a BeanWrapper for the new instance   新实例的BeanRapper
 	 * @see #obtainFromSupplier
@@ -1358,7 +1358,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * Instantiate the given bean using its default constructor.
 	 * 使用默认构造函数实例化给定bean。
 	 * @param beanName the name of the bean     bean的名称
-	 * @param mbd the bean definition for the bean      bean定义
+	 * @param mbd the bean definition for the bean      BeanDefinition
 	 * @return a BeanWrapper for the new instance       新BeanWrapper
 	 */
 	protected BeanWrapper instantiateBean(String beanName, RootBeanDefinition mbd) {
@@ -1388,9 +1388,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * on a factory object itself configured using Dependency Injection.
 	 * 使用命名工厂方法实例化bean。如果mbd参数指定一个类，而不是factoryBean，或者使用依赖项注入配置的factory对象本身上的实例变量，那么该方法可能是静态的。
 	 * @param beanName the name of the bean     bean的名称
-	 * @param mbd the bean definition for the bean      bean的bean定义
+	 * @param mbd the bean definition for the bean      bean的BeanDefinition
 	 * @param explicitArgs argument values passed in programmatically via the getBean method,
-	 * or {@code null} if none (-> use constructor argument values from bean definition)    通过getBean方法以编程方式传入的参数值，如果没有，则为null（->使用bean定义中的构造函数参数值）
+	 * or {@code null} if none (-> use constructor argument values from bean definition)    通过getBean方法以编程方式传入的参数值，如果没有，则为null（->使用BeanDefinition中的构造函数参数值）
 	 * @return a BeanWrapper for the new instance   新实例的BeanRapper
 	 * @see #getBean(String, Object[])
 	 */
@@ -1413,11 +1413,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 *
 	 *
 	 * @param beanName the name of the bean     bean的名称
-	 * @param mbd the bean definition for the bean      bean的bean定义
+	 * @param mbd the bean definition for the bean      bean的BeanDefinition
 	 * @param ctors the chosen candidate constructors       选定的候选构造函数
 	 * @param explicitArgs argument values passed in programmatically via the getBean method,
 	 * or {@code null} if none (-> use constructor argument values from bean definition)
-	 *                     通过getBean方法以编程方式传入的参数值，如果没有，则为null（->使用bean定义中的构造函数参数值）
+	 *                     通过getBean方法以编程方式传入的参数值，如果没有，则为null（->使用BeanDefinition中的构造函数参数值）
 	 * @return a BeanWrapper for the new instance   新实例的BeanWrapper
 	 */
 	protected BeanWrapper autowireConstructor(
@@ -1428,9 +1428,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 	/**
 	 * Populate the bean instance in the given BeanWrapper with the property values from the bean definition.
-	 * 使用bean定义中的属性值填充给定BeanWrapper中的bean实例。
+	 * 使用BeanDefinition中的属性值填充给定BeanWrapper中的bean实例。
 	 * @param beanName the name of the bean
-	 * @param mbd the bean definition for the bean	bean定义
+	 * @param mbd the bean definition for the bean	BeanDefinition
 	 * @param bw the BeanWrapper with bean instance	带有bean实例的BeanWrapper
 	 */
 	@SuppressWarnings("deprecation")  // for postProcessPropertyValues
@@ -1539,7 +1539,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * Fill in any missing property values with references to other beans in this factory if autowire is set to "byName".
 	 * 如果autowire设置为“byName”，则使用对该工厂中其他bean的引用来填充任何缺少的属性值。
 	 * @param beanName the name of the bean we're wiring up.Useful for debugging messages; not used functionally.	我们正在连接的bean的名称-用于调试消息；没有用在功能上
-	 * @param mbd bean definition to update through autowiring	通过autowiring更新的bean定义
+	 * @param mbd bean definition to update through autowiring	通过autowiring更新的BeanDefinition
 	 * @param bw the BeanWrapper from which we can obtain information about the bean	我们可以从中获得有关bean的信息的BeanWrapper
 	 * @param pvs the PropertyValues to register wired objects with	用于注册有线对象的属性值
 	 */
@@ -1580,7 +1580,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * 这使得 `BeanFactory` 对于小名称空间的配置变得简单，但是对于更大的应用程序，它的工作方式不如标准的Spring行为。
 	 *
 	 * @param beanName the name of the bean to autowire by type	按类型自动关联的bean的名称
-	 * @param mbd the merged bean definition to update through autowiring	通过自动连线更新的合并bean定义
+	 * @param mbd the merged bean definition to update through autowiring	通过自动连线更新的合并BeanDefinition
 	 * @param bw the BeanWrapper from which we can obtain information about the bean	我们可以从中获得有关bean的信息的BeanWrapper
 	 * @param pvs the PropertyValues to register wired objects with	用于注册有线对象的属性
 	 */
@@ -1643,7 +1643,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * These are probably unsatisfied references to other beans in the
 	 * factory. Does not include simple properties like primitives or Strings.
 	 * 返回不满足的非简单bean属性数组。这些可能是不满意的参考其他bean在工厂。不包括基本体或字符串等简单属性。 参
-	 * @param mbd the merged bean definition the bean was created with	创建bean时使用的合并bean定义
+	 * @param mbd the merged bean definition the bean was created with	创建bean时使用的合并BeanDefinition
 	 * @param bw the BeanWrapper the bean was created with	创建bean时使用的BeanWrapper
 	 * @return an array of bean property names
 	 * @see org.springframework.beans.BeanUtils#isSimpleProperty
@@ -1753,7 +1753,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * don't permanently modify this property.
 	 * 应用给定的属性值，解析对该 `BeanFactory` 中其他bean的任何运行时引用。必须使用深度复制，因此我们不会永久修改此属性。
 	 * @param beanName the bean name passed for better exception information	为获得更好的异常信息而传递的bean名称
-	 * @param mbd the merged bean definition	合并bean定义
+	 * @param mbd the merged bean definition	合并BeanDefinition
 	 * @param bw the BeanWrapper wrapping the target object	包装目标对象的BeanWrapper
 	 * @param pvs the new property values	新的属性值
 	 */
@@ -1898,7 +1898,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * 初始化给定的bean实例，应用工厂回调、init方法和bean后处理器。 对于传统定义的bean，从createBean调用；对于现有bean实例，从initializeBean调用。
 	 * @param beanName the bean name in the factory (for debugging purposes)	工厂中的bean名称（用于调试）
 	 * @param bean the new bean instance we may need to initialize	我们可能需要初始化的新bean实例
-	 * @param mbd the bean definition that the bean was created with	创建bean时使用的bean定义
+	 * @param mbd the bean definition that the bean was created with	创建bean时使用的BeanDefinition
 	 * (can also be {@code null}, if given an existing bean instance)	（如果给定现有bean实例，也可以为null)
 	 * @return the initialized bean instance (potentially wrapped)
 	 * @see BeanNameAware
@@ -1972,7 +1972,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * 这意味着检查bean是否实现了InitializingBean或定义了自定义的init方法，如果实现了，则调用必要的回调。
 	 * @param beanName the bean name in the factory (for debugging purposes)	工厂中的bean名称（用于调试）
 	 * @param bean the new bean instance we may need to initialize	我们可能需要初始化的新bean实例
-	 * @param mbd the merged bean definition that the bean was created with	创建bean时使用的合并bean定义
+	 * @param mbd the merged bean definition that the bean was created with	创建bean时使用的合并BeanDefinition
 	 * (can also be {@code null}, if given an existing bean instance)	（如果给定现有bean实例，也可以为null）
 	 * @throws Throwable if thrown by init methods or by the invocation process	如果由init方法或调用进程抛
 	 * @see #invokeCustomInitMethod

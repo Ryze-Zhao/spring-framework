@@ -89,7 +89,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * (or DTD, historically).
 	 * <p>Opens a DOM Document; then initializes the default settings
 	 * specified at the {@code <beans/>} level; then parses the contained bean definitions.
-	 * 这个实现根据“springbeans”XSD（或者DTD）解析bean定义。 打开DOM文档；然后初始化 级别指定的默认设置；然后解析包含的bean定义。
+	 * 这个实现根据“springbeans”XSD（或者DTD）解析BeanDefinition。 打开DOM文档；然后初始化 级别指定的默认设置；然后解析包含的BeanDefinition。
 	 */
 	@Override
 	public void registerBeanDefinitions(Document doc, XmlReaderContext readerContext) {
@@ -222,7 +222,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 
 	/**
 	 * Parse an "import" element and load the bean definitions from the given resource into the bean factory.
-	 * 解析“import”元素并将bean定义从给定的资源加载到 `BeanFactory` 中。
+	 * 解析“import”元素并将BeanDefinition从给定的资源加载到 `BeanFactory` 中。
 	 */
 	protected void importBeanDefinitionResource(Element ele) {
 		// <Spring分析点10-1> 获取 <import> 中的 resource 属性值
@@ -339,7 +339,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 
 	/**
 	 * Process the given bean element, parsing the bean definition and registering it with the registry.
-	 * 处理给定的bean元素，解析bean定义并向注册表注册它。
+	 * 处理给定的bean元素，解析BeanDefinition并向注册表注册它。
 	 */
 	protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
 		// 进行 bean 元素解析。

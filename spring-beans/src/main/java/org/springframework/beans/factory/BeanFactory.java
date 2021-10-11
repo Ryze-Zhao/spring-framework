@@ -164,7 +164,7 @@ public interface BeanFactory {
 	 * @param name the name of the bean to retrieve	要检索的bean的名称
 	 * @param requiredType type the bean must match; can be an interface or superclass	bean必须匹配的类型,可以是接口或超类
 	 * @return an instance of the bean	bean的一个实例
-	 * @throws NoSuchBeanDefinitionException if there is no such bean definition	如果没有这样的bean定义
+	 * @throws NoSuchBeanDefinitionException if there is no such bean definition	如果没有这样的BeanDefinition
 	 * @throws BeanNotOfRequiredTypeException if the bean is not of the required type	如果bean不是所需的类型
 	 * @throws BeansException if the bean could not be created	如果无法创建bean
 	 */
@@ -177,7 +177,7 @@ public interface BeanFactory {
 	 * @param name the name of the bean to retrieve
 	 * (only applied when creating a new instance as opposed to retrieving an existing one)
 	 * 返回指定bean的实例，该实例可以是共享的，也可以是独立的。
-	 * 允许指定显式构造函数参数/工厂方法参数，覆盖bean定义中指定的默认参数（如果有）。
+	 * 允许指定显式构造函数参数/工厂方法参数，覆盖BeanDefinition中指定的默认参数（如果有）。
 	 *
 	 * @return an instance of the bean	要检索的bean的名称
 	 * @throws NoSuchBeanDefinitionException if there is no such bean definition	使用显式参数创建bean实例时使用的参数（仅在创建新实例而不是检索现有实例时应用）
@@ -215,7 +215,7 @@ public interface BeanFactory {
 	 * of the given type. For more extensive retrieval operations across sets of beans,
 	 * use {@link ListableBeanFactory} and/or {@link BeanFactoryUtils}.
 	 * 返回指定bean的实例，该实例可以是共享的，也可以是独立的。
-	 * 允许指定显式构造函数参数/工厂方法参数，覆盖bean定义中指定的默认参数（如果有）。
+	 * 允许指定显式构造函数参数/工厂方法参数，覆盖BeanDefinition中指定的默认参数（如果有）。
 	 * 此方法进入ListableBeanFactory的按类型查找区域，但也可以根据给定类型的名称转换为传统的按名称查找。
 	 * 要跨多组bean执行更广泛的检索操作，请使用ListableBeanFactory和/或BeanFactoryUtils。
 	 * @param requiredType type the bean must match; can be an interface or superclass
@@ -274,9 +274,9 @@ public interface BeanFactory {
 	 * or abstract, lazy or eager, in scope or not. Therefore, note that a {@code true}
 	 * return value from this method does not necessarily indicate that {@link #getBean}
 	 * will be able to obtain an instance for the same name.
-	 * 这个 `BeanFactory` 是否包含具有给定名称的bean定义或外部注册的单例实例？ 如果给定的名称是别名，它将被翻译回相应的规范bean名称。
+	 * 这个 `BeanFactory` 是否包含具有给定名称的BeanDefinition或外部注册的单例实例？ 如果给定的名称是别名，它将被翻译回相应的规范bean名称。
 	 * 如果此工厂是分层的，则将询问任何父工厂是否在此工厂实例中找不到该bean。
-	 * 如果找到与给定名称匹配的bean定义或单例实例，则无论指定的bean定义是具体的还是抽象的、懒惰的还是立即初始的、范围内的还是非范围内的，
+	 * 如果找到与给定名称匹配的BeanDefinition或单例实例，则无论指定的BeanDefinition是具体的还是抽象的、懒惰的还是立即初始的、范围内的还是非范围内的，
 	 * 此方法都将返回true。因此，请注意，此方法返回的真值并不一定表示getBean将能够获得同名的实例。
 	 * @param name the name of the bean to query
 	 * @return whether a bean with the given name is present

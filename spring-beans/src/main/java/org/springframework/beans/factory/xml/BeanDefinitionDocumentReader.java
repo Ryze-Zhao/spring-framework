@@ -38,7 +38,7 @@ public interface BeanDefinitionDocumentReader {
 
 	/**
 	 * Read bean definitions from the given DOM document and register them with the registry in the given reader context.
-	 * 从给定的DOM文档中读取bean定义，并在给定的reader上下文中向注册表注册它们。
+	 * 从给定的DOM文档中读取BeanDefinition，并在给定的reader上下文中向注册表注册它们。
 	 * @param doc the DOM document
 	 * @param readerContext the current context of the reader
 	 * (includes the target registry and the resource being parsed)
