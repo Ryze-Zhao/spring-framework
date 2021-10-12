@@ -926,6 +926,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void initApplicationEventMulticaster() {
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+		// 是否包含指定名称 applicationEventMulticaster 的 Bean
 		if (beanFactory.containsLocalBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME)) {
 			this.applicationEventMulticaster =
 					beanFactory.getBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, ApplicationEventMulticaster.class);
@@ -934,6 +935,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			}
 		}
 		else {
+			// 使用  SimpleApplicationEventMulticaster 创建一个 事件分发器
 			this.applicationEventMulticaster = new SimpleApplicationEventMulticaster(beanFactory);
 			beanFactory.registerSingleton(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, this.applicationEventMulticaster);
 			if (logger.isTraceEnabled()) {
@@ -1001,7 +1003,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Publish early application events now that we finally have a multicaster...
-		// 早期Application事件发布
+		// 早期Application事件发布,并且将 earlyApplicationEvents 设置为空
 		Set<ApplicationEvent> earlyEventsToProcess = this.earlyApplicationEvents;
 		this.earlyApplicationEvents = null;
 		if (!CollectionUtils.isEmpty(earlyEventsToProcess)) {
@@ -1064,15 +1066,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		clearResourceCaches();
 
 		// Initialize lifecycle processor for this context.
-		// 一般是加载DefaultLifecycleProcessor
+		// 一般是加载DefaultLifecycleProcessor（为此上下文初始化生命周期处理器）
 		initLifecycleProcessor();
 
 		// Propagate refresh to lifecycle processor first.
-		// 执行生命周期处理器的onRefresh()调用实现了SmartLifecycle接口的start方法启动对应Bean生命周期(随着Application启动启动,关闭而关闭)
+		// 执行生命周期处理器的onRefresh()调用实现了SmartLifecycle接口的start方法启动对应Bean生命周期(随着Application启动而启动,关闭而关闭)
 		getLifecycleProcessor().onRefresh();
 
 		// Publish the final event.
-		// 发布上下文刷新完毕事件
+		// 发布上下文刷新完毕事件到相应的监听器
 		publishEvent(new ContextRefreshedEvent(this));
 
 		// Participate in LiveBeansView MBean, if active.
