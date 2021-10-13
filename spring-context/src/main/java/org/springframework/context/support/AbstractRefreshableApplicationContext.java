@@ -126,7 +126,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 			closeBeanFactory();
 		}
 		try {
-			// 创建 BeanFactory，内部会检测父工厂，默认父工厂为null
+			// 创建 BeanFactory，内部会检测父工厂，默认父工厂为null，通常为DefaultListableBeanFactory
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
 			// 设置序列化id，可以从id反序列化到beanFactory对象
 			// id的值是在super()方法中进行设值的，这里只是单纯的获取id

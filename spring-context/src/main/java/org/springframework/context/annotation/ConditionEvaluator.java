@@ -73,38 +73,57 @@ class ConditionEvaluator {
 
 	/**
 	 * Determine if an item should be skipped based on {@code @Conditional} annotations.
+	 * 根据@Conditional注解确定是否应跳过项。
+	 *
 	 * @param metadata the meta data
 	 * @param phase the phase of the call
 	 * @return if the item should be skipped
 	 */
 	public boolean shouldSkip(@Nullable AnnotatedTypeMetadata metadata, @Nullable ConfigurationPhase phase) {
+		// 依靠 AnnotationMetadata 接口判断是否存在指定元注解
+
+		// 如果metadata为空，或者没有ConditionalXXX(条件注解)这个注解就不用跳过
 		if (metadata == null || !metadata.isAnnotated(Conditional.class.getName())) {
 			return false;
 		}
 
+		// 传入phase 为 null
 		if (phase == null) {
+			// 判断元数据类型，并初始化phase
+			// 如果存在：Configuration，Component，ComponentScan,Import，ImportResource这几个注解 或者 类里面有@Bean注解的方法phase
 			if (metadata instanceof AnnotationMetadata &&
 					ConfigurationClassUtils.isConfigurationCandidate((AnnotationMetadata) metadata)) {
+				// 就被初始为ConfigurationPhase.PARSE_CONFIGURATION，继续调用本 shouldSkip
 				return shouldSkip(metadata, ConfigurationPhase.PARSE_CONFIGURATION);
 			}
+			// 否则 初始为ConfigurationPhase.REGISTER_BEAN，继续调用本 shouldSkip
 			return shouldSkip(metadata, ConfigurationPhase.REGISTER_BEAN);
 		}
 
+
 		List<Condition> conditions = new ArrayList<>();
+		// 获取metadata中的ConditionalXXX注解里面的所有value(这里包含自定义的实现类)的全类名
 		for (String[] conditionClasses : getConditionClasses(metadata)) {
+			// 遍历，然后通过全类名和类加载器，反射拿到Condition 实例，加入到conditions集合
 			for (String conditionClass : conditionClasses) {
 				Condition condition = getCondition(conditionClass, this.context.getClassLoader());
 				conditions.add(condition);
 			}
 		}
-
+		// 排序
 		AnnotationAwareOrderComparator.sort(conditions);
 
+		// 遍历condition集合
 		for (Condition condition : conditions) {
 			ConfigurationPhase requiredPhase = null;
+			// 判断 condition实例 是否有 ConfigurationCondition 接口的实现类
 			if (condition instanceof ConfigurationCondition) {
+				// 如果有，就拿到当前 ConfigurationCondition 接口的实现类 并调用 getConfigurationPhase() 拿到 ConfigurationPhase
 				requiredPhase = ((ConfigurationCondition) condition).getConfigurationPhase();
 			}
+			// requiredPhase == null（condition实例类没有 ConfigurationCondition 接口的实现类）
+			// 或者 requiredPhase == phase（通过 getConfigurationPhase()获取的requiredPhase，与传入的 phase（即ConfigurationPhase.PARSE_CONFIGURATION、ConfigurationPhase.REGISTER_BEAN）相等）
+			// !condition.matches(this.context, metadata)，如果匹配上了，这里取反就是false，那么对于整个 shouldSkip，就是不跳过。
 			if ((requiredPhase == null || requiredPhase == phase) && !condition.matches(this.context, metadata)) {
 				return true;
 			}

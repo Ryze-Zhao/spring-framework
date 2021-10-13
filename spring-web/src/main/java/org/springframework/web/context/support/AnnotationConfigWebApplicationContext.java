@@ -196,22 +196,32 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 	 */
 	@Override
 	protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) {
+		// 为容器设置注解 BeanDefinition 读取器 AnnotatedBeanDefinitionReader
 		AnnotatedBeanDefinitionReader reader = getAnnotatedBeanDefinitionReader(beanFactory);
+		// 为容器设置类路径 BeanDefinition 扫描器 ClassPathBeanDefinitionScanner
 		ClassPathBeanDefinitionScanner scanner = getClassPathBeanDefinitionScanner(beanFactory);
 
+		// 获取容器的Bean名称生成器 BeanNameGenerator
 		BeanNameGenerator beanNameGenerator = getBeanNameGenerator();
+		// 若存在 BeanNameGenerator
 		if (beanNameGenerator != null) {
+			// 那么为 AnnotatedBeanDefinitionReader 和 ClassPathBeanDefinitionScanner 设置 BeanNameGenerator
 			reader.setBeanNameGenerator(beanNameGenerator);
 			scanner.setBeanNameGenerator(beanNameGenerator);
+			// 直接注册成单例 BeanNameGenerator 进容器里
 			beanFactory.registerSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR, beanNameGenerator);
 		}
 
+		// 获取容器的作用域元信息解析器 ScopeMetadataResolver
 		ScopeMetadataResolver scopeMetadataResolver = getScopeMetadataResolver();
+		// 若存在 ScopeMetadataResolver
 		if (scopeMetadataResolver != null) {
+			// 那么为 AnnotatedBeanDefinitionReader 和 ClassPathBeanDefinitionScanner 设置 ScopeMetadataResolver
 			reader.setScopeMetadataResolver(scopeMetadataResolver);
 			scanner.setScopeMetadataResolver(scopeMetadataResolver);
 		}
 
+		// 若有自定义注解，那么注册自定义注解类到 AnnotatedBeanDefinitionReader 中
 		if (!this.componentClasses.isEmpty()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Registering component classes: [" +
@@ -220,6 +230,7 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 			reader.register(ClassUtils.toClassArray(this.componentClasses));
 		}
 
+		// 若有自定义basePackages，那么让 ClassPathBeanDefinitionScanner 扫描这些包路径（自定义包扫描路径）
 		if (!this.basePackages.isEmpty()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Scanning base packages: [" +
@@ -228,10 +239,13 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 			scanner.scan(StringUtils.toStringArray(this.basePackages));
 		}
 
+		// 获取容器定义的 BeanDefinition 资源路径
 		String[] configLocations = getConfigLocations();
+		// 如果定位的 BeanDefinition 资源路径不为空
 		if (configLocations != null) {
 			for (String configLocation : configLocations) {
 				try {
+					// 使用当前容器的 ClassLoader 加载定位路径的字节码类文件
 					Class<?> clazz = ClassUtils.forName(configLocation, getClassLoader());
 					if (logger.isTraceEnabled()) {
 						logger.trace("Registering [" + configLocation + "]");
@@ -243,6 +257,7 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 						logger.trace("Could not load class for config location [" + configLocation +
 								"] - trying package scan. " + ex);
 					}
+					// 如果容器 ClassLoader 加载定义路径的 BeanDefinition 资源失败，则启用容器 ClassPathBeanDefinitionScanner  扫描给定路径包及其子包中的类
 					int count = scanner.scan(configLocation);
 					if (count == 0 && logger.isDebugEnabled()) {
 						logger.debug("No component classes found for specified class/package [" + configLocation + "]");

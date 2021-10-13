@@ -161,12 +161,13 @@ public abstract class BeanDefinitionReaderUtils {
 	public static void registerBeanDefinition(BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry)
 			throws BeanDefinitionStoreException {
 		// Register bean definition under primary name.
-		// 在全名称下注册BeanDefinition
+		// 获取解析的 BeanDefinition 的名称
 		String beanName = definitionHolder.getBeanName();
+		// 向IoC容器注册 BeanDefinition
 		registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());
 
 		// Register aliases for bean name, if any.
-		// 为bean名称注册别名（如果有的话）
+		// 如果解析的BeanDefinition有别名，向容器为其注册别名
 		String[] aliases = definitionHolder.getAliases();
 		if (aliases != null) {
 			for (String alias : aliases) {
