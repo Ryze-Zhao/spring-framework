@@ -425,16 +425,17 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// Multicast right now if possible - or lazily once the multicaster is initialized
 		// 我们自定义调用时，这个earlyApplicationEvents必定为null
+		// 如果早期事件已经被初始化了，那就先放进早期事件里，否则就直接发送事件了
 		if (this.earlyApplicationEvents != null) {
 			this.earlyApplicationEvents.add(applicationEvent);
 		}
 		else {
-			// 获取事件发布器，发布对应的事件
+			// 获取事件广播器，发布对应的事件
 			getApplicationEventMulticaster().multicastEvent(applicationEvent, eventType);
 		}
 
 		// Publish event via parent context as well...
-		// 父容器中也需要发布事件
+		// 如果存在父容器，那父容器也会发送一个事件
 		if (this.parent != null) {
 			if (this.parent instanceof AbstractApplicationContext) {
 				((AbstractApplicationContext) this.parent).publishEvent(event, eventType);
@@ -648,7 +649,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				/*
 				 * <Spring分析点38-8> 初始化事件派发器（ApplicationEventMulticaster）；
 				 *
-				 * 初始化当前 ApplicationContext 的事件分发器
+				 * 初始化当前 ApplicationContext 的事件广播器
 				 */
 				initApplicationEventMulticaster();
 
@@ -919,8 +920,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	/**
 	 * Initialize the ApplicationEventMulticaster.Uses SimpleApplicationEventMulticaster if none defined in the context.
-	 * 事件分发器用于Spring事件通知机制,监听器通过指定监听事件,当分发器广播该事件时会执行对应监听器方法.
-	 * 该方法表示如果有自定义分发器则使用自定义分发器没有则创建一个SimpleApplicationEventMulticaster.可自定义拓展让分发器监听事件异步执行
+	 * 事件广播器用于Spring事件通知机制,监听器通过指定监听事件,当广播器广播该事件时会执行对应监听器方法.
+	 * 该方法表示如果有自定义广播器则使用自定义广播器没有则创建一个SimpleApplicationEventMulticaster.可自定义拓展让广播器监听事件异步执行
 	 * 保存事件和对应监听器列表映射,发布事件后会找到该事件的所有监听器.如果由线程池则异步执行.没有则同步执行
 	 * @see org.springframework.context.event.SimpleApplicationEventMulticaster
 	 */
@@ -935,7 +936,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			}
 		}
 		else {
-			// 使用  SimpleApplicationEventMulticaster 创建一个 事件分发器
+			// 使用  SimpleApplicationEventMulticaster 创建一个 事件广播器
 			this.applicationEventMulticaster = new SimpleApplicationEventMulticaster(beanFactory);
 			beanFactory.registerSingleton(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, this.applicationEventMulticaster);
 			if (logger.isTraceEnabled()) {
@@ -951,9 +952,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * 初始化生命周期处理器。如果上下文中未定义DefaultLifecycleProcessor，则使用DefaultLifecycleProcessor。
 	 */
 	protected void initLifecycleProcessor() {
+		// 当 ApplicationContext 启动或停止时，它会通过 LifecycleProcessor 来与所有声明的 Bean 的周期做状态更新，而在 LifecycleProcessor 的使用前首先需要初始化
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
-		// 我们自己没定义就一定是走下面默认的LifecycleProcssor上.我们自己定义的话最好也是继承下面那个默认的来定义,下面那个默认的是让Bean生命周期随上下文一致的保证.
+		// 我们自己没自定义就一定是走这个DefaultLifecycleProcessor（即：else部分）
+		// 当然，我们自定义的话最好也是继承默认的 DefaultLifecycleProcessor 来定义，因为他是让Bean生命周期随上下文一致的保证
 		if (beanFactory.containsLocalBean(LIFECYCLE_PROCESSOR_BEAN_NAME)) {
+			// 如果工厂里已经存在 LifecycleProcessor，那就拿出来，把值放上去 this.lifecycleProcessor
 			this.lifecycleProcessor =
 					beanFactory.getBean(LIFECYCLE_PROCESSOR_BEAN_NAME, LifecycleProcessor.class);
 			if (logger.isTraceEnabled()) {
@@ -961,9 +965,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			}
 		}
 		else {
+			// 一般情况下，都会注册上这个默认的处理器 DefaultLifecycleProcessor
 			DefaultLifecycleProcessor defaultProcessor = new DefaultLifecycleProcessor();
 			defaultProcessor.setBeanFactory(beanFactory);
 			this.lifecycleProcessor = defaultProcessor;
+			// 直接注册成单例 Bean 进去容器里
 			beanFactory.registerSingleton(LIFECYCLE_PROCESSOR_BEAN_NAME, this.lifecycleProcessor);
 			if (logger.isTraceEnabled()) {
 				logger.trace("No '" + LIFECYCLE_PROCESSOR_BEAN_NAME + "' bean, using " +
@@ -985,11 +991,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	/**
 	 * Add beans that implement ApplicationListener as listeners. Doesn't affect other listeners, which can be added without being beans.
-	 * 将早期加入的系统监听器加入分发器中.常规的监听器Bean则先加入名字等到后面和其他Bean一起创建.从BeanFactory中获取即可.并发布早期Application事件
+	 * 将早期加入的系统监听器加入广播器中.常规的监听器Bean则先加入名字等到后面和其他Bean一起创建.从BeanFactory中获取即可.并发布早期Application事件
 	 */
 	protected void registerListeners() {
 		// Register statically specified listeners first.
-		// 将Application启动时加载的Linsteners加入分发器中
+		// 将Application启动时加载的Linsteners加入广播器中
 		// 这里的 applicationListeners 是需要我们手动调用 AbstractApplicationContext.addApplicationListener 方法才会有内容
 		for (ApplicationListener<?> listener : getApplicationListeners()) {
 			getApplicationEventMulticaster().addApplicationListener(listener);
@@ -1062,23 +1068,28 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	@SuppressWarnings("deprecation")
 	protected void finishRefresh() {
 		// Clear context-level resource caches (such as ASM metadata from scanning).
-		// 清除为上下文创建初始化准备的资源文件数据信息缓存.比如ASM的元数据信息
+		// Spring5.0 之后才有的方法
+		// 清除为上下文创建初始化准备的资源文件数据信息缓存.比如：resourceCaches、ASM的元数据
 		clearResourceCaches();
 
 		// Initialize lifecycle processor for this context.
-		// 一般是加载DefaultLifecycleProcessor（为此上下文初始化生命周期处理器）
+		// 初始化所有的 LifecycleProcessor,一般是加载DefaultLifecycleProcessor（为此上下文初始化生命周期处理器）
+		// 在 Spring 中还提供了 Lifecycle 接口， Lifecycle 中包含 start/stop 方法，实现此接口后 Spring 会保证在启动的时候调用其 start 方法开始生命周期，
+		// 并在 Spring 关闭的时候调用 stop 方法来结束生命周期，通常用来配置后台程序，在启动后一直运行（如对 MQ 进行轮询等）
+		// ApplicationContext 的初始化最后正是保证了这一功能的实现
 		initLifecycleProcessor();
 
 		// Propagate refresh to lifecycle processor first.
-		// 执行生命周期处理器的onRefresh()调用实现了SmartLifecycle接口的start方法启动对应Bean生命周期(随着Application启动而启动,关闭而关闭)
+		// 调用上面初始化好的LifecycleProcessor#onRefresh()，实现了SmartLifecycle接口的start方法启动对应Bean生命周期(随着Application启动而启动,关闭而关闭)
 		getLifecycleProcessor().onRefresh();
 
 		// Publish the final event.
-		// 发布上下文刷新完毕事件到相应的监听器
+		// 发布 Context 刷新完毕事件到相应的监听器
 		publishEvent(new ContextRefreshedEvent(this));
 
 		// Participate in LiveBeansView MBean, if active.
-		// 设置JMX则执行
+		// 设置JMX则执行，和 MBeanServer 和 MBean 有关的。相当于把当前容器上下文，注册到 MBeanServer 里面去
+		// 这样子，MBeanServer 持有了容器的引用，就可以拿到容器的所有内容了，也就让 Spring 支持到了 MBean 的相关功能
 		if (!NativeDetector.inNativeImage()) {
 			LiveBeansView.registerApplicationContext(this);
 		}

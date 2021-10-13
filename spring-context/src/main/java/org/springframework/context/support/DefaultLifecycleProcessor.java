@@ -118,6 +118,11 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
 		this.running = false;
 	}
 
+	/**
+	 * 只有这个方法才是容器启动时候自动会调用的，其余都不是，它默认只会执行实现了 SmartLifecycle 接口并且 isAutoStartup = true 的 Bean 的 start 方法.
+	 *
+	 * @author : HeHaoZhao
+	 */
 	@Override
 	public void onRefresh() {
 		startBeans(true);
@@ -137,37 +142,49 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
 
 
 	// Internal helpers
+
 	/**
-    * 找出所有实现SmartLifecycle并且声明为自动启动的Bean执行启动方法
-    * @author : HeHaoZhao
-    */
+	 * 找出所有实现SmartLifecycle并且声明为自动启动的Bean执行启动方法.
+	 * autoStartupOnly：是否仅支持自动启动
+	 *     true：只支持伴随容器启动（Bean 必须实现了 SmartLifecycle 接口且 isAutoStartup 为 true 才行）
+	 *     false：表示无所谓。都会执行 Bean 的 start 方法
+	 * @author : HeHaoZhao
+	 */
 	private void startBeans(boolean autoStartupOnly) {
+		// 拿到所有的实现了 Lifecycle/SmartLifecycle 的，已经在 IOC 容器里面的单例 Bean （备注：不包括自己 this，也就是说处理器自己不包含进去）
+		// 这里若我们自己没有定义过实现 Lifecycle 的 Bean，这里就是空的
 		Map<String, Lifecycle> lifecycleBeans = getLifecycleBeans();
+		// phases 这个 Map，表示按照 phase 值，把这个 Bean 进行分组，最后分组执行
 		Map<Integer, LifecycleGroup> phases = new TreeMap<>();
 
 		lifecycleBeans.forEach((beanName, bean) -> {
+			// 若 Bean 实现了 SmartLifecycle 接口并且标注是 AutoStartup，或者强制要求自动自行的（autoStartupOnly = true）
 			if (!autoStartupOnly || (bean instanceof SmartLifecycle && ((SmartLifecycle) bean).isAutoStartup())) {
 				int phase = getPhase(bean);
 				phases.computeIfAbsent(
 						phase,
 						p -> new LifecycleGroup(phase, this.timeoutPerShutdownPhase, lifecycleBeans, autoStartupOnly)
 				).add(beanName, bean);
+				// ↑↑↑ 添加到 phase 值相同的组分组
 			}
 		});
 		if (!phases.isEmpty()) {
+			// 这里调用 LifecycleGroup#start()
 			phases.values().forEach(LifecycleGroup::start);
 		}
 	}
 
 	/**
-	 * Start the specified bean as part of the given set of Lifecycle beans,
-	 * making sure that any beans that it depends on are started first.
-	 * @param lifecycleBeans a Map with bean name as key and Lifecycle instance as value
-	 * @param beanName the name of the bean to start
+	 * Start the specified bean as part of the given set of Lifecycle beans,making sure that any beans that it depends on are started first.
+	 * 启动指定的bean作为给定生命周期bean集的一部分，确保首先启动它所依赖的任何bean。
+	 *
+	 * @param lifecycleBeans a Map with bean name as key and Lifecycle instance as value    一个映射，bean名称作为键，生命周期实例作为值
+	 * @param beanName the name of the bean to start    要开始的bean的名称
 	 */
 	private void doStart(Map<String, ? extends Lifecycle> lifecycleBeans, String beanName, boolean autoStartupOnly) {
 		Lifecycle bean = lifecycleBeans.remove(beanName);
 		if (bean != null && bean != this) {
+			// 控制 Bean 的依赖关系
 			String[] dependenciesForBean = getBeanFactory().getDependenciesForBean(beanName);
 			for (String dependency : dependenciesForBean) {
 				doStart(lifecycleBeans, dependency, autoStartupOnly);
@@ -178,6 +195,7 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
 					logger.trace("Starting bean '" + beanName + "' of type [" + bean.getClass().getName() + "]");
 				}
 				try {
+					// 执行 Bean 的 start 方法
 					bean.start();
 				}
 				catch (Throwable ex) {
@@ -354,8 +372,10 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
 			if (logger.isDebugEnabled()) {
 				logger.debug("Starting beans in phase " + this.phase);
 			}
+			// 按照权重值进行排序，若没有实现 Smart 接口的，权重值都为 0
 			Collections.sort(this.members);
 			for (LifecycleGroupMember member : this.members) {
+				// 一次执行这些 Bean 的 start 方法
 				doStart(this.lifecycleBeans, member.name, this.autoStartupOnly);
 			}
 		}
