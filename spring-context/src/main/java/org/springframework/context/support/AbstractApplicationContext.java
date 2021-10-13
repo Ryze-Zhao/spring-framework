@@ -888,12 +888,16 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	/**
 	 * Initialize the MessageSource.
 	 * Use parent's if none defined in this context.
+	 * 初始化消息源。如果在此上下文中未定义，请使用父级。
 	 */
 	protected void initMessageSource() {
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+		// 判断是否已经存在名为 “messageSource” 的 Bean 了（初次进入时，若没自定义就一般没有，因此走else）
 		if (beanFactory.containsLocalBean(MESSAGE_SOURCE_BEAN_NAME)) {
+			// 从容器里拿出这个 messageSource
 			this.messageSource = beanFactory.getBean(MESSAGE_SOURCE_BEAN_NAME, MessageSource.class);
 			// Make MessageSource aware of parent MessageSource.
+			// 设置父属性
 			if (this.parent != null && this.messageSource instanceof HierarchicalMessageSource) {
 				HierarchicalMessageSource hms = (HierarchicalMessageSource) this.messageSource;
 				if (hms.getParentMessageSource() == null) {
@@ -909,8 +913,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		else {
 			// Use empty MessageSource to be able to accept getMessage calls.
 			DelegatingMessageSource dms = new DelegatingMessageSource();
+			// 其实就是获取到父容器的 messageSource 字段（否则就是 getParent() 上下文自己）
 			dms.setParentMessageSource(getInternalParentMessageSource());
+			// 给当前的 messageSource 赋值
 			this.messageSource = dms;
+			// 把 messageSource 作为一个单例的 Bean 注册进 beanFactory 工厂里
 			beanFactory.registerSingleton(MESSAGE_SOURCE_BEAN_NAME, this.messageSource);
 			if (logger.isTraceEnabled()) {
 				logger.trace("No '" + MESSAGE_SOURCE_BEAN_NAME + "' bean, using [" + this.messageSource + "]");
@@ -991,7 +998,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	/**
 	 * Add beans that implement ApplicationListener as listeners. Doesn't affect other listeners, which can be added without being beans.
-	 * 将早期加入的系统监听器加入广播器中.常规的监听器Bean则先加入名字等到后面和其他Bean一起创建.从BeanFactory中获取即可.并发布早期Application事件
+	 * 将早期加入的系ApplicationListener加入广播器中.常规的监听器Bean则先加入名字等到后面和其他Bean一起创建.从BeanFactory中获取即可.并发布早期Application事件
 	 */
 	protected void registerListeners() {
 		// Register statically specified listeners first.
