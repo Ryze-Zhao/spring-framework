@@ -55,8 +55,20 @@ import org.springframework.util.Assert;
  */
 public class AnnotationConfigApplicationContext extends GenericApplicationContext implements AnnotationConfigRegistry {
 
+
+	/**
+	 * .
+	 * AnnotatedBeanDefinitionReader 作用是读取加了注解的Bean
+	 * 这个类在构造方法中实例化
+	 */
 	private final AnnotatedBeanDefinitionReader reader;
 
+
+	/**
+	 * .
+	 * ClassPathBeanDefinitionScanner 作用是扫描加了注解的Bean
+	 * 这个类在构造方法中实例化
+	 */
 	private final ClassPathBeanDefinitionScanner scanner;
 
 
@@ -67,13 +79,14 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	public AnnotationConfigApplicationContext() {
 		// 分步记录有关ApplicationStartup期间发生的特定阶段或操作的指标
 		StartupStep createAnnotatedBeanDefReader = this.getApplicationStartup().start("spring.context.annotated-bean-reader.create");
-		// 创建一个读取注解的BeanDefinition读取器，AnnotationConfigApplicationContext实现了BeanDefinitionRegistry接口
+		// 创建一个读取注解的BeanDefinitionReader，AnnotationConfigApplicationContext 实现了 BeanDefinitionRegistry 接口
 		this.reader = new AnnotatedBeanDefinitionReader(this);
-		// 启动结束
+		// 分步记录有关ApplicationStartup 结束
 		createAnnotatedBeanDefReader.end();
-		/**
-		 * 可以用来扫描包或者类，继而转换成bd，但实际上我们扫描包不是scanner这个对象，是spring自己new的一个ClassPathBeanDefinitionScanner
-		 * 这里的scanner仅仅是为了程序员能够在外部调用AnnotationConfigApplicationContext对象scan方法
+		/*
+		 * 可以用来扫描包或者类，继而转换成BeanDefinition，但实际上Spring扫描包并不是使用scanner这个对象，而是Spring内部自行new ClassPathBeanDefinitionScanner扫描
+		 *
+		 * 这里的scanner仅仅是为了程序员能够在外部调用 AnnotationConfigApplicationContext对象scan方法
 		 */
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
@@ -95,22 +108,28 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * {@link Configuration @Configuration} classes
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
-		//这里由于他有父类，故而会先调用父类的构造方法，然后才会调用自己的构造方法
-		//在自己构造方法中初始一个读取器和扫描器
+		// 这里由于他有父类，故而会先调用父类的构造方法，然后才会调用自己的构造方法
+		// 在自己构造方法中初始一个读取器:AnnotatedBeanDefinitionReader 和扫描器:ClassPathBeanDefinitionScanner
 		this();
+		// 注册bean配置类
 		register(componentClasses);
+		// 刷新上下文（核心方法）
 		refresh();
 	}
 
 	/**
-	 * Create a new AnnotationConfigApplicationContext, scanning for components
-	 * in the given packages, registering bean definitions for those components,
-	 * and automatically refreshing the context.
-	 * @param basePackages the packages to scan for component classes
+	 * Create a new AnnotationConfigApplicationContext, scanning for components in the given packages, registering bean definitions for those components,and automatically refreshing the context.
+	 * 创建新的AnnotationConfigApplicationContext，扫描给定包中的组件，注册这些组件的BeanDefinition，并自动刷新上下文
+	 *
+	 * @param basePackages the packages to scan for component classes 要扫描组件类的包
 	 */
 	public AnnotationConfigApplicationContext(String... basePackages) {
+		// 这里由于他有父类，故而会先调用父类的构造方法，然后才会调用自己的构造方法
+		// 在自己构造方法中初始一个读取器:AnnotatedBeanDefinitionReader 和扫描器:ClassPathBeanDefinitionScanner
 		this();
+        // 扫描给定包中的组件
 		scan(basePackages);
+		// 刷新上下文（核心方法）
 		refresh();
 	}
 

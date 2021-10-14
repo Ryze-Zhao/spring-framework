@@ -106,11 +106,12 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
 
 	/**
 	 * Create a new GenericApplicationContext.
+	 * 创建新的GenericaApplicationContext
 	 * @see #registerBeanDefinition
 	 * @see #refresh
 	 */
 	public GenericApplicationContext() {
-		// 这个类包含很多重要的容器比如beanDefinitionMap等等
+		// 这个类包含很多重要的容器，比如beanDefinitionMap等等
 		this.beanFactory = new DefaultListableBeanFactory();
 	}
 

@@ -264,7 +264,7 @@ public class AnnotatedBeanDefinitionReader {
 			return;
 		}
 
-
+		// 设置回调
 		abd.setInstanceSupplier(supplier);
 		// 解析 AnnotatedBeanDefinition 的作用域，若@Scope("prototype")，则Bean为原型类型；若@Scope("singleton")，则Bean为单例类型(默认）
 		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
@@ -295,8 +295,12 @@ public class AnnotatedBeanDefinitionReader {
 				}
 			}
 		}
+
+		// 自定义bean注册，通常用在applicationContext创建后，手动向容器中使用lambda表达式的方式注册bean
+		// 比如：applicationContext.registerBean(UserService.class, () -> new UserService());
 		if (customizers != null) {
 			for (BeanDefinitionCustomizer customizer : customizers) {
+				// 自定义bean添加到BeanDefinition
 				customizer.customize(abd);
 			}
 		}
@@ -305,6 +309,9 @@ public class AnnotatedBeanDefinitionReader {
 		// 根据通过 AnnotationMetadata 类中配置的作用域 ScopeMetadata ，创建相应的代理对象
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
 		// 向IoC容器注册 BeanDefinitionHolder
+		// BeanDefinitionReaderUtils.registerBeanDefinition 内部通过
+		// DefaultListableBeanFactory.registerBeanDefinition(String beanName, BeanDefinition beanDefinition)按名称将bean定义信息注册到容器中，
+		// 实际上 DefaultListableBeanFactory 内部维护一个Map<String, BeanDefinition>类型变量beanDefinitionMap，用于保存注bean定义信息（beanName 和 BeanDefinition映射）
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
 	}
 

@@ -233,6 +233,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	 */
 	@Override
 	public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
+		// 生成唯一标识，用于重复处理验证
 		int registryId = System.identityHashCode(registry);
 		if (this.registriesPostProcessed.contains(registryId)) {
 			throw new IllegalStateException(
@@ -243,7 +244,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 					"postProcessBeanFactory already called on this post-processor against " + registry);
 		}
 		this.registriesPostProcessed.add(registryId);
-
+		// 解析Java类并配置Bean
 		processConfigBeanDefinitions(registry);
 	}
 
@@ -273,11 +274,20 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	 * Build and validate a configuration model based on the registry of {@link Configuration} classes.
 	 */
 	public void processConfigBeanDefinitions(BeanDefinitionRegistry registry) {
+		// 初始化 BeanDefinitionHolder 集合
 		List<BeanDefinitionHolder> configCandidates = new ArrayList<>();
+		// 获取 BeanFactory 中的 beanDefinitionNames（所有已经注册的BeanName）
 		String[] candidateNames = registry.getBeanDefinitionNames();
-
+		// 遍历 所有已经注册的BeanName
 		for (String beanName : candidateNames) {
+			// 通过BeanName，得到BeanDefinition实例
 			BeanDefinition beanDef = registry.getBeanDefinition(beanName);
+
+			/*
+			 * Spring内部对配置类分为两种，区分的办法是
+			 *      Full模式（@Configuration(proxyBeanMethods = true)）与Lite模式（@Configuration(proxyBeanMethods = false)）
+			 * 因此获取ConfigurationClassUtils.CONFIGURATION_CLASS_ATTRIBUTE有值，代表当前处理的 BeanDefinition 已经被解析，如果Debug模式下，输出日志
+			 */
 			if (beanDef.getAttribute(ConfigurationClassUtils.CONFIGURATION_CLASS_ATTRIBUTE) != null) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Bean definition has already been processed as a configuration class: " + beanDef);
