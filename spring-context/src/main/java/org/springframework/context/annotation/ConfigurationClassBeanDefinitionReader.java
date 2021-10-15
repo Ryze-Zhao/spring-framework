@@ -136,24 +136,29 @@ class ConfigurationClassBeanDefinitionReader {
 	 */
 	private void loadBeanDefinitionsForConfigurationClass(
 			ConfigurationClass configClass, TrackedConditionEvaluator trackedConditionEvaluator) {
-
+		// 通过AnnotationMetadata 接口判断是否需要跳过（具体看里面实现吧）
 		if (trackedConditionEvaluator.shouldSkip(configClass)) {
 			String beanName = configClass.getBeanName();
 			if (StringUtils.hasLength(beanName) && this.registry.containsBeanDefinition(beanName)) {
+				// 跳过配置类的话在Spring容器中移除bean的注册
 				this.registry.removeBeanDefinition(beanName);
 			}
+			// 从importRegistry 中移除
 			this.importRegistry.removeImportingClass(configClass.getMetadata().getClassName());
 			return;
 		}
 
 		if (configClass.isImported()) {
+			// 如果自身是被@Import注释修饰，注册自己
 			registerBeanDefinitionForImportedConfigurationClass(configClass);
 		}
+		// 将@Bean方法注册为bean
 		for (BeanMethod beanMethod : configClass.getBeanMethods()) {
 			loadBeanDefinitionsForBeanMethod(beanMethod);
 		}
-
+		// 将configClass中ImportResource指定的资源注册为bean
 		loadBeanDefinitionsFromImportedResources(configClass.getImportedResources());
+		// 如果该类有@Import，且Import进来的类实现了ImportBeanDefinitionRegistrar接口，则调用Import进来的类的registerBeanDefinitions方法
 		loadBeanDefinitionsFromRegistrars(configClass.getImportBeanDefinitionRegistrars());
 	}
 

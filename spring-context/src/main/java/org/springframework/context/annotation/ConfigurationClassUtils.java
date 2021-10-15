@@ -84,7 +84,7 @@ abstract class ConfigurationClassUtils {
 	 */
 	public static boolean checkConfigurationClassCandidate(
 			BeanDefinition beanDef, MetadataReaderFactory metadataReaderFactory) {
-
+		// 获取类名
 		String className = beanDef.getBeanClassName();
 		if (className == null || beanDef.getFactoryMethodName() != null) {
 			return false;
@@ -143,11 +143,11 @@ abstract class ConfigurationClassUtils {
 	}
 
 	/**
-	 * Check the given metadata for a configuration class candidate
-	 * (or nested component class declared within a configuration/component class).
-	 * @param metadata the metadata of the annotated class
-	 * @return {@code true} if the given class is to be registered for
-	 * configuration class processing; {@code false} otherwise
+	 * Check the given metadata for a configuration class candidate(or nested component class declared within a configuration/component class).
+	 * 检查配置类候选对象（或配置/组件类中声明的嵌套组件类）的给定元数据
+	 * @param metadata the metadata of the annotated class  注释类的元数据
+	 * @return {@code true} if the given class is to be registered for configuration class processing; {@code false} otherwise
+	 *                      如果要为配置类处理注册给定类，则为true；否则就错了
 	 */
 	public static boolean isConfigurationCandidate(AnnotationMetadata metadata) {
 		// Do not consider an interface or an annotation...
