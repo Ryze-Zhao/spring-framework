@@ -82,8 +82,7 @@ abstract class ConfigurationClassUtils {
 	 * @param metadataReaderFactory the current factory in use by the caller
 	 * @return whether the candidate qualifies as (any kind of) configuration class
 	 */
-	public static boolean checkConfigurationClassCandidate(
-			BeanDefinition beanDef, MetadataReaderFactory metadataReaderFactory) {
+	public static boolean checkConfigurationClassCandidate(BeanDefinition beanDef, MetadataReaderFactory metadataReaderFactory) {
 		// 获取类名
 		String className = beanDef.getBeanClassName();
 		if (className == null || beanDef.getFactoryMethodName() != null) {
@@ -124,9 +123,12 @@ abstract class ConfigurationClassUtils {
 
 		Map<String, Object> config = metadata.getAnnotationAttributes(Configuration.class.getName());
 		if (config != null && !Boolean.FALSE.equals(config.get("proxyBeanMethods"))) {
+			// 含有@Configuration注解，并且proxyBeanMethods属性设置为true（默认不写为true哈），那么对应的BeanDefinition的configurationClass属性值设置为full
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_FULL);
 		}
 		else if (config != null || isConfigurationCandidate(metadata)) {
+			// 含有@Bean、@Component(及派生的注解)、@ComponentScan、@Import、@ImportResource注解，configurationClass属性值设置为lite
+			// 也可能是含有@Configuration注解，并且proxyBeanMethods属性设置为false
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_LITE);
 		}
 		else {
@@ -144,18 +146,21 @@ abstract class ConfigurationClassUtils {
 
 	/**
 	 * Check the given metadata for a configuration class candidate(or nested component class declared within a configuration/component class).
-	 * 检查配置类候选对象（或配置/组件类中声明的嵌套组件类）的给定元数据
+	 * 判断是否含有candidateIndicators这个集合中的注解
 	 * @param metadata the metadata of the annotated class  注释类的元数据
 	 * @return {@code true} if the given class is to be registered for configuration class processing; {@code false} otherwise
 	 *                      如果要为配置类处理注册给定类，则为true；否则就错了
 	 */
 	public static boolean isConfigurationCandidate(AnnotationMetadata metadata) {
 		// Do not consider an interface or an annotation...
+		// 不要考虑接口
 		if (metadata.isInterface()) {
 			return false;
 		}
 
 		// Any of the typical annotations found?
+		// candidateIndicators 是一个静态常量，在初始化时，包含了四个元素,分别为@Component,@ComponentScan,@Import,@ImportResource这四个注解
+		// 只要这个类上添加了这四种注解中的一个，就便是这个类是一个配置类，这个类对应的BeanDefinition中的configurationClass属性值为lite
 		for (String indicator : candidateIndicators) {
 			if (metadata.isAnnotated(indicator)) {
 				return true;
@@ -163,10 +168,12 @@ abstract class ConfigurationClassUtils {
 		}
 
 		// Finally, let's look for @Bean methods...
+		// 查找有没有加了@Bean注解的方法
 		return hasBeanMethods(metadata);
 	}
 
 	static boolean hasBeanMethods(AnnotationMetadata metadata) {
+		// 查找有没有加了@Bean注解的方法
 		try {
 			return metadata.hasAnnotatedMethods(Bean.class.getName());
 		}
