@@ -126,6 +126,7 @@ class ConfigurationClassBeanDefinitionReader {
 	public void loadBeanDefinitions(Set<ConfigurationClass> configurationModel) {
 		TrackedConditionEvaluator trackedConditionEvaluator = new TrackedConditionEvaluator();
 		for (ConfigurationClass configClass : configurationModel) {
+			// 循环调用loadBeanDefinitionsForConfigurationClass()
 			loadBeanDefinitionsForConfigurationClass(configClass, trackedConditionEvaluator);
 		}
 	}
@@ -134,8 +135,7 @@ class ConfigurationClassBeanDefinitionReader {
 	 * Read a particular {@link ConfigurationClass}, registering bean definitions
 	 * for the class itself and all of its {@link Bean} methods.
 	 */
-	private void loadBeanDefinitionsForConfigurationClass(
-			ConfigurationClass configClass, TrackedConditionEvaluator trackedConditionEvaluator) {
+	private void loadBeanDefinitionsForConfigurationClass(ConfigurationClass configClass, TrackedConditionEvaluator trackedConditionEvaluator) {
 		// 通过AnnotationMetadata 接口判断是否需要跳过（具体看里面实现吧）
 		if (trackedConditionEvaluator.shouldSkip(configClass)) {
 			String beanName = configClass.getBeanName();
@@ -148,17 +148,20 @@ class ConfigurationClassBeanDefinitionReader {
 			return;
 		}
 
+		// 如果一个bean是通过@Import(ImportSelector)的方式添加到容器中的，那么此时configClass.isImported()返回的是true
+		// 而且configClass的importedBy属性里面存储的是ConfigurationClass就是将bean导入的类
 		if (configClass.isImported()) {
 			// 如果自身是被@Import注释修饰，注册自己
 			registerBeanDefinitionForImportedConfigurationClass(configClass);
 		}
-		// 将@Bean方法注册为bean
+
+		// 判断当前的bean中是否含有 @Bean注解的方法，如果有，需要把这些方法产生的bean放入到BeanDefinitionMap当中
 		for (BeanMethod beanMethod : configClass.getBeanMethods()) {
 			loadBeanDefinitionsForBeanMethod(beanMethod);
 		}
 		// 将configClass中ImportResource指定的资源注册为bean
 		loadBeanDefinitionsFromImportedResources(configClass.getImportedResources());
-		// 如果该类有@Import，且Import进来的类实现了ImportBeanDefinitionRegistrar接口，则调用Import进来的类的registerBeanDefinitions方法
+		// 如果bean上存在@Import注解，且Import进来的类实现了ImportBeanDefinitionRegistrar接口，则执行该实现类的registerBeanDefinitions()方法
 		loadBeanDefinitionsFromRegistrars(configClass.getImportBeanDefinitionRegistrars());
 	}
 

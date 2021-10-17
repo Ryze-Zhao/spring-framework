@@ -169,6 +169,7 @@ class ConfigurationClassParser {
 
 	public void parse(Set<BeanDefinitionHolder> configCandidates) {
 		// 遍历配置类，得到 BeanDefinition，根据 BeanDefinition 类型不同，调用不用的parse方法解析
+		// 根据 BeanDefinition 类型的不同，调用 parse() 不同的重载方法，实际上最终都是调用processConfigurationClass()方法
 		for (BeanDefinitionHolder holder : configCandidates) {
 			BeanDefinition bd = holder.getBeanDefinition();
 			try {
@@ -230,6 +231,7 @@ class ConfigurationClassParser {
 		}
 
 		// 处理Imported
+		// 判断同一个配置类是否重复加载过，如果重复加载过，则合并，否则从集合中移除旧的配置类，后续逻辑将处理新的配置类
 		ConfigurationClass existingClass = this.configurationClasses.get(configClass);
 		if (existingClass != null) {
 			if (configClass.isImported()) {
@@ -240,6 +242,7 @@ class ConfigurationClassParser {
 				return;
 			}
 			else {
+				// 旧换新
 				// Explicit bean definition found, probably replacing an import.
 				// Let's remove the old one and go with the new one.
 				this.configurationClasses.remove(configClass);
@@ -248,9 +251,15 @@ class ConfigurationClassParser {
 		}
 
 		// Recursively process the configuration class and its superclass hierarchy.
+		// 处理配置类，由于配置类可能存在父类(若父类的全类名是以java开头的，则除外)，
+		// 所以需要将configClass变成sourceClass去解析，然后返回sourceClass的父类。
+		// 如果此时父类为空，则不会进行while循环去解析，如果父类不为空，则会循环的去解析父类（递归）
+		//
+		// SourceClass的意义：简单的包装类，目的是为了以统一的方式去处理带有注解的类，不管这些类是如何加载的
 		SourceClass sourceClass = asSourceClass(configClass, filter);
 		// 递归解析
 		do {
+			//【真正解析配置类】
 			sourceClass = doProcessConfigurationClass(configClass, sourceClass, filter);
 		}
 		while (sourceClass != null);
@@ -271,15 +280,15 @@ class ConfigurationClassParser {
 	protected final SourceClass doProcessConfigurationClass(
 			ConfigurationClass configClass, SourceClass sourceClass, Predicate<String> filter)
 			throws IOException {
-		// 如果用了@Component等注解，连@Component的派生注解也会解析，如：@Controller，@Service等等
+		// <Spring分析点39-1> 如果用了@Component等注解，连@Component的派生注解也会解析，如：@Controller，@Service等等
 		if (configClass.getMetadata().isAnnotated(Component.class.getName())) {
 			// Recursively process any member (nested) classes first
-			// 处理内部类
+			// 首先处理内部类，处理内部类时，最终还是调用doProcessConfigurationClass()方法
 			processMemberClasses(configClass, sourceClass, filter);
 		}
 
 		// Process any @PropertySource annotations
-		// 处理 @PropertySource 注解
+		// <Spring分析点39-2> 处理 @PropertySource 注解（处理属性资源文件）
 		for (AnnotationAttributes propertySource : AnnotationConfigUtils.attributesForRepeatable(
 				sourceClass.getMetadata(), PropertySources.class,
 				org.springframework.context.annotation.PropertySource.class)) {
@@ -293,25 +302,31 @@ class ConfigurationClassParser {
 		}
 
 		// Process any @ComponentScan annotations
-		// 处理 @ComponentScan 注解（获取@ComponentScan注解信息）
+		// <Spring分析点39-3> 处理 @ComponentScan 或者 @ComponentScans注解
+		//	 <Spring分析点39-3.1> 先找出类上的 @ComponentScan 和 @ComponentScans 注解的所有属性(例如basePackages等属性值)
 		Set<AnnotationAttributes> componentScans = AnnotationConfigUtils.attributesForRepeatable(
 				sourceClass.getMetadata(), ComponentScans.class, ComponentScan.class);
 		if (!componentScans.isEmpty() &&
 				!this.conditionEvaluator.shouldSkip(sourceClass.getMetadata(), ConfigurationPhase.REGISTER_BEAN)) {
 			for (AnnotationAttributes componentScan : componentScans) {
 				// The config class is annotated with @ComponentScan -> perform the scan immediately
-				// 按@CmponentScan注解扫描bean
+				// <Spring分析点39-3.2> 解析 @ComponentScan 和 @ComponentScans 配置的扫描的包所包含的类
+				// 	 比如 basePackages = com.ryze.zhao, 那么在这一步会扫描出这个包及子包下的class，然后将其解析成BeanDefinition(BeanDefinition基本可以理解为等价于BeanDefinitionHolder)
 				Set<BeanDefinitionHolder> scannedBeanDefinitions =
 						this.componentScanParser.parse(componentScan, sourceClass.getMetadata().getClassName());
 				// Check the set of scanned definitions for any further config classes and parse recursively if needed
-				// 遍历扫描出的bean定义是否是配置类bean
+				// <Spring分析点39-3.3> 通过上一步扫描包 com.ryze.zhao 下的类，有可能扫描出来新的Bean，也可能添加了 @ComponentScan 和 @ComponentScans 注解.
+				//	所以这里需要循环遍历一次，进行递归(parse)，继续解析，直到解析出的类上没添加 @ComponentScan 和 @ComponentScans 注解
+				//	(这时<Spring分析点39-3.1> 这一步解析出componentScans为空列表，不会进入到if语句，递归终止)
 				for (BeanDefinitionHolder holder : scannedBeanDefinitions) {
 					BeanDefinition bdCand = holder.getBeanDefinition().getOriginatingBeanDefinition();
 					if (bdCand == null) {
 						bdCand = holder.getBeanDefinition();
 					}
-					// 如果扫描出的bean定义是配置类（含有@COnfiguration）,则继续调用parse方法，内部再次调用doProcessConfigurationClas(),递归解析
+
+					// 同样，这里会调用ConfigurationClassUtils.checkConfigurationClassCandidate()方法来判断类是否是一个配置类
 					if (ConfigurationClassUtils.checkConfigurationClassCandidate(bdCand, this.metadataReaderFactory)) {
+						// 如果扫描出的bean定义是配置类（含有@COnfiguration）,则继续调用parse方法，内部再次调用doProcessConfigurationClas(),递归解析
 						parse(bdCand.getBeanClassName(), holder.getBeanName());
 					}
 				}
@@ -319,11 +334,12 @@ class ConfigurationClassParser {
 		}
 
 		// Process any @Import annotations
-		// 处理@Import注解
+		// <Spring分析点39-4> 处理@Import注解注册的bean，这一步只会将import注册的bean变为ConfigurationClass，并不会变成BeanDefinition
+		// 而是在loadBeanDefinitions()方法中变成BeanDefinition，再放入到BeanDefinitionMap中
 		processImports(configClass, sourceClass, getImports(sourceClass), filter, true);
 
 		// Process any @ImportResource annotations
-		// 处理@ImportResource注解
+		// <Spring分析点39-5> 处理@ImportResource注解引入的配置文件
 		AnnotationAttributes importResource =
 				AnnotationConfigUtils.attributesFor(sourceClass.getMetadata(), ImportResource.class);
 		if (importResource != null) {
@@ -336,10 +352,10 @@ class ConfigurationClassParser {
 		}
 
 		// Process individual @Bean methods
-		// 处理@Bean注解
+		// 处理@Bean注解的方法
 		Set<MethodMetadata> beanMethods = retrieveBeanMethodMetadata(sourceClass);
 		for (MethodMetadata methodMetadata : beanMethods) {
-			// 将解析出的所有@Bean注解方法添加到configClass配置类信息中
+			// 将解析出的 所有@Bean注解的方法 添加到configClass配置类信息中
 			configClass.addBeanMethod(new BeanMethod(methodMetadata, configClass));
 		}
 

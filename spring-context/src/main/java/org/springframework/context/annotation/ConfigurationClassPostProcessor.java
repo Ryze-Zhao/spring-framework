@@ -260,13 +260,21 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 					"postProcessBeanFactory already called on this post-processor against " + beanFactory);
 		}
 		this.factoriesPostProcessed.add(factoryId);
+		// 下面的if语句不会进入
+		// 因为在执行BeanFactoryPostProcessor时，会先执行BeanDefinitionRegistryPostProcessor#postProcessorBeanDefinitionRegistry()方法
+		// 而在执行postProcessorBeanDefinitionRegistry()方法时，都会调用processConfigBeanDefinitions()方法
+		//
+		// 而这里与postProcessorBeanDefinitionRegistry()方法的执行逻辑是一样的，为了避免重复执行，所以在执行方法之前会先生成一个id，将id放入到一个set当中，
+		// 每次执行之前先判断id是否存在，所以在此处，永远不会进入到if语句中
 		if (!this.registriesPostProcessed.contains(factoryId)) {
 			// BeanDefinitionRegistryPostProcessor hook apparently not supported...
 			// Simply call processConfigurationClasses lazily at this point then.
+			// 该方法在这里不会被执行到
 			processConfigBeanDefinitions((BeanDefinitionRegistry) beanFactory);
 		}
-
+		// 对加了@Configuration注解的配置类进行Cglib代理
 		enhanceConfigurationClasses(beanFactory);
+		// beanFactory 添加一个BeanPostProcessor后置处理器
 		beanFactory.addBeanPostProcessor(new ImportAwareBeanPostProcessor(beanFactory));
 	}
 
@@ -375,9 +383,9 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			candidates.clear();
 			// 再次获取容器中bean定义数量  如果大于 之前获取的bean定义数量，则说明有新的bean注册到容器中，需要再次解析
 			// 这里判断registry.getBeanDefinitionCount() > candidateNames.length的目的是为了知道reader.loadBeanDefinitions(configClasses)这一步有没有向BeanDefinitionMap中添加新的BeanDefinition
-			// 实际上就是看配置类(假如AppConfig类会向BeanDefinitionMap中添加bean)，如果有，registry.getBeanDefinitionCount()就会大于candidateNames.length
+			// 实际上就是看配置类(假如ZhaoConfig类会向BeanDefinitionMap中添加bean)，如果有，registry.getBeanDefinitionCount()就会大于candidateNames.length
 			// 这样就需要再次遍历新加入的BeanDefinition，并判断这些bean是否已经被解析过了，如果未解析，需要重新进行解析
-			// 我们假如的AppConfig类向容器中添加的bean，实际上在parser.parse()这一步已经全部被解析了
+			// 我们假如的ZhaoConfig类向容器中添加的bean，实际上在parser.parse()这一步已经全部被解析了
 			if (registry.getBeanDefinitionCount() > candidateNames.length) {
 				String[] newCandidateNames = registry.getBeanDefinitionNames();
 				Set<String> oldCandidateNames = new HashSet<>(Arrays.asList(candidateNames));
@@ -479,6 +487,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			beanDef.setAttribute(AutoProxyUtils.PRESERVE_TARGET_CLASS_ATTRIBUTE, Boolean.TRUE);
 			// Set enhanced subclass of the user-specified bean class
 			Class<?> configClass = beanDef.getBeanClass();
+			// 调用ConfigurationClassEnhancer.enhance()方法创建增强类
 			Class<?> enhancedClass = enhancer.enhance(configClass, this.beanClassLoader);
 			if (configClass != enhancedClass) {
 				if (logger.isTraceEnabled()) {
@@ -504,6 +513,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		public PropertyValues postProcessProperties(@Nullable PropertyValues pvs, Object bean, String beanName) {
 			// Inject the BeanFactory before AutowiredAnnotationBeanPostProcessor's
 			// postProcessProperties method attempts to autowire other configuration beans.
+			// 为被CGLIB增强时实现了EnhancedConfiguration接口的代理类，设置beanFactory属性
 			if (bean instanceof EnhancedConfiguration) {
 				((EnhancedConfiguration) bean).setBeanFactory(this.beanFactory);
 			}

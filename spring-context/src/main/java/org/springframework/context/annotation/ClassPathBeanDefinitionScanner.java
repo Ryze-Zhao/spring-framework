@@ -281,7 +281,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 		Set<BeanDefinitionHolder> beanDefinitions = new LinkedHashSet<>();
 		// 遍历扫描所有给定的包
 		for (String basePackage : basePackages) {
-			// 调用父类ClassPathScanningCandidateComponentProvider的方法，扫描给定类路径，获取符合条件的Bean定义
+			// 调用父类ClassPathScanningCandidateComponentProvider#scanCandidateComponents(backPackages)方法，扫描给定类路径，获取符合条件的Bean定义
 			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
 			// 遍历扫描到的BeanDefinition
 			for (BeanDefinition candidate : candidates) {
@@ -296,19 +296,20 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 					postProcessBeanDefinition((AbstractBeanDefinition) candidate, beanName);
 				}
 				// 如果扫描到的Bean是Spring的注解Bean，则处理其通用的Spring注解
+				// 通用注解解析到candidate结构中，主要是处理Lazy, primary DependsOn, Role ,Description这五个注解
 				if (candidate instanceof AnnotatedBeanDefinition) {
 					// 处理注解Bean中通用的注解，在分析注解Bean定义类读取器时已经分析过
 					AnnotationConfigUtils.processCommonDefinitionAnnotations((AnnotatedBeanDefinition) candidate);
 				}
 
-				// 根据Bean名称检查指定的Bean是否需要在容器中注册，或者在容器中覆盖
+				// 检查当前bean是否已经注册，不存在则注册
 				if (checkCandidate(beanName, candidate)) {
 					// 创建一个指定Bean名称的 BeanDefinitionHolder ，封装 注解中配置的作用域，为Bean应用相应的代理模式 数据
 					BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(candidate, beanName);
 					// 根据通过 AnnotationMetadata 类中配置的作用域 ScopeMetadata ，创建相应的代理对象
 					definitionHolder =AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
 					beanDefinitions.add(definitionHolder);
-					// 向IoC容器注册 BeanDefinitionHolder
+					// 向IoC容器注册 BeanDefinitionHolder，主要是一些@Component组件，@Bean注解方法并没有在此处注册
 					registerBeanDefinition(definitionHolder, this.registry);
 				}
 			}
