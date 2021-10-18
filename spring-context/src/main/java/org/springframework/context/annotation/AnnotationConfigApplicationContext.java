@@ -79,7 +79,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	public AnnotationConfigApplicationContext() {
 		// 分步记录有关ApplicationStartup期间发生的特定阶段或操作的指标
 		StartupStep createAnnotatedBeanDefReader = this.getApplicationStartup().start("spring.context.annotated-bean-reader.create");
-		// 创建一个读取注解的BeanDefinitionReader，AnnotationConfigApplicationContext 实现了 BeanDefinitionRegistry 接口
+		// 创建一个读取注解的BeanDefinitionReader，AnnotationConfigApplicationContext 间接实现了 BeanDefinitionRegistry 接口
 		this.reader = new AnnotatedBeanDefinitionReader(this);
 		// 分步记录有关ApplicationStartup 结束
 		createAnnotatedBeanDefReader.end();
