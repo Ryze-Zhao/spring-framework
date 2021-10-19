@@ -292,7 +292,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			BeanDefinition beanDef = registry.getBeanDefinition(beanName);
 
 			/*
-			 * Spring内部对配置类分为两种，区分的办法是
+			 * Spring内部对配置类分为两种：
 			 *      Full模式（@Configuration(proxyBeanMethods = true)）与Lite模式（@Configuration(proxyBeanMethods = false)）
 			 * 因此获取ConfigurationClassUtils.CONFIGURATION_CLASS_ATTRIBUTE有值，代表当前处理的 BeanDefinition 已经被解析，如果Debug模式下，输出日志
 			 */
@@ -301,7 +301,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 					logger.debug("Bean definition has already been processed as a configuration class: " + beanDef);
 				}
 			}
-			// 如果当前的bean是Javabean配置类（含有@Configuration注解的类），则加入到集合configCandidates中
+			// 如果当前的bean是JavaBean配置类（含有@Configuration注解的类），则加入到集合configCandidates中
 			//   checkConfigurationClassCandidate()会判断 BeanDefinition 是否是一个配置类,并为BeanDefinition设置属性为lite或者full，方便后面用
 			//     如果加了@Configuration，并且proxyBeanMethods属性设置为true，那么对应的BeanDefinition为full，否则为lite
 			//     如果加了@Bean、@Component(及派生的注解)、@ComponentScan、@Import、@ImportResource，那么对应的BeanDefinition为lite
@@ -327,11 +327,15 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		// Detect any custom bean name generation strategy supplied through the enclosing application context
 		// 初始化一个ConfigurationClassParser解析器，可以解析@Congiguration配置类
 		SingletonBeanRegistry sbr = null;
+		// 判断 BeanDefinitionRegistry 是不是 SingletonBeanRegistry子类，若是会将 registry 强转为 SingletonBeanRegistry
+		// 因，通常初始化时都是DefaultListableBeanFactory，而他是SingletonBeanRegistry 的子类，所以通常这里为true
 		if (registry instanceof SingletonBeanRegistry) {
 			sbr = (SingletonBeanRegistry) registry;
 			if (!this.localBeanNameGeneratorSet) {
-				// beanName的生成器，因为后面会扫描出所有加入到Spring容器中class类，然后把这些class解析成BeanDefinition类，
+				// BeanName生成器，因为后面会扫描出所有加入到Spring容器中class类，然后把这些class解析成BeanDefinition类，
 				// 此时需要利用BeanNameGenerator为这些BeanDefinition生成beanName
+
+				// 看看有无自定义的 BeanName生成器，若有，那就直接用
 				BeanNameGenerator generator = (BeanNameGenerator) sbr.getSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR);
 				if (generator != null) {
 					this.componentScanBeanNameGenerator = generator;
@@ -345,11 +349,14 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		}
 
 		// Parse each @Configuration class
-		// 初始化一个ConfigurationClassParser解析器，可以解析@Congiguration配置类
+		// 初始并实例化 一个ConfigurationClassParser解析器，可以解析@Congiguration配置类
 		ConfigurationClassParser parser = new ConfigurationClassParser(
 				this.metadataReaderFactory, this.problemReporter, this.environment,
 				this.resourceLoader, this.componentScanBeanNameGenerator, registry);
 
+		// 实例化2个Set
+		// candidates 用于将之前加入的configCandidates进行去重，因为可能有多个配置类重复了
+		// alreadyParsed 用于判断是否处理过
 		Set<BeanDefinitionHolder> candidates = new LinkedHashSet<>(configCandidates);
 		Set<ConfigurationClass> alreadyParsed = new HashSet<>(configCandidates.size());
 		do {
@@ -373,7 +380,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 						this.importBeanNameGenerator, parser.getImportRegistry());
 			}
 			// 将上一步parser解析出的ConfigurationClass类加载成BeanDefinition
-			// 实际上经过上一步的parse()后，解析出来的bean已经放入到BeanDefinition中了，但是由于这些bean可能会引入新的bean，
+			// 实际上经过上一步的parse()后，解析出来的bean已经放入到BeanDefinition中了，但是由于这些Bean又可能会引入新的bean，
 			// 例如：实现了ImportBeanDefinitionRegistrar或者ImportSelector接口的bean，或者bean中存在被@Bean注解的方法
 			// 因此需要执行一次loadBeanDefinition()，这样就会执行ImportBeanDefinitionRegistrar、ImportSelector接口的方法、@Bean注释的方法
 			this.reader.loadBeanDefinitions(configClasses);

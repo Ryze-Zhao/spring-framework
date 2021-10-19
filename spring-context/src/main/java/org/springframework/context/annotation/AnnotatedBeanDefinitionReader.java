@@ -88,6 +88,9 @@ public class AnnotatedBeanDefinitionReader {
 		// 用于@Conditional注解的实现
 		this.conditionEvaluator = new ConditionEvaluator(registry, environment, null);
 		// 重点:注册注解配置处理器
+		// 当用注解的方式启动项目时，将处理这些注解的基础设施类放到DefaultListableBeanFactory中，
+		// 因为无论如何，Spring终究需要某些基础类，用于xml中的配置类，或者我们的注解类，比如@Configuration、@ComponentScan、@ComponentScans、@Import、@ImportResource、@Bean等
+		// registerAnnotationConfigProcessors方法作用就是如此，将Spring几个基础类封装成BeanDefinition放到容器当中
 		AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
 	}
 
@@ -274,10 +277,13 @@ public class AnnotatedBeanDefinitionReader {
 		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
 
 
-		// 处理 AnnotatedBeanDefinition 中的通用注解
+		// 处理 AnnotatedBeanDefinition 中的通用注解，主要是@Lazy、@DependsOn、@Primary、@Role等等注解
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
 		// 如果在向容器注册 AnnotatedBeanDefinition 时，使用了额外的限定符注解，则解析限定符注解。
 		// 主要是配置的关于autowiring自动依赖注入装配的限定条件，即@Qualifier注解，Spring自动依赖注入装配默认是按类型装配，如果使用@Qualifier则按名称
+
+		// byName 和 qualifiers 这个变量是Annotation类型的数组，里面存不仅仅是Qualifier注解
+		// 理论上里面存的是一切注解，所以下面Spring去循环了这个数组，然后依次判断了注解当中是否包含了@Primary，是否包含了@Lazy
 		if (qualifiers != null) {
 			for (Class<? extends Annotation> qualifier : qualifiers) {
 				// 如果配置了@Primary注解，设置该Bean为autowiring自动依赖注入装配时的首选

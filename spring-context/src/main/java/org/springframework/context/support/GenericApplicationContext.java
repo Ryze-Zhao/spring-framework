@@ -294,8 +294,8 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
 	}
 
 	/**
-	 * Return the single internal BeanFactory held by this context
-	 * (as ConfigurableListableBeanFactory).
+	 * Return the single internal BeanFactory held by this context(as ConfigurableListableBeanFactory).
+	 * 返回此上下文持有的单个内部BeanFactory（作为ConfigurableListableBeanFactory）
 	 */
 	@Override
 	public final ConfigurableListableBeanFactory getBeanFactory() {

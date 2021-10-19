@@ -618,15 +618,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 				// Invoke factory processors registered as beans in the context.
 				/*
-				 * <Spring分析点38-5> 执行BeanFactoryPostProcessor的方法；
-				 *
-				 * 调用 BeanFactoryPostProcessor 各个实现类的 postProcessBeanFactory(factory) 方法
+				 * <Spring分析点38-5> 执行已被注册的 BeanFactoryPostProcessor接口各实现类#postProcessBeanFactory(factory) 方法
 				 */
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
 				/*
-				 * <Spring分析点38-6> 注册 BeanPostProcessor的实现类（Bean的后置处理器,拦截Bean的创建）
+				 * <Spring分析点38-6> 注册 BeanPostProcessor接口各实现类（Bean的后置处理器,拦截Bean的创建）
 				 *
 				 * 此接口两个方法: postProcessBeforeInitialization 和 postProcessAfterInitialization
 				 * 两个方法分别在 Bean 初始化之前和初始化之后得到执行。
@@ -647,9 +645,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 				// Initialize event multicaster for this context.
 				/*
-				 * <Spring分析点38-8> 初始化事件派发器（ApplicationEventMulticaster）；
-				 *
-				 * 初始化当前 ApplicationContext 的事件广播器
+				 * <Spring分析点38-8> 初始化当前 ApplicationContext事件广播器（ApplicationEventMulticaster）；
 				 */
 				initApplicationEventMulticaster();
 
@@ -673,9 +669,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 				// Instantiate all remaining (non-lazy-init) singletons.
 				/*
-				 * <Spring分析点38-11> 初始化所有 `非懒加载` 且 `未被初始化` 的 `singleton` 的 Bean；（重点）
+				 * <Spring分析点38-11> 初始并实例化所有 `非懒加载` 且 `未被初始化` 的 `singleton` 的 Bean；（重点）
 				 *
-				 * 注：该方法完成后，可以认为我们的Bean完成初始化
+				 * 注：该方法完成后，可以认为符合条件的Bean完成初始并实例（其他是未完成哦）
 				 */
 				finishBeanFactoryInitialization(beanFactory);
 
@@ -780,14 +776,14 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	/**
 	 * Configure the factory's standard context characteristics, such as the context's ClassLoader and post-processors.
-	 * 配置工厂的标准上下文特征，例如上下文的类加载器和后处理器。
+	 * 配置工厂的标准上下文特征，例如上下文的 ClassLoader 和 PostProcessors(后处理器)
 	 * @param beanFactory the BeanFactory to configure  要配置的beanFactory
 	 */
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		// Tell the internal bean factory to use the context's class loader etc.
-		// 设置BeanFactory的ClassLoader
+		// 设置 BeanFactory 的ClassLoader
 		beanFactory.setBeanClassLoader(getClassLoader());
-		// 判断并设置加载BeanFactory的Spel表达式解析器（默认加载）
+		// 判断并设置加载 BeanFactory 的Spel表达式解析器（默认加载）
 		if (!shouldIgnoreSpel) {
 			beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver(beanFactory.getBeanClassLoader()));
 		}
@@ -863,7 +859,14 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
 		// Spring扫描加载完毕所有的BeanDefinition(扫描出来的各种注解和config配置的BeanDefinition)后，
-		// 调用执行默认的和自定义的 BeanDefinitionRegistryPostProcessor接口 和 BeanFactoryPostProcessor接口 实现类
+		// 调用执行 自动加载和手动添加 的 BeanDefinitionRegistryPostProcessor接口 和 BeanFactoryPostProcessor接口 的实现类
+		// 注：BeanDefinitionRegistryPostProcessor接口 继承 BeanFactoryPostProcessor接口
+
+		// 自动加载：由Spring自己扫描添加的
+		// 手动添加：手动调用 AnnotationConfigApplicationContext.addBeanFactoryPostProcesor()添加的
+		// 注意:getBeanFactoryPostProcessors()是获取手动添加给Spring的 BeanFactoryPostProcessor
+		// 例如：自己写的类，若添加了@Component，那么getBeanFactoryPostProcessors()就不会获取到对应的类，因为这种情况属于Spring扫描添加（即：自动加载）
+		// 例如：自己写的类，若不添加了@Component，而使用AnnotationConfigApplicationContext.addBeanFactoryPostProcesor()添加的，那么getBeanFactoryPostProcessors()就会获取到对应的类（属于手动添加）
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime(e.g. through an @Bean method registered by ConfigurationClassPostProcessor)

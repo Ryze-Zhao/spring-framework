@@ -259,6 +259,9 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 		// Register annotation config processors, if necessary.
 		// 注册注解配置(Annotation config)处理器
 		if (this.includeAnnotationConfig) {
+			// 当用注解的方式启动项目时，将处理这些注解的基础设施类放到DefaultListableBeanFactory中，
+			// 因为无论如何，Spring终究需要某些基础类，用于xml中的配置类，或者我们的注解类，比如@Configuration、@ComponentScan、@ComponentScans、@Import、@ImportResource、@Bean等
+			// registerAnnotationConfigProcessors方法作用就是如此，将Spring几个基础类封装成BeanDefinition放到容器当中
 			AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
 		}
 
@@ -281,7 +284,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 		Set<BeanDefinitionHolder> beanDefinitions = new LinkedHashSet<>();
 		// 遍历扫描所有给定的包
 		for (String basePackage : basePackages) {
-			// 调用父类ClassPathScanningCandidateComponentProvider#scanCandidateComponents(backPackages)方法，扫描给定类路径，获取符合条件的Bean定义
+			// 调用父类ClassPathScanningCandidateComponentProvider#scanCandidateComponents(backPackages)方法，扫描给定类路径，获取符合条件的BeanDefinition
 			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
 			// 遍历扫描到的BeanDefinition
 			for (BeanDefinition candidate : candidates) {
@@ -293,6 +296,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 				String beanName = this.beanNameGenerator.generateBeanName(candidate, this.registry);
 				// 如果扫描到的Bean不是Spring的注解Bean，则为Bean设置默认值，设置Bean的自动依赖注入装配属性等
 				if (candidate instanceof AbstractBeanDefinition) {
+					// 如果这个类是AbstractBeanDefinition的子类，则为他设置默认值，比如lazy，init destory
 					postProcessBeanDefinition((AbstractBeanDefinition) candidate, beanName);
 				}
 				// 如果扫描到的Bean是Spring的注解Bean，则处理其通用的Spring注解

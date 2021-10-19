@@ -174,6 +174,9 @@ class ConfigurationClassParser {
 			BeanDefinition bd = holder.getBeanDefinition();
 			try {
 				if (bd instanceof AnnotatedBeanDefinition) {
+					// 解析注解对象，
+					// 并且把解析出来的AnnotatedBeanDefinition放到map，但是这里的 AnnotatedBeanDefinition 指的是普通的 AnnotatedBeanDefinition
+					// 何谓不普通的呢？比如@Bean 和各种beanFactoryPostProcessor得到的bean，都只是在这里进行解析，但并不会进行put操作
 					parse(((AnnotatedBeanDefinition) bd).getMetadata(), holder.getBeanName());
 				}
 				else if (bd instanceof AbstractBeanDefinition && ((AbstractBeanDefinition) bd).hasBeanClass()) {
@@ -191,7 +194,7 @@ class ConfigurationClassParser {
 						"Failed to parse configuration class [" + bd.getBeanClassName() + "]", ex);
 			}
 		}
-		// 处理 this.deferredImportSelectors
+		// 处理 this.deferredImportSelectorHandler
 		this.deferredImportSelectorHandler.process();
 	}
 
@@ -230,7 +233,7 @@ class ConfigurationClassParser {
 			return;
 		}
 
-		// 处理Imported
+		// 处理Imported（当前这个注解类有没有被别的类import）
 		// 判断同一个配置类是否重复加载过，如果重复加载过，则合并，否则从集合中移除旧的配置类，后续逻辑将处理新的配置类
 		ConfigurationClass existingClass = this.configurationClasses.get(configClass);
 		if (existingClass != null) {
@@ -265,6 +268,7 @@ class ConfigurationClassParser {
 		while (sourceClass != null);
 
 		// 添加到 ConfigurationClassParser 的 configurationClasses中
+		// 一个map，用来存放扫描出来的bean信息（注意这里的bean不是对象，仅仅bean的信息，因为还没到实例化这一步）
 		this.configurationClasses.put(configClass, configClass);
 	}
 
@@ -310,7 +314,7 @@ class ConfigurationClassParser {
 				!this.conditionEvaluator.shouldSkip(sourceClass.getMetadata(), ConfigurationPhase.REGISTER_BEAN)) {
 			for (AnnotationAttributes componentScan : componentScans) {
 				// The config class is annotated with @ComponentScan -> perform the scan immediately
-				// <Spring分析点39-3.2> 解析 @ComponentScan 和 @ComponentScans 配置的扫描的包所包含的类
+				// <Spring分析点39-3.2> 解析 @ComponentScan 和 @ComponentScans 配置的扫描的包所包含的类（扫描出来所有@Component）
 				// 	 比如 basePackages = com.ryze.zhao, 那么在这一步会扫描出这个包及子包下的class，然后将其解析成BeanDefinition(BeanDefinition基本可以理解为等价于BeanDefinitionHolder)
 				Set<BeanDefinitionHolder> scannedBeanDefinitions =
 						this.componentScanParser.parse(componentScan, sourceClass.getMetadata().getClassName());
@@ -333,9 +337,25 @@ class ConfigurationClassParser {
 			}
 		}
 
+		/*
+		 * 上面的代码就是扫描普通类----@Component
+		 * 并且放到了map当中
+		 */
+
 		// Process any @Import annotations
 		// <Spring分析点39-4> 处理@Import注解注册的bean，这一步只会将import注册的bean变为ConfigurationClass，并不会变成BeanDefinition
 		// 而是在loadBeanDefinitions()方法中变成BeanDefinition，再放入到BeanDefinitionMap中
+
+		/*
+		 * 这里处理的import是需要判断我们的类当中时候有@Import注解
+		 * 如果有这把@Import当中的值拿出来，是一个类
+		 * 比如@Import(xxxxx.class)，那么这里便把xxxxx传进去进行解析
+		 * 在解析的过程中如果发觉是一个importSelector那么就回调selector的方法
+		 * 返回一个字符串（类名），通过这个字符串得到一个类
+		 * 继而在递归调用本方法来处理这个类
+		 *
+		 * 判断一组类是不是imports（3种import）
+		 */
 		processImports(configClass, sourceClass, getImports(sourceClass), filter, true);
 
 		// Process any @ImportResource annotations
