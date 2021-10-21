@@ -608,22 +608,25 @@ class ConfigurationClassParser {
 	private void processImports(ConfigurationClass configClass, SourceClass currentSourceClass,
 			Collection<SourceClass> importCandidates, Predicate<String> exclusionFilter,
 			boolean checkForCircularImports) {
-
+		// 判断 importCandidates
 		if (importCandidates.isEmpty()) {
 			return;
 		}
 
+		// 检验是否 CircularImport 等
 		if (checkForCircularImports && isChainedImportOnStack(configClass)) {
 			this.problemReporter.error(new CircularImportProblem(configClass, this.importStack));
 		}
 		else {
+			// 将 configClass 放入到 importStack堆
 			this.importStack.push(configClass);
 			try {
 				for (SourceClass candidate : importCandidates) {
+					// 是否 ImportSelector
 					if (candidate.isAssignable(ImportSelector.class)) {
 						// Candidate class is an ImportSelector -> delegate to it to determine imports
 						Class<?> candidateClass = candidate.loadClass();
-						// 反射实现一个对象
+						// 反射，实例化这个ImportSelector 类
 						ImportSelector selector = ParserStrategyUtils.instantiateClass(candidateClass, ImportSelector.class,
 								this.environment, this.resourceLoader, this.registry);
 						Predicate<String> selectorFilter = selector.getExclusionFilter();
@@ -631,10 +634,13 @@ class ConfigurationClassParser {
 							exclusionFilter = exclusionFilter.or(selectorFilter);
 						}
 						if (selector instanceof DeferredImportSelector) {
+							// 添加到 deferredImportSelectors 里面，后续进行注册
 							this.deferredImportSelectorHandler.handle(configClass, (DeferredImportSelector) selector);
 						}
 						else {
-							// 回调
+							// 获取到selectimports里面的需要初始化的类，然后再次调用processlmports方法，最后是当成普通的@Configuration 类来进行处理
+
+							// 回调，获取要注入到spring的bean工厂的类数组字符串
 							String[] importClassNames = selector.selectImports(currentSourceClass.getMetadata());
 							Collection<SourceClass> importSourceClasses = asSourceClasses(importClassNames, exclusionFilter);
 							// 递归，这里第二次调用processImports，如果是一个普通类，会进else
@@ -642,24 +648,21 @@ class ConfigurationClassParser {
 						}
 					}
 					else if (candidate.isAssignable(ImportBeanDefinitionRegistrar.class)) {
-						// Candidate class is an ImportBeanDefinitionRegistrar ->
-						// delegate to it to register additional bean definitions
+						// Candidate class is an ImportBeanDefinitionRegistrar -> delegate to it to register additional bean definitions
 						Class<?> candidateClass = candidate.loadClass();
+						// 反射，实例化这个 ImportBeanDefinitionRegistrar 类
 						ImportBeanDefinitionRegistrar registrar =
 								ParserStrategyUtils.instantiateClass(candidateClass, ImportBeanDefinitionRegistrar.class,
 										this.environment, this.resourceLoader, this.registry);
-						// 添加到一个list当中和importselector不同
+						// 添加到 Map<ImportBeanDefinitionRegistrar, AnnotationMetadata> importBeanDefinitionRegistrars，后续进行处理
 						configClass.addImportBeanDefinitionRegistrar(registrar, currentSourceClass.getMetadata());
 					}
 					else {
 						// Candidate class not an ImportSelector or ImportBeanDefinitionRegistrar ->
 						// process it as an @Configuration class
-						// 否则，加入到importStack后调用processConfigurationClass 进行处理
-						// processConfigurationClass里面主要就是把类放到configurationClasses
-						// configurationClasses是一个集合，会在后面拿出来解析成bd继而注册
-						// 可以看到普通类在扫描出来的时候就被注册了
-						// 如果是importSelector，会先放到configurationClasses后面进行出来注册
+						// 当作普通的 @Configuration 类进行处理
 						this.importStack.registerImport(currentSourceClass.getMetadata(), candidate.getMetadata().getClassName());
+						// 又再次调用 processConfigurationClass 进行解析
 						processConfigurationClass(candidate.asConfigClass(configClass), exclusionFilter);
 					}
 				}
