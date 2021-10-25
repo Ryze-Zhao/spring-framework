@@ -623,6 +623,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 
 	@Override
 	public String resolveRequiredPlaceholders(String text) throws IllegalArgumentException {
+		// text即配置文件路径，比如classpath:spring/start/bean/SpringConfig.xml
 		return this.propertyResolver.resolveRequiredPlaceholders(text);
 	}
 
