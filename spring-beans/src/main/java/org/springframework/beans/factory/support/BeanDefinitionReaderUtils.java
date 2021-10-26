@@ -164,6 +164,13 @@ public abstract class BeanDefinitionReaderUtils {
 		// 获取解析的 BeanDefinition 的名称
 		String beanName = definitionHolder.getBeanName();
 		// 向IoC容器注册 BeanDefinition
+		/*
+		 * 情况一：
+		 *  DefaultListableBeanFactory类实现了BeanDefinitionRegistry接口
+		 * 情况二：
+		 *  GenericApplicationContext类实现了BeanDefinitionRegistry接口,并且在 GenericApplicationContext类中维护了一个DefaultListableBeanFactory beanFactory
+		 * 该步骤实际调用的是GenericApplicationContext类中的registerBeanDefinition()方法，{@link org.springframework.context.support.GenericApplicationContext#registerBeanDefinition(String,BeanDefinition)}
+		 */
 		registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());
 
 		// Register aliases for bean name, if any.

@@ -280,21 +280,21 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 */
 	protected Set<BeanDefinitionHolder> doScan(String... basePackages) {
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
-		// 创建一个集合，存放扫描到Bean定义的封装类
+		// 创建一个集合，存放扫描到Bean定义的封装类（存储扫描到的BeanDefinition信息）
 		Set<BeanDefinitionHolder> beanDefinitions = new LinkedHashSet<>();
-		// 遍历扫描所有给定的包
+		// 遍历扫描所有给定的包，进行解析，注册
 		for (String basePackage : basePackages) {
 			// 调用父类ClassPathScanningCandidateComponentProvider#scanCandidateComponents(backPackages)方法，扫描给定类路径，获取符合条件的BeanDefinition
 			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
-			// 遍历扫描到的BeanDefinition
+			// 遍历扫描到的BeanDefinition，进行解析
 			for (BeanDefinition candidate : candidates) {
 				// 获取 BeanDefinition 中@Scope注解的值，即获取Bean的作用域
 				ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(candidate);
 				// 为Bean设置注解配置的作用域
 				candidate.setScope(scopeMetadata.getScopeName());
-				// 为Bean生成名称
+				// 根据Bean信息生成BeanName
 				String beanName = this.beanNameGenerator.generateBeanName(candidate, this.registry);
-				// 如果扫描到的Bean不是Spring的注解Bean，则为Bean设置默认值，设置Bean的自动依赖注入装配属性等
+				// 如果扫描到的Bean不是Spring的注解Bean，则为Bean设置默认值，设置Bean的自动依赖注入装配属性等（对于配置类型BeanDefinition类型和注解类型BeanDefinition类型进行区分设置）
 				if (candidate instanceof AbstractBeanDefinition) {
 					// 如果这个类是AbstractBeanDefinition的子类，则为他设置默认值，比如lazy，init destory
 					postProcessBeanDefinition((AbstractBeanDefinition) candidate, beanName);
@@ -303,6 +303,11 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 				// 通用注解解析到candidate结构中，主要是处理Lazy, primary DependsOn, Role ,Description这五个注解
 				if (candidate instanceof AnnotatedBeanDefinition) {
 					// 处理注解Bean中通用的注解，在分析注解Bean定义类读取器时已经分析过
+					/*
+					 * 检查并且处理常用的注解
+					 * 这里的处理主要是指把常用注解的值设置到AnnotatedBeanDefinition当中
+					 * 当前前提是这个类必须是AnnotatedBeanDefinition类型的，说白了就是加了注解的类
+					 */
 					AnnotationConfigUtils.processCommonDefinitionAnnotations((AnnotatedBeanDefinition) candidate);
 				}
 

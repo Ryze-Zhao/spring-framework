@@ -175,27 +175,26 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * @param root the DOM root element of the document  root–文档的DOM根元素
 	 */
 	protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate) {
-		// 如果根节点使用默认命名空间，执行默认解析
+		// 如果根节点使用默认标签，执行默认解析
 		if (delegate.isDefaultNamespace(root)) {
-			// 遍历子节点
+			// 遍历子节点，获取beans的所有子节点,遍历,对其子节点根据是否使用默认标签,使用不同的解析方法
 			NodeList nl = root.getChildNodes();
 			for (int i = 0; i < nl.getLength(); i++) {
 				Node node = nl.item(i);
-				if (node instanceof Element) {
-					Element ele = (Element) node;
+				if (node instanceof Element) {					Element ele = (Element) node;
 					if (delegate.isDefaultNamespace(ele)) {
-						// <Spring分析点9-1> 如果该节点使用默认命名空间，执行默认解析
+						// <Spring分析点9-1> 如果该节点使用默认标签，执行默认解析
 						parseDefaultElement(ele, delegate);
 					}
 					else {
-						// 如果该节点非默认命名空间，执行自定义解析
+						// 如果该节点非默认标签，执行自定义解析
 						delegate.parseCustomElement(ele);
 					}
 				}
 			}
 		}
 		else {
-			// <Spring分析点9-2> 如果根节点非默认命名空间，执行自定义解析
+			// <Spring分析点9-2> 如果根节点非默认标签，执行自定义解析
 			delegate.parseCustomElement(root);
 		}
 	}
@@ -345,13 +344,14 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		// 进行 bean 元素解析。
 		// <Spring分析点11-1> 如果解析成功，则返回 BeanDefinitionHolder 对象。而 BeanDefinitionHolder 为 name 和 alias 的 BeanDefinition 对象
 		// 如果解析失败，则返回 null 。
+		// 解析ele,返回BeanDefinitionHolder类型实例bdHolder,经过这个方法后,bdHolder实例已经包含我们配置文件中配置的各种属性,例如:class,name,id,alias等
 		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
 		if (bdHolder != null) {
-			// <Spring分析点11-2> 进行自定义标签处理
+			// <Spring分析点11-2> 当返回的bdHolder不为空的情况下若存在默认标签的字标签下再有自定义属性,还需要再次对自定义标签进行解析
 			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
 			try {
 				// Register the final decorated instance.
-				// <Spring分析点11-3> 进行 BeanDefinition 的注册
+				// <Spring分析点11-3> 进行 BeanDefinitionHolder 注册
 				BeanDefinitionReaderUtils.registerBeanDefinition(bdHolder, getReaderContext().getRegistry());
 			}
 			catch (BeanDefinitionStoreException ex) {
