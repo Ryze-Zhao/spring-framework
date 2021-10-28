@@ -120,7 +120,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 */
 	@Override
 	protected final void refreshBeanFactory() throws BeansException {
-		// 如果 beanFactory已存在，则销毁，这里的操作都是用了 对象锁进行同步
+		// 如果 beanFactory已存在，则销毁重新创建，这里的操作都是用了 对象锁进行同步
 		if (hasBeanFactory()) {
 			destroyBeans();
 			closeBeanFactory();
@@ -131,10 +131,18 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 			// 设置序列化id，可以从id反序列化到beanFactory对象
 			// id的值是在super()方法中进行设值的，这里只是单纯的获取id
 			beanFactory.setSerializationId(getId());
-			// 更新 allowBeanDefinitionOverriding 和 allowCircularReferences 的值，
-			// 默认这段代码没用，不会修改默认值，除非你beanFactory.set*Name 修改了值
+			/*
+			 * 更新 allowBeanDefinitionOverriding 和 allowCircularReferences 的值，默认这段代码没用，不会修改默认值，除非你beanFactory.set*Name 修改了值
+			 *
+			 * 定制beanFactory,设置相关属性,包括是否允许覆盖同名称的不同定义的对象以及循环依赖
+			 * 设置@Autowired和@Qualifer注解解析器QualifierAnnotationAutowire CandidateResolver
+			 */
 			customizeBeanFactory(beanFactory);
-			// 初始化documentReader，并进行xml文件解读及解析 BeanDefinition文件
+			/*
+			 *  初始化DodumentReader,并进行XML文件读取及解析 BeanDefinition文件
+			 *  1. Spring:    {@link AbstractXmlApplicationContext#loadBeanDefinitions}
+			 *  2. SpringMvc: {@link org.springframework.web.context.support.XmlWebApplicationContext#loadBeanDefinitions(org.springframework.beans.factory.support.DefaultListableBeanFactory)}
+			 */
 			loadBeanDefinitions(beanFactory);
 			this.beanFactory = beanFactory;
 		}

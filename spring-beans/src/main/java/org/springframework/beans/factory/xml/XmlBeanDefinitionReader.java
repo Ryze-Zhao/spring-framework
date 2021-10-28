@@ -343,21 +343,26 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 *           BeanDefinitionStoreException–在加载或解析错误的情况
 	 */
 	public int loadBeanDefinitions(EncodedResource encodedResource) throws BeanDefinitionStoreException {
+		// 非空判断及日志记录
 		Assert.notNull(encodedResource, "EncodedResource must not be null");
 		if (logger.isTraceEnabled()) {
 			logger.trace("Loading XML bean definitions from " + encodedResource);
 		}
 
-		// <Spring分析点2-1> 获取已经加载过的资源
+		// <Spring分析点2-1> 通过set集合来记录当前正在加载的资源
 		Set<EncodedResource> currentResources = this.resourcesCurrentlyBeingLoaded.get();
 		if (!currentResources.add(encodedResource)) {
 			// 将当前资源加入记录缓存中。如果已存在，抛出异常
+			// 将encodedResource添加到currentResources集合中,如果添加失败,则抛出异常
 			throw new BeanDefinitionStoreException("Detected cyclic loading of " + encodedResource + " - check your import definitions!");
 		}
 
+		// 加载bean
+		// 通过encodedResource获取已经封装的Resource对象并再次从Resource中获取其中的inputStream
 		try (InputStream inputStream = encodedResource.getResource().getInputStream()) {
 			// <Spring分析点2-2> 从 EncodedResource 获取封装的 Resource ，并从 Resource 中获取其中的 InputStream ，然后将 InputStream 封装为 InputSource
 			InputSource inputSource = new InputSource(inputStream);
+			// 如果encodedResource中设置的编码不为空,则设置inputSource的编码
 			if (encodedResource.getEncoding() != null) {
 				inputSource.setEncoding(encodedResource.getEncoding());
 			}
@@ -369,7 +374,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 					"IOException parsing XML document from " + encodedResource.getResource(), ex);
 		}
 		finally {
-			// <Spring分析点2-3> 从记录缓存中剔除该资源
+			// <Spring分析点2-3> 从记录缓存中剔除该资源 加载完毕,从记录缓存集合中将encodedResource移除
 			currentResources.remove(encodedResource);
 			if (currentResources.isEmpty()) {
 				this.resourcesCurrentlyBeingLoaded.remove();
@@ -416,7 +421,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	protected int doLoadBeanDefinitions(InputSource inputSource, Resource resource)
 			throws BeanDefinitionStoreException {
 		try {
-			// <Spring分析点3-1> 获取 XML Document 实例
+			// <Spring分析点3-1> 获取 XML Document 实例（将配置文件解析为一个Document实例，以便下面对BeanDefinition进行解析）
 			Document doc = doLoadDocument(inputSource, resource);
 			// <Spring分析点3-2> 根据 Document 实例，注册 BeanDefinition 信息
 			int count = registerBeanDefinitions(doc, resource);
@@ -556,7 +561,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		// <Spring分析点7-3> 创建 XmlReaderContext 对象
 		// <Spring分析点7-4> 注册 BeanDefinition
 		documentReader.registerBeanDefinitions(doc, createReaderContext(resource));
-		// 计算新注册的 BeanDefinition 数量
+		// 计算本次注册的 BeanDefinition 数量
 		return getRegistry().getBeanDefinitionCount() - countBefore;
 	}
 

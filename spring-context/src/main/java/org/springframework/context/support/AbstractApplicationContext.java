@@ -583,6 +583,18 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			 * <Spring分析点38-2.2> 将配置文件、注解 解析为各个 BeanDefinition ，并注册到 BeanFactory 中，这一步 Bean 还没有初始化，只是将配置信息都提取成 BeanDefinition，
 			 * 并将这些 BeanDefinition 都保存到了 Map 中(核心是一个 key为beanName，value为 BeanDefinition 的 Map)
 			 */
+			/**
+			 * obtainFreshBeanFactory()方法中根据实现类的不同调用不同的refreshBeanFactory()方法
+			 *
+			 * <-----  注解模式  ----->
+			 * 1. 如果是使用 AnnotationConfigApplicationContext 来初始化环境调用的是GenericApplicationContext#refreshBeanFactory()方法
+			 * {@link GenericApplicationContext#refreshBeanFactory()}在该方法中只是对beanFactory的一些变量进行设置
+			 *
+			 * <----- XML配置模式  ----->
+			 *  2. 如果是使用 ClassPathXmlApplicationContext 来初始化环境，调用的是{@link AbstractRefreshableApplicationContext#refreshBeanFactory()}
+			 * 由于还没有对beanFactory进行初始化，所以在该方法中，完成了对beanFactory的初始化操作，并对设置的资源位置进行扫描，解析
+			 * 注意:此方法是使用 ClassPathXmlApplicationContext 来初始化上下文是解析注册bean的重要入口
+			 */
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
@@ -621,6 +633,23 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				// Invoke factory processors registered as beans in the context.
 				/*
 				 * <Spring分析点38-5> 执行已被注册的 BeanFactoryPostProcessor接口各实现类#postProcessBeanFactory(factory) 方法
+				 */
+				/**
+				 * <-----  注解模式  ----->
+				 * 1. 如果是使用 AnnotationConfigApplicationContext 来初始化环境(该方法是解析注册bean的重要入口)
+				 * 在该方法中执行了 {@link org.springframework.context.annotation.ConfigurationClassPostProcessor#processConfigBeanDefinitions} 方法
+				 * 对配置类进行解析(如果该注解bean是配置类则在这个方法里完成了包扫描操作)
+				 * 注意:
+				 *  1.1. 一般情况下, 此时beanFactory中只注册了这一个BeanFactoryPostProcessor类-->ConfigurationClassPostProcessor
+				 *     在{@link AnnotationConfigUtils#registerAnnotationConfigProcessors(org.springframework.beans.factory.support.BeanDefinitionRegistry)}中注册的
+				 *  1.2. 注解模式下,此时BeanDefinitionMap中含有6个Spring内部处理器类, 其中通过ConfigurationClassPostProcessor类来解析配置类,完成包扫描,bean注册等操作
+				 *     然而, 在xml配置模式下, 此时BeanDefinitionMap只有自定义配置的BeanDefinition信息
+				 *
+				 * <----- XML配置模式  ----->
+				 * 2. 如果是使用 ClassPathXmlApplicationContext 来初始化环境
+				 *  默认情况下, 此时BeanDefinitionMap只有自定义配置的BeanDefinition信息, 并没有任何Spring内部所定义的BeanFactory后处理器
+				 *  除非用户自定义了BeanFactory后处理器, 需要对BeanFactory进行修改, 那么才会执行对应后处理器里面的方法;
+				 *
 				 */
 				invokeBeanFactoryPostProcessors(beanFactory);
 
@@ -773,6 +802,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
 		refreshBeanFactory();
+		// 返回已经刷新完成的bean工厂
 		return getBeanFactory();
 	}
 

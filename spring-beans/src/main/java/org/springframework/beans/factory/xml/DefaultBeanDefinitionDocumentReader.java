@@ -94,7 +94,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	@Override
 	public void registerBeanDefinitions(Document doc, XmlReaderContext readerContext) {
 		this.readerContext = readerContext;
-		// 获得 XML Document Root Element，执行注册 BeanDefinition
+		// 获取节点的根节点： XML Document Root 节点，并将root作为参数继续注册 BeanDefinition
 		doRegisterBeanDefinitions(doc.getDocumentElement());
 	}
 
@@ -150,11 +150,11 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			}
 		}
 
-		// <Spring分析点8-3> 解析前处理
+		// <Spring分析点8-3> 解析前处理（解析前处理,留给子类实现(设计模式:模板方法模式)）
 		preProcessXml(root);
-		// <Spring分析点8-4> 解析
+		// <Spring分析点8-4> 解析（根据Root节点进行解析）
 		parseBeanDefinitions(root, this.delegate);
-		// <Spring分析点8-5> 解析后处理
+		// <Spring分析点8-5> 解析后处理（解析后处理,留给子类实现(设计模式:模板方法模式)）
 		postProcessXml(root);
 		// 设置 delegate 回老的 BeanDefinitionParserDelegate 对象
 		this.delegate = parent;
