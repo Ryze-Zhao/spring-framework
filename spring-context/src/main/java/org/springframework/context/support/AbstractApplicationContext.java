@@ -813,13 +813,14 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		// Tell the internal bean factory to use the context's class loader etc.
-		// 设置 BeanFactory 的ClassLoader
+		// 设置内部 BeanFactory 的ClassLoader
 		beanFactory.setBeanClassLoader(getClassLoader());
 		// 判断并设置加载 BeanFactory 的Spel表达式解析器（默认加载）
+		//   默认可以使用#{bean.xxx}的形式来调用相关属性值
 		if (!shouldIgnoreSpel) {
 			beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver(beanFactory.getBeanClassLoader()));
 		}
-		// 添加一个默认的PropertyEditor用于 自定义属性 设置操作
+		// 为 BeanFactory 增加了一个默认的属性编辑器PropertyEditor,这个主要是对bean的属性 自定义 的一个工具
 		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));
 
 		// Configure the bean factory with context callbacks.
@@ -897,9 +898,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// 自动加载：由Spring自己扫描添加的
 		// 手动添加：手动调用 AnnotationConfigApplicationContext.addBeanFactoryPostProcesor()添加的
 		// 注意:getBeanFactoryPostProcessors()是获取手动添加给Spring的 BeanFactoryPostProcessor
+
 		// 例如：自己写的类，若添加了@Component，那么getBeanFactoryPostProcessors()就不会获取到对应的类，因为这种情况属于Spring扫描添加（即：自动加载）
-		// 例如：自己写的类，若不添加了@Component，而使用AnnotationConfigApplicationContext.addBeanFactoryPostProcesor()添加的，那么getBeanFactoryPostProcessors()就会获取到对应的类（属于手动添加）
-		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
+		// 例如：自己写的类，若不添加了@Component，而使用AnnotationConfigApplicationContext.addBeanFactoryPostProcesor()添加的，那么getBeanFactoryPostProcessors()就会获取到对应的类（属于手动添加）,
+		//      则会在 ConfigurationClassPostProcessor#processConfigBeanDefinitions() 方法之前执行
+		 PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime(e.g. through an @Bean method registered by ConfigurationClassPostProcessor)
 		// 检测LoadTimeWeaver并准备编织（如果同时发现）（例如，通过ConfigurationClassPostProcessor注册的@Bean方法）
@@ -1126,7 +1129,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		getLifecycleProcessor().onRefresh();
 
 		// Publish the final event.
-		// 发布 Context 刷新完毕事件到相应的监听器
+		// 发布 Context 刷新完毕事件到相应的监听器(事件对象:ContextRefreshedEvent)
 		publishEvent(new ContextRefreshedEvent(this));
 
 		// Participate in LiveBeansView MBean, if active.

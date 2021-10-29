@@ -55,7 +55,32 @@ final class PostProcessorRegistrationDelegate {
 	private PostProcessorRegistrationDelegate() {
 	}
 
-
+	/**
+	 * .
+	 * 流程：
+	 * 1. 执行 自定义的实现 BeanDefinitionRegistryPostProcessor接口 时重写的 postProcessBeanDefinitionRegistry()方法
+	 *
+	 * 2. 执行 Spring内部的实现 BeanDefinitionRegistryPostProcessor接口 时重写的 postProcessBeanDefinitionRegistry()方法
+	 *  {@link PostProcessorRegistrationDelegate#invokeBeanDefinitionRegistryPostProcessors(Collection, BeanDefinitionRegistry)}
+	 *
+	 * 3. 执行 自定义的实现 BeanDefinitionRegistryPostProcessor接口 和 BeanFactoryPostProcessor接口 时重写的 postProcessBeanFactory()方法
+	 *      和 Spring内部的实现 BeanDefinitionRegistryPostProcessor接口 时重写的 postProcessBeanFactory()方法
+	 *
+	 * 4. 执行 Spring内部实现 BeanFactoryPostProcessor接口 的处理器中的 postProcessBeanFactory()方法
+	 * {@link PostProcessorRegistrationDelegate#invokeBeanFactoryPostProcessors(Collection, ConfigurableListableBeanFactory)}
+	 *
+	 * 注意点：
+	 *  1. 将自定义的实现 BeanDefinitionRegistryPostProcessor接口 和 BeanFactoryPostProcessor接口 的类分别保存在不同的集合中
+	 *     在区分过程中执行自定义实现 BeanDefinitionRegistryPostProcessor接口 时重写的 postProcessBeanDefinitionRegistry()方法
+	 *
+	 * 注意: BeanDefinitionRegistryPostProcessor接口 继承了 BeanFactoryPostProcessor接口
+	 * 之所以要将所有的后处理器区分开, 是因为实现 BeanDefinitionRegistryPostProcessor接口 的要执行两个方法
+	 * {@link BeanDefinitionRegistryPostProcessor#postProcessBeanDefinitionRegistry(BeanDefinitionRegistry)} 和{@link BeanFactoryPostProcessor#postProcessBeanFactory(ConfigurableListableBeanFactory)}这两个方法
+	 * 而实现 BeanFactoryPostProcessor接口 的只需要执行{@link BeanFactoryPostProcessor#postProcessBeanFactory(ConfigurableListableBeanFactory)}这个方法即可
+	 *
+	 *
+	 *
+	 */
 	public static void invokeBeanFactoryPostProcessors(
 			ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
 
