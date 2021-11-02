@@ -970,10 +970,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		// While this may not be part of the regular factory bootstrap, it does otherwise work fine.
 		// 获取所有 BeanDefinition Name
 		// 创建beanDefinitionNames的副本beanNames用于后续的遍历，以允许init等方法注册新的bean定义
+		// 注意: 这里是对beanDefinitionNames集合进行拷贝
 		List<String> beanNames = new ArrayList<>(this.beanDefinitionNames);
 
 		// Trigger initialization of all non-lazy singleton beans...
-		// 遍历beanNames,即遍历所有 BeanDefinition Name
+		// 遍历beanNames,即遍历所有 BeanDefinition Name（触发所有非惰性单例bean的初始化）
 		for (String beanName : beanNames) {
 			// 根据指定的beanName获取其父类的相关公共属性（MergedBeanDefinition）,返回合并后的RootBeanDefinition（目前仅在Spring.xml配置文件使用）
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
@@ -1015,7 +1016,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		}
 
 		// Trigger post-initialization callback for all applicable beans...
-		// 遍历beanNames，触发所有SmartInitializingSingleton的后初始化回调
+		// 遍历beanNames，触发所有SmartInitializingSingleton的后初始化回调（如果目标Bean实现了SmartInitializingSingleton接口并重写了afterSingletonsInstantiated()方法）
 		for (String beanName : beanNames) {
 			// 拿到beanName对应的bean实例
 			Object singletonInstance = getSingleton(beanName);
@@ -1032,6 +1033,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					}, getAccessControlContext());
 				}
 				else {
+					// 执行afterSingletonsInstantiated()方法
 					smartSingleton.afterSingletonsInstantiated();
 				}
 				smartInitialize.end();
@@ -1054,6 +1056,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		// 这是注册前的最后一次校验了，主要是对属性 methodOverrides 进行校验。
 		if (beanDefinition instanceof AbstractBeanDefinition) {
 			try {
+				/*
+				 * 注册前的最后一次校验,这里的校验不同于之前的XML文件校验
+				 * 主要是对于 AbstractBeanDefinition 属性中的methodOverrides校验,
+				 * 校验methodOverrides是否与工厂方法并存或者methodOverrides对应的方法不存在
+				 */
 				((AbstractBeanDefinition) beanDefinition).validate();
 			}
 			catch (BeanDefinitionValidationException ex) {
@@ -1062,10 +1069,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 		}
 		// <Spring分析点19-2> 从缓存中获取指定 beanName 的 BeanDefinition
+		// 判断该beanName是否已经注册 ,根据不同的设置进行处理;
 		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
 		// <Spring分析点19-3> 如果已经存在
 		if (existingDefinition != null) {
-			// 如果存在但是不允许覆盖，抛出异常
+			// 如果对应的BeanName已经注册且在配置中配置了bean不允许被覆盖,则抛出异常
 			if (!isAllowBeanDefinitionOverriding()) {
 				throw new BeanDefinitionOverrideException(beanName, beanDefinition, existingDefinition);
 			}
@@ -1100,9 +1108,15 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		}
 		// <Spring分析点19-4> 如果未存在
 		else {
-			// 检测创建 Bean 阶段是否已经开启，如果开启了则需要对 beanDefinitionMap 进行并发控制
+			/*
+			 * 检测创建 Bean 阶段是否已经开启，即 是否有任何bean被标记为同时创建。
+			 * 如果bean工厂的bean创建已经开始, 那么就不能向 beanDefinitionNames 集合中添加beanName; （需要对 beanDefinitionMap 进行并发控制）
+			 * 因为创建bean时, 会迭代beanDefinitionNames集合，获取beanName，获取BeanDefinition创建bean实例
+			 * 一旦开始迭代, 则不允许在向该map集合中插入元素
+			 */
 			if (hasBeanCreationStarted()) {
-				// beanDefinitionMap 为全局变量，避免并发情况
+				// 处于bean创建阶段
+				// beanDefinitionMap 为全局变量，,这里肯定会存在并发访问的情况，因此使用synchronized
 				// Cannot modify startup-time collection elements anymore (for stable iteration)
 				synchronized (this.beanDefinitionMap) {
 					// 添加到 BeanDefinition 到 beanDefinitionMap 中。
@@ -1115,7 +1129,8 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					// 从 manualSingletonNames 移除 beanName
 					removeManualSingletonName(beanName);
 				}
-			} 
+			}
+			// 仍处于注册阶段
 			else {
 				// Still in startup registration phase
 				// 添加到 BeanDefinition 到 beanDefinitionMap 中。
@@ -1129,6 +1144,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		}
 
 		// <Spring分析点19-5> 重新设置 beanName 对应的缓存
+		// 如果该bean定义已经注册,并且为单例,则进行重置
 		if (existingDefinition != null || containsSingleton(beanName)) {
 			resetBeanDefinition(beanName);
 		}

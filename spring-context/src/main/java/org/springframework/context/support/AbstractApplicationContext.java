@@ -583,7 +583,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			 * <Spring分析点38-2.2> 将配置文件、注解 解析为各个 BeanDefinition ，并注册到 BeanFactory 中，这一步 Bean 还没有初始化，只是将配置信息都提取成 BeanDefinition，
 			 * 并将这些 BeanDefinition 都保存到了 Map 中(核心是一个 key为beanName，value为 BeanDefinition 的 Map)
 			 */
-			/**
+			/*
 			 * obtainFreshBeanFactory()方法中根据实现类的不同调用不同的refreshBeanFactory()方法
 			 *
 			 * <-----  注解模式  ----->
@@ -634,7 +634,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				/*
 				 * <Spring分析点38-5> 执行已被注册的 BeanFactoryPostProcessor接口各实现类#postProcessBeanFactory(factory) 方法
 				 */
-				/**
+				/*
 				 * <-----  注解模式  ----->
 				 * 1. 如果是使用 AnnotationConfigApplicationContext 来初始化环境(该方法是解析注册bean的重要入口)
 				 * 在该方法中执行了 {@link org.springframework.context.annotation.ConfigurationClassPostProcessor#processConfigBeanDefinitions} 方法
@@ -801,8 +801,33 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see #getBeanFactory()
 	 */
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
+		/*
+		 * 此处根据实现类的不同调用不同的refreshBeanFactory()方法
+		 *
+		 * <----- 注解配置模式  ----->
+		 * 1. 如果是使用 AnnotationConfigApplicationContext 来初始化环境，调用的是GenericApplicationContext#refreshBeanFactory()方法
+		 * {@link GenericApplicationContext#refreshBeanFactory()}，在该方法中只是对beanFactory的一些变量进行设置
+		 *
+		 * <----- XML配置模式  ----->
+		 * 2. 如果是使用ClassPathXmlApplicationContext来初始化环境，用的是{@link AbstractRefreshableApplicationContext#refreshBeanFactory()}
+		 * 由于还没有对beanFactory进行初始化,所以在该方法中,完成了对beanFactory的初始化操作
+		 *
+		 * 注意:两种方式都使用的是间接继承AbstractApplicationContext这个抽象类,并重写refreshBeanFactory()方法
+		 */
 		refreshBeanFactory();
-		// 返回已经刷新完成的bean工厂
+		/*
+		 * 返回已经刷新完成的bean工厂
+		 * <----- 注解配置模式  ----->
+		 * 1. GenericApplicationContext 继承了 AbstractApplicationContext 并重写了getBeanFactory()方法;
+		 * 2. 所以此处调用的是 GenericApplicationContext#getBeanFactory()方法，将GenericApplicationContext中
+		 *      DefaultListableBeanFactory 类型的 beanFactory 以 ConfigurableListableBeanFactory 类型返回;
+		 * 3. DefaultListableBeanFactory 实现了 ConfigurableListableBeanFactory 接口{@link GenericApplicationContext#getBeanFactory()}
+		 *
+		 * <----- XML配置模式  ----->
+		 * 返回已经刷新完成bean工厂
+		 * {@link AbstractRefreshableApplicationContext#getBeanFactory()}
+		 *
+		 */
 		return getBeanFactory();
 	}
 

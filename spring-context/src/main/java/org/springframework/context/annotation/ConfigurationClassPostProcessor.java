@@ -284,9 +284,20 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	public void processConfigBeanDefinitions(BeanDefinitionRegistry registry) {
 		// 初始化 BeanDefinitionHolder 集合
 		List<BeanDefinitionHolder> configCandidates = new ArrayList<>();
-		// 获取 BeanFactory 中的 beanDefinitionNames（所有已经注册的BeanName）
+		// 获取 BeanFactory 中的 beanDefinitionNames（所有已经注册的BeanName），
+		// 其实就是之前 AnnotationConfigUtils#registerAnnotationConfigProcessors注册的，再加上我们的配置类
+		/*
+		 * (1).org.springframework.context.annotation.internalConfigurationAnnotationProcessor   -->只有这一个实现了BeanDefinitionRegistryPostProcessor接口
+		 * (2).org.springframework.context.annotation.internalAutowiredAnnotationProcessor
+		 * (3).org.springframework.context.annotation.internalCommonAnnotationProcessor
+		 * (4).org.springframework.context.annotation.internalPersistenceAnnotationProcessor    -->这个没有被注册,JPA环境下注册
+		 * (5).org.springframework.context.event.internalEventListenerProcessor
+		 * (6).org.springframework.context.event.internalEventListenerFactory
+		 * (7).zhaoConfig
+		 * 注：5.1前仍有一个org.springframework.context.annotation.internalRequiredAnnotationProcessor（现已废弃）
+		 */
 		String[] candidateNames = registry.getBeanDefinitionNames();
-		// 遍历 所有已经注册的BeanName
+		// <Spring分析点40-1> 遍历 所有已经注册的BeanName,, 将加了@Configuration, @Component, @ComponentScan, @Import, @ImportResource注解的配置类 添加到configCandidates集合
 		for (String beanName : candidateNames) {
 			// 通过BeanName，得到BeanDefinition实例
 			BeanDefinition beanDef = registry.getBeanDefinition(beanName);
@@ -311,13 +322,16 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		}
 
 		// Return immediately if no @Configuration classes were found
-		// 没有@Configuration注解的类，直接退出
+		/*
+		 * 如果没有@Configuration自定义注解类,直接退出
+		 * 下面只对添加@Configuration,@Component, @ComponentScan, @Import, @ImportResource注解的类进行处理
+		 */
 		if (configCandidates.isEmpty()) {
 			return;
 		}
 
 		// Sort by previously determined @Order value, if applicable
-		// 对configCandidates 进行 排序,按照@Order 进行排序
+		// <Spring分析点40-2> 对configCandidates 进行 排序,按照@Order 进行排序
 		configCandidates.sort((bd1, bd2) -> {
 			int i1 = ConfigurationClassUtils.getOrder(bd1.getBeanDefinition());
 			int i2 = ConfigurationClassUtils.getOrder(bd2.getBeanDefinition());
@@ -328,15 +342,17 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		// 初始化一个ConfigurationClassParser解析器，可以解析@Congiguration配置类
 		SingletonBeanRegistry sbr = null;
 		// 判断 BeanDefinitionRegistry 是不是 SingletonBeanRegistry子类，若是会将 registry 强转为 SingletonBeanRegistry
-		// 因，通常初始化时都是DefaultListableBeanFactory，而他是SingletonBeanRegistry 的子类，所以通常这里为true
+		// 通常初始化时都是DefaultListableBeanFactory，而他是SingletonBeanRegistry 的子类，所以通常这里为true
 		if (registry instanceof SingletonBeanRegistry) {
 			sbr = (SingletonBeanRegistry) registry;
+			//是否有自定义的
 			if (!this.localBeanNameGeneratorSet) {
 				// BeanName生成器，因为后面会扫描出所有加入到Spring容器中class类，然后把这些class解析成BeanDefinition类，
 				// 此时需要利用BeanNameGenerator为这些BeanDefinition生成beanName
 
 				// 看看有无自定义的 BeanName生成器，若有，那就直接用
 				BeanNameGenerator generator = (BeanNameGenerator) sbr.getSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR);
+				// 如果有则直接用，否则用Spring默认的
 				if (generator != null) {
 					this.componentScanBeanNameGenerator = generator;
 					this.importBeanNameGenerator = generator;
@@ -348,6 +364,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			this.environment = new StandardEnvironment();
 		}
 
+		//  <Spring分析点40-3> 循环解析每个配置类
 		// Parse each @Configuration class
 		// 初始并实例化 一个ConfigurationClassParser解析器，可以解析@Congiguration配置类
 		ConfigurationClassParser parser = new ConfigurationClassParser(
@@ -355,12 +372,16 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				this.resourceLoader, this.componentScanBeanNameGenerator, registry);
 
 		// 实例化2个Set
-		// candidates 用于将之前加入的configCandidates进行去重，因为可能有多个配置类重复了
+		// 将configCandidates(List)集合中的BeanDefinitionHolder放入candidates(Set)集合中进行去重,因为可能有多个配置类重复了
 		// alreadyParsed 用于判断是否处理过
 		Set<BeanDefinitionHolder> candidates = new LinkedHashSet<>(configCandidates);
 		Set<ConfigurationClass> alreadyParsed = new HashSet<>(configCandidates.size());
+
 		do {
 			StartupStep processConfig = this.applicationStartup.start("spring.context.config-classes.parse");
+			// candidates: 需要解析的配置类集合
+			//  对添加注解(@Configuration, @Component, @ComponentScan, @Import, @ImportResource等)的类进行解析，该步骤会递归完成了对所有加注解的bean的解析工作
+			//
 			// 解析Java配置类，在此处会解析配置类上的注解(@ComponentScan扫描出的类，@Import注册的类，以及@Bean方法定义的类)
 			// 注意：这一步只会将加了@Configuration注解以及通过@ComponentScan注解扫描的类 加入到BeanDefinitionMap中
 			// 通过其他注解(例如@Import、@Bean)的方式，在parse()方法这一步并不会将其解析为BeanDefinition和不会放入到BeanDefinitionMap中，
@@ -369,11 +390,13 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			// 主要校验配置类不能使用final修饰符（CGLIB代理是生成一个子类，因此原先的类不能使用final修饰）
 			parser.validate();
 
-			// 排除已处理过的配置类
+			// 获取所有的配置类
 			Set<ConfigurationClass> configClasses = new LinkedHashSet<>(parser.getConfigurationClasses());
+			// /移除所有已经解析过的配置类
 			configClasses.removeAll(alreadyParsed);
 
 			// Read the model and create bean definitions based on its content
+			// 读取模型并根据其内容创建BeanDefinitionReader
 			if (this.reader == null) {
 				this.reader = new ConfigurationClassBeanDefinitionReader(
 						registry, this.sourceExtractor, this.resourceLoader, this.environment,
@@ -388,6 +411,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			processConfig.tag("classCount", () -> String.valueOf(configClasses.size())).end();
 			// 清空已处理的配置类
 			candidates.clear();
+
 			// 再次获取容器中bean定义数量  如果大于 之前获取的bean定义数量，则说明有新的bean注册到容器中，需要再次解析
 			// 这里判断registry.getBeanDefinitionCount() > candidateNames.length的目的是为了知道reader.loadBeanDefinitions(configClasses)这一步有没有向BeanDefinitionMap中添加新的BeanDefinition
 			// 实际上就是看配置类(假如ZhaoConfig类会向BeanDefinitionMap中添加bean)，如果有，registry.getBeanDefinitionCount()就会大于candidateNames.length

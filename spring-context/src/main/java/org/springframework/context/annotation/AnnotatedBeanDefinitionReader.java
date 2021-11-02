@@ -267,7 +267,7 @@ public class AnnotatedBeanDefinitionReader {
 			return;
 		}
 
-		// 设置回调
+		// 设置 InstanceSupplier 属性
 		abd.setInstanceSupplier(supplier);
 		// 解析 AnnotatedBeanDefinition 的作用域，若@Scope("prototype")，则Bean为原型类型；若@Scope("singleton")，则Bean为单例类型(默认）
 		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
@@ -277,7 +277,7 @@ public class AnnotatedBeanDefinitionReader {
 		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
 
 
-		// 处理 AnnotatedBeanDefinition 中的通用注解，主要是@Lazy、@DependsOn、@Primary、@Role等等注解
+		// 处理 AnnotatedBeanDefinition 中的通用注解，主要是@Lazy、@DependsOn、 @Description、@Primary、@Role等等注解
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
 		// 如果在向容器注册 AnnotatedBeanDefinition 时，使用了额外的限定符注解，则解析限定符注解。
 		// 主要是配置的关于autowiring自动依赖注入装配的限定条件，即@Qualifier注解，Spring自动依赖注入装配默认是按类型装配，如果使用@Qualifier则按名称
