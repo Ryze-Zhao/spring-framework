@@ -1257,7 +1257,13 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @param beanName the name of the bean
 	 */
 	protected boolean isPrototypeCurrentlyInCreation(String beanName) {
+		// prototypesCurrentlyInCreation: 存储当前正在创建的bean的名称
 		Object curVal = this.prototypesCurrentlyInCreation.get();
+		/*
+		 * 如果正在创建的beanName是原型, 并且已经存在于prototypesCurrentlyInCreation(正在创建的原型类型bean集合)集合中
+		 * 如果是原型,并且已经存在于该集合中, 那么可以判断出此时该bean已经出现循环依赖, 那么对于原型类型, 不解决循环依赖,
+		 * 而是抛出异常
+		 */
 		return (curVal != null &&
 				// 相等
 				(curVal.equals(beanName) || (curVal instanceof Set &&
