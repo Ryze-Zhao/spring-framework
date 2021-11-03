@@ -17,7 +17,7 @@ public class AnnotationConfigApplicationContextStartTest {
 
 		// 方式二：Java配置类
 	    AnnotationConfigApplicationContext context= new AnnotationConfigApplicationContext(ZhaoConfig.class);
-		WayService wayService = context.getBean(WayServiceImpl.class);
+		WayService wayService = context.getBean(WayService.class);
 		wayService.query();
 
 

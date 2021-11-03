@@ -221,10 +221,11 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	@Nullable
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
 		// Quick check for existing instance without full singleton lock
-		// 从单例缓冲中加载 bean
+		// 从单例缓冲中加载 bean（检查缓存中是否存在实例,存在的话就直接返回）
 		Object singletonObject = this.singletonObjects.get(beanName);
 		// 缓存中的 bean 为空，且当前 bean 正在创建
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
+			// 如果此bean正在加载,但是可以从earlySingletonObjects中获取到目标bean,就返回该对象;否则进行创建
 			singletonObject = this.earlySingletonObjects.get(beanName);
 			//双重校验
 			// earlySingletonObjects 中没有，且允许提前创建
@@ -232,21 +233,24 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				// 加锁
 				synchronized (this.singletonObjects) {
 					// Consistent creation of early reference within full singleton lock
-					// 在完整单例锁中一致地创建早期引用
-					// 从 earlySingletonObjects 获取
+					// 在完整单例锁中一致地创建早期引用,从 earlySingletonObjects 获取
 					singletonObject = this.singletonObjects.get(beanName);
 					if (singletonObject == null) {
 						// 从 earlySingletonObjects 获取
 						singletonObject = this.earlySingletonObjects.get(beanName);
 						if (singletonObject == null) {
 							// 从 singletonFactories 中获取对应的 ObjectFactory
+							// 当某些方法需要提前初始化的时候会调用addSingletonFactory方法将对应的ObjectFactory初始化策略存储在singletonFactories(缓存中)
+							// 如果早期目标bean获取失败, 则尝试从缓存中获取创建目标bean的工厂bean(解决循环依赖)
 							ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 							if (singletonFactory != null) {
-								// 获得 bean
+								// 获得 bean（调用预先设定的getObject方法,创建singletonObject）
 								singletonObject = singletonFactory.getObject();
 								// 添加 bean 到 earlySingletonObjects 中
+								// 记录在earlySingletonObjects缓存中,避免循环依赖(不等bean创建完成就将创建bean的ObjectFactory提早曝光加入缓存中,一旦下一个bean创建需要依赖上一个bean,则直接使用ObjectFactory)
 								this.earlySingletonObjects.put(beanName, singletonObject);
 								// 从 singletonFactories 中移除对应的 ObjectFactory
+								// singletonFactories:用于保存BeanName和创建工厂bean之间的关系,与BeanName相关的bean已经被创建,所以需要从singletonFactories移除BeanName
 								this.singletonFactories.remove(beanName);
 							}
 						}

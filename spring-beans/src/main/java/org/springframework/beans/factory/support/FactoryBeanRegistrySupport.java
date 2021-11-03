@@ -99,14 +99,15 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 	 * @see org.springframework.beans.factory.FactoryBean#getObject()
 	 */
 	protected Object getObjectFromFactoryBean(FactoryBean<?> factory, String beanName, boolean shouldPostProcess) {
-		// <Spring分析点22-1> 为单例模式且缓存中存在
+		// <Spring分析点22-1> FactoryBean为单例模式且缓存中存在（FactoryBean是单态模式，并且FactoryBean缓存中存在指定名称的Bean实例对象）
 		if (factory.isSingleton() && containsSingleton(beanName)) {
 			// <Spring分析点22-1.1> 单例锁
 			synchronized (getSingletonMutex()) {
-				// <Spring分析点22-1.2> 从缓存中获取指定的 factoryBean
+				// <Spring分析点22-1.2> 从缓存中获取指定的 factoryBean（直接从FactoryBean缓存中获取指定名称的Bean实例对象）
 				Object object = this.factoryBeanObjectCache.get(beanName);
+				// Bean工厂缓存中没有指定名称的实例对象，则生产该实例对象
 				if (object == null) {
-					// 为空，则从 FactoryBean 中获取对象
+					// 为空，则从 FactoryBean 中获取对象（调用FactoryBean#getObject方法生产指定Bean的实例对象）
 					object = doGetObjectFromFactoryBean(factory, beanName);
 					// 从缓存中获取
 					// Only post-process and store if not put there already during getObject() call above
@@ -126,7 +127,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 							// 单例 Bean 的前置处理
 							beforeSingletonCreation(beanName);
 							try {
-								// 对从 FactoryBean 获取的对象进行后处理
+								// 对从 FactoryBean 获取的对象进行后处理（为创建出来的Bean实例对象添加BeanPostProcessor后置处理器）
 								// 生成的对象将暴露给 bean 引用
 								object = postProcessObjectFromFactoryBean(object, beanName);
 							}
@@ -148,14 +149,14 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 				return object;
 			}
 		}
-		// <Spring分析点22-2>
+		// <Spring分析点22-2> FactoryBean 不为单例模式 或 缓存中不存在
 		else {
-			// 为空，则从 FactoryBean 中获取对象
+			// 从 FactoryBean 中获取对象（调用FactoryBean#getObject方法生产指定Bean的实例对象）
 			Object object = doGetObjectFromFactoryBean(factory, beanName);
 			// 需要后续处理
 			if (shouldPostProcess) {
 				try {
-					// 对从 FactoryBean 获取的对象进行后处理
+					// 对从 FactoryBean 获取的对象进行后处理（为创建出来的Bean实例对象添加BeanPostProcessor后置处理器）
 					// 生成的对象将暴露给 bean 引用
 					object = postProcessObjectFromFactoryBean(object, beanName);
 				}
