@@ -102,6 +102,12 @@ public class ProxyCreatorSupport extends AdvisedSupport {
 		if (!this.active) {
 			activate();
 		}
+		/*
+		 * {@link org.springframework.aop.framework.DefaultAopProxyFactory#createAopProxy(org.springframework.aop.framework.AdvisedSupport)}
+		 * ProxyFactory的父类ProxyCreatorSupport中的方法,父类ProxyCreatorSupport中维护着变量AopProxyFactory,
+		 * DefaultAopProxyFactory是AopProxyFactory(接口)的实现类, 通过DefaultAopProxyFactory#createAopProxy()
+		 * 根据条件获取JdkDynamicAopProxy或CglibAopProxy实例, 所以创建代理类是可以传递this
+		 */
 		return getAopProxyFactory().createAopProxy(this);
 	}
 
