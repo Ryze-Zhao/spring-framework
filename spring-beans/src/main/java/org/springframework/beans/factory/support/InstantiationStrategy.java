@@ -37,20 +37,21 @@ public interface InstantiationStrategy {
 
 	/**
 	 * Return an instance of the bean with the given name in this factory.
-	 * @param bd the bean definition
+	 * 默认构造方法：返回此工厂中具有给定名称的bean实例。
+	 * @param bd the bean definition	BeanDefinition
 	 * @param beanName the name of the bean when it is created in this context.
-	 * The name can be {@code null} if we are autowiring a bean which doesn't
-	 * belong to the factory.
-	 * @param owner the owning BeanFactory
-	 * @return a bean instance for this bean definition
+	 * The name can be {@code null} if we are autowiring a bean which doesn't belong to the factory.
+	 *                 在此上下文中创建bean时的名称。如果我们正在自动连接一个不属于工厂的bean，那么这个名称可以为null。
+	 * @param owner the owning BeanFactory	拥有的工厂
+	 * @return a bean instance for this bean definition	此BeanDefinition的bean实例
 	 * @throws BeansException if the instantiation attempt failed
 	 */
 	Object instantiate(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner)
 			throws BeansException;
 
 	/**
-	 * Return an instance of the bean with the given name in this factory,
-	 * creating it via the given constructor.
+	 * Return an instance of the bean with the given name in this factory,creating it via the given constructor.
+	 * 指定构造方法
 	 * @param bd the bean definition
 	 * @param beanName the name of the bean when it is created in this context.
 	 * The name can be {@code null} if we are autowiring a bean which doesn't
@@ -65,8 +66,8 @@ public interface InstantiationStrategy {
 			Constructor<?> ctor, Object... args) throws BeansException;
 
 	/**
-	 * Return an instance of the bean with the given name in this factory,
-	 * creating it via the given factory method.
+	 * Return an instance of the bean with the given name in this factory,creating it via the given factory method.
+	 * 工厂方法
 	 * @param bd the bean definition
 	 * @param beanName the name of the bean when it is created in this context.
 	 * The name can be {@code null} if we are autowiring a bean which doesn't

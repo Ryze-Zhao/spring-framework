@@ -52,16 +52,21 @@ public interface GenericConverter {
 	 * <p>Each entry is a convertible source-to-target type pair.
 	 * <p>For {@link ConditionalConverter conditional converters} this method may return
 	 * {@code null} to indicate all source-to-target pairs should be considered.
+	 * 返回此转换器可以转换的源类型和目标类型。
+	 * 每个条目都是可转换的源到目标类型对。
+	 * 对于条件转换器，此方法可能返回null，以指示应考虑所有源到目标对。
 	 */
 	@Nullable
 	Set<ConvertiblePair> getConvertibleTypes();
 
 	/**
 	 * Convert the source object to the targetType described by the {@code TypeDescriptor}.
-	 * @param source the source object to convert (may be {@code null})
-	 * @param sourceType the type descriptor of the field we are converting from
-	 * @param targetType the type descriptor of the field we are converting to
-	 * @return the converted object
+	 * 将源对象转换为TypeDescriptor描述的targetType。
+	 *
+	 * @param source the source object to convert (may be {@code null})     要转换的源对象（可能为空）
+	 * @param sourceType the type descriptor of the field we are converting from    要从中转换的字段的类型描述符
+	 * @param targetType the type descriptor of the field we are converting to      我们要转换到的字段的类型描述符
+	 * @return the converted object     转换的对象
 	 */
 	@Nullable
 	Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType);

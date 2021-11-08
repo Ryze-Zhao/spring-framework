@@ -52,6 +52,7 @@ import org.springframework.beans.BeansException;
  * programmatically registered post-processors. Furthermore, the
  * {@link org.springframework.core.annotation.Order @Order} annotation is not
  * taken into account for {@code BeanFactoryPostProcessor} beans.
+ * 始终需要注意的是 BeanFactoryPostProcessor 是与 BeanDefinition 打交道的，如果想要与 Bean 打交道，请使用 BeanPostProcessor
  *
  * @author Juergen Hoeller
  * @author Sam Brannen
@@ -63,11 +64,13 @@ import org.springframework.beans.BeansException;
 public interface BeanFactoryPostProcessor {
 
 	/**
-	 * Modify the application context's internal bean factory after its standard
-	 * initialization. All bean definitions will have been loaded, but no beans
+	 * 1、Modify the application context's internal bean factory after its standard initialization.
+	 * 2、All bean definitions will have been loaded, but no beans
 	 * will have been instantiated yet. This allows for overriding or adding
 	 * properties even to eager-initializing beans.
-	 * @param beanFactory the bean factory used by the application context
+	 * 该方法的作用：在标准初始化之后修改 `ApplicationContext` 的内部 `BeanFactory` 。
+	 * 作用时机：所有BeanDefinition都已加载，但尚未实例化任何bean。这允许重写或添加属性，甚至可以初始化bean。
+	 * @param beanFactory the bean factory used by the application context	 `ApplicationContext` 使用的 `BeanFactory`
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 */
 	void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException;

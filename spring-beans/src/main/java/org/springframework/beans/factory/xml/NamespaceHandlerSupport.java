@@ -45,8 +45,8 @@ import org.springframework.lang.Nullable;
 public abstract class NamespaceHandlerSupport implements NamespaceHandler {
 
 	/**
-	 * Stores the {@link BeanDefinitionParser} implementations keyed by the
-	 * local name of the {@link Element Elements} they handle.
+	 * Stores the {@link BeanDefinitionParser} implementations keyed by the local name of the {@link Element Elements} they handle.
+	 * 存储由它们处理的{@link Element}的本地名称键控的{@link BeanDefinitionParser}实现。
 	 */
 	private final Map<String, BeanDefinitionParser> parsers = new HashMap<>();
 
@@ -64,23 +64,41 @@ public abstract class NamespaceHandlerSupport implements NamespaceHandler {
 
 
 	/**
-	 * Parses the supplied {@link Element} by delegating to the {@link BeanDefinitionParser} that is
-	 * registered for that {@link Element}.
+	 * Parses the supplied {@link Element} by delegating to the {@link BeanDefinitionParser} that is registered for that {@link Element}.
+	 * 通过委托给为{@link Element}注册的{@link BeanDefinitionParser}来解析提供的{@link Element}。
 	 */
 	@Override
 	@Nullable
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
+		// <Spring分析点17-1> 获得元素对应的 BeanDefinitionParser 对象
+		/*
+		 * 寻找解析器并进行解析操作,在自定义handler中并没有重写父类中parse()方法,因此此处是调用父类AbstractBeanDefinitionParser中的parse()方法
+		 *
+		 * 在parse()方法中根据标签命名空间获取不同的解析进行解析
+		 * 例如: 标签:<context:component-scan base-package="com.ryze.zhao"/>的解析为ComponentScanBeanDefinitionParser
+		 * 该解析器会去解析包路径信息, 注册包路径下的所有BeanDefinition
+		 */
 		BeanDefinitionParser parser = findParserForElement(element, parserContext);
+		// <Spring分析点17-2> 执行解析
+		/*
+		 * 解析器1:
+		 * {@link AbstractBeanDefinitionParser#parse(org.w3c.dom.Element, org.springframework.beans.factory.xml.ParserContext)}
+		 * 解析器2:<context:component-scan base-package="com.ioc.lic"/>
+		 * {@link org.springframework.context.annotation.ComponentScanBeanDefinitionParser#parse(org.w3c.dom.Element, org.springframework.beans.factory.xml.ParserContext)}
+		 */
 		return (parser != null ? parser.parse(element, parserContext) : null);
 	}
 
 	/**
-	 * Locates the {@link BeanDefinitionParser} from the register implementations using
-	 * the local name of the supplied {@link Element}.
+	 * Locates the {@link BeanDefinitionParser} from the register implementations using the local name of the supplied {@link Element}.
+	 * 使用提供的{@link Element}的本地名称从寄存器实现中查找{@link BeanDefinitionParser}。
 	 */
 	@Nullable
 	private BeanDefinitionParser findParserForElement(Element element, ParserContext parserContext) {
+		// 获取元素名称,也就是<myname:user>中的user,若在实例中,此时localName为user
 		String localName = parserContext.getDelegate().getLocalName(element);
+		// 获得 BeanDefinitionParser 对象
+		// 根据user找到对应的解析器,也就是在 registerBeanDefinitionParser("user", new UserBeanDefinitionParser())  中注册的解析器
 		BeanDefinitionParser parser = this.parsers.get(localName);
 		if (parser == null) {
 			parserContext.getReaderContext().fatal(
@@ -130,9 +148,8 @@ public abstract class NamespaceHandlerSupport implements NamespaceHandler {
 
 
 	/**
-	 * Subclasses can call this to register the supplied {@link BeanDefinitionParser} to
-	 * handle the specified element. The element name is the local (non-namespace qualified)
-	 * name.
+	 * Subclasses can call this to register the supplied {@link BeanDefinitionParser} to handle the specified element. The element name is the local (non-namespace qualified) name.
+	 * 子类可以调用它来注册提供的BeanDefinitionParser来处理指定的元素。元素名称是本地（非命名空间限定）名称
 	 */
 	protected final void registerBeanDefinitionParser(String elementName, BeanDefinitionParser parser) {
 		this.parsers.put(elementName, parser);

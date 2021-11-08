@@ -45,6 +45,8 @@ public interface BeanFactoryAware extends Aware {
 	 * <p>Invoked after the population of normal bean properties
 	 * but before an initialization callback such as
 	 * {@link InitializingBean#afterPropertiesSet()} or a custom init-method.
+	 * 将 BeanFactory 提供给 bean 实例回调
+	 * 调用时机和 setBeanClassLoader 一样
 	 * @param beanFactory owning BeanFactory (never {@code null}).
 	 * The bean can immediately call methods on the factory.
 	 * @throws BeansException in case of initialization errors

@@ -55,17 +55,31 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 	public static final String DEFAULT_HANDLER_MAPPINGS_LOCATION = "META-INF/spring.handlers";
 
 
-	/** Logger available to subclasses. */
+	/**
+	 * Logger available to subclasses.
+	 */
 	protected final Log logger = LogFactory.getLog(getClass());
 
-	/** ClassLoader to use for NamespaceHandler classes. */
+	/**
+	 * ClassLoader to use for NamespaceHandler classes.
+	 * 用于NamespaceHandler类的ClassLoader
+	 */
 	@Nullable
 	private final ClassLoader classLoader;
 
-	/** Resource location to search for. */
+	/**
+	 * Resource location to search for.
+	 * NamespaceHandler 映射配置文件地址
+	 */
 	private final String handlerMappingsLocation;
 
-	/** Stores the mappings from namespace URI to NamespaceHandler class name / instance. */
+	/**
+	 * Stores the mappings from namespace URI to NamespaceHandler class name / instance.
+	 * NamespaceHandler 映射。
+	 * <p>
+	 * key：命名空间
+	 * value：分成两种情况：1）未初始化时，对应的 NamespaceHandler 的类路径；2）已初始化，对应的 NamespaceHandler 对象
+	 */
 	@Nullable
 	private volatile Map<String, Object> handlerMappings;
 
@@ -107,32 +121,46 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 
 
 	/**
-	 * Locate the {@link NamespaceHandler} for the supplied namespace URI
-	 * from the configured mappings.
-	 * @param namespaceUri the relevant namespace URI
-	 * @return the located {@link NamespaceHandler}, or {@code null} if none found
+	 * Locate the {@link NamespaceHandler} for the supplied namespace URI from the configured mappings.
+	 * 从配置的映射中找到提供的命名空间URI的命名空间处理程序。
+	 * @param namespaceUri the relevant namespace URI  相关的名称空间URI
+	 * @return the located {@link NamespaceHandler}, or {@code null} if none found 找到的NamespaceHandler，如果找不到则为null
 	 */
 	@Override
 	@Nullable
 	public NamespaceHandler resolve(String namespaceUri) {
+		// <Spring分析点16-1> 获取所有已经配置的 Handler 映射
 		Map<String, Object> handlerMappings = getHandlerMappings();
+		// <Spring分析点16-2> 根据 namespaceUri 获取 handler 的信息
 		Object handlerOrClassName = handlerMappings.get(namespaceUri);
 		if (handlerOrClassName == null) {
+			// <Spring分析点16-3.1> 不存在
 			return null;
 		}
 		else if (handlerOrClassName instanceof NamespaceHandler) {
+			// <Spring分析点16-3.2> 已经做过解析的情况,直接从缓存读取
 			return (NamespaceHandler) handlerOrClassName;
 		}
 		else {
+			// <Spring分析点16-3.3> 没有做过解析,则返回的是类路径
 			String className = (String) handlerOrClassName;
 			try {
+				// 获得类，并创建 NamespaceHandler 对象
+				// 利用反射将类路径转换为类
 				Class<?> handlerClass = ClassUtils.forName(className, this.classLoader);
 				if (!NamespaceHandler.class.isAssignableFrom(handlerClass)) {
 					throw new FatalBeanException("Class [" + className + "] for namespace [" + namespaceUri +
 							"] does not implement the [" + NamespaceHandler.class.getName() + "] interface");
 				}
+				// 初始化类
 				NamespaceHandler namespaceHandler = (NamespaceHandler) BeanUtils.instantiateClass(handlerClass);
-				namespaceHandler.init();
+				// 初始化 NamespaceHandler 对象
+				/*
+				 * 调用自定义的NamespaceHandler的初始化方法
+				 * SpringMvc: {@link org.springframework.web.servlet.config.MvcNamespaceHandler#init()}
+				 */
+				 namespaceHandler.init();
+				// 将该handler记录在缓存中,以便下次调用该handler可以直接获取,不用再次转换
 				handlerMappings.put(namespaceUri, namespaceHandler);
 				return namespaceHandler;
 			}
@@ -149,9 +177,11 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 
 	/**
 	 * Load the specified NamespaceHandler mappings lazily.
+	 * 延迟加载指定的NamespaceHandler映射
 	 */
 	private Map<String, Object> getHandlerMappings() {
 		Map<String, Object> handlerMappings = this.handlerMappings;
+		// 双重检查锁，延迟加载
 		if (handlerMappings == null) {
 			synchronized (this) {
 				handlerMappings = this.handlerMappings;
@@ -160,11 +190,13 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 						logger.trace("Loading NamespaceHandler mappings from [" + this.handlerMappingsLocation + "]");
 					}
 					try {
+						// 读取 handlerMappingsLocation
 						Properties mappings =
 								PropertiesLoaderUtils.loadAllProperties(this.handlerMappingsLocation, this.classLoader);
 						if (logger.isTraceEnabled()) {
 							logger.trace("Loaded NamespaceHandler mappings: " + mappings);
 						}
+						// 初始化到 handlerMappings 中
 						handlerMappings = new ConcurrentHashMap<>(mappings.size());
 						CollectionUtils.mergePropertiesIntoMap(mappings, handlerMappings);
 						this.handlerMappings = handlerMappings;

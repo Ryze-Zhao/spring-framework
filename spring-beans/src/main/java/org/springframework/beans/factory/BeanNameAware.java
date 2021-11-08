@@ -40,6 +40,7 @@ public interface BeanNameAware extends Aware {
 	 * <p>Invoked after population of normal bean properties but before an
 	 * init callback such as {@link InitializingBean#afterPropertiesSet()}
 	 * or a custom init-method.
+	 * 在创建此 bean 的  `BeanFactory` 中设置 beanName
 	 * @param name the name of the bean in the factory.
 	 * Note that this name is the actual bean name used in the factory, which may
 	 * differ from the originally specified name: in particular for inner bean

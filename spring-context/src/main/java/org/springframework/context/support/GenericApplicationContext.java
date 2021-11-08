@@ -106,10 +106,12 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
 
 	/**
 	 * Create a new GenericApplicationContext.
+	 * 创建新的GenericaApplicationContext
 	 * @see #registerBeanDefinition
 	 * @see #refresh
 	 */
 	public GenericApplicationContext() {
+		// 这个类包含很多重要的容器，比如beanDefinitionMap等等
 		this.beanFactory = new DefaultListableBeanFactory();
 	}
 
@@ -263,8 +265,8 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
 	//---------------------------------------------------------------------
 
 	/**
-	 * Do nothing: We hold a single internal BeanFactory and rely on callers
-	 * to register beans through our public methods (or the BeanFactory's).
+	 * Do nothing: We hold a single internal BeanFactory and rely on callers to register beans through our public methods (or the BeanFactory's).
+	 * 什么也不做：我们拥有一个内部BeanFactory，依靠调用方通过我们的公共方法（或BeanFactory的）注册Bean。
 	 * @see #registerBeanDefinition
 	 */
 	@Override
@@ -292,8 +294,8 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
 	}
 
 	/**
-	 * Return the single internal BeanFactory held by this context
-	 * (as ConfigurableListableBeanFactory).
+	 * Return the single internal BeanFactory held by this context(as ConfigurableListableBeanFactory).
+	 * 返回此上下文持有的单个内部BeanFactory（作为ConfigurableListableBeanFactory）
 	 */
 	@Override
 	public final ConfigurableListableBeanFactory getBeanFactory() {

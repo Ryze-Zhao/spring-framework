@@ -32,9 +32,11 @@ public interface ConverterFactory<S, R> {
 
 	/**
 	 * Get the converter to convert from S to target type T, where T is also an instance of R.
-	 * @param <T> the target type
-	 * @param targetType the target type to convert to
-	 * @return a converter from S to T
+	 * 获取要从S转换为目标类型T的转换器，其中T也是R的一个实例。
+	 *
+	 * @param <T> the target type       要转换为的目标类型
+	 * @param targetType the target type to convert to      目标类型
+	 * @return a converter from S to T      从S到T的转换器
 	 */
 	<T extends R> Converter<S, T> getConverter(Class<T> targetType);
 

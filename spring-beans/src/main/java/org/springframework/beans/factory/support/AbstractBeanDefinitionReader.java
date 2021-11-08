@@ -86,6 +86,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 		this.registry = registry;
 
 		// Determine ResourceLoader to use.
+		// 确定要使用的ResourceLoader。
 		if (this.registry instanceof ResourceLoader) {
 			this.resourceLoader = (ResourceLoader) this.registry;
 		}
@@ -94,6 +95,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 		}
 
 		// Inherit Environment if possible
+		// 如果可能，继承环境
 		if (this.registry instanceof EnvironmentCapable) {
 			this.environment = ((EnvironmentCapable) this.registry).getEnvironment();
 		}
@@ -197,20 +199,23 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 
 	/**
 	 * Load bean definitions from the specified resource location.
-	 * <p>The location can also be a location pattern, provided that the
-	 * ResourceLoader of this bean definition reader is a ResourcePatternResolver.
-	 * @param location the resource location, to be loaded with the ResourceLoader
-	 * (or ResourcePatternResolver) of this bean definition reader
-	 * @param actualResources a Set to be filled with the actual Resource objects
-	 * that have been resolved during the loading process. May be {@code null}
-	 * to indicate that the caller is not interested in those Resource objects.
-	 * @return the number of bean definitions found
-	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
+	 * <p>The location can also be a location pattern, provided that the ResourceLoader of this bean definition reader is a ResourcePatternResolver.
+	 *
+	 * 从指定的资源位置加载BeanDefinition。 如果这个BeanDefinition读取器的ResourceLoader是resourcepatternsolver，那么位置也可以是位置模式。
+	 *
+	 *
+	 * @param location the resource location, to be loaded with the ResourceLoader (or ResourcePatternResolver) of this bean definition reader
+	 *                 location–要使用此BeanDefinition读取器的ResourceLoader（或ResourcePatternResolver）加载的资源位置
+	 * @param actualResources a Set to be filled with the actual Resource objects that have been resolved during the loading process. May be {@code null} to indicate that the caller is not interested in those Resource objects.
+	 *                 actualResources–要填充在加载过程中解析的实际资源对象的集合。可以为null，表示调用者对这些资源对象不感兴趣。
+	 * @return the number of bean definitions found     找到的BeanDefinition数
+	 * @throws BeanDefinitionStoreException in case of loading or parsing errors BeanDefinitionStoreException–在加载或解析错误的情况下
 	 * @see #getResourceLoader()
 	 * @see #loadBeanDefinitions(org.springframework.core.io.Resource)
 	 * @see #loadBeanDefinitions(org.springframework.core.io.Resource[])
 	 */
 	public int loadBeanDefinitions(String location, @Nullable Set<Resource> actualResources) throws BeanDefinitionStoreException {
+		// 获得 ResourceLoader 对象
 		ResourceLoader resourceLoader = getResourceLoader();
 		if (resourceLoader == null) {
 			throw new BeanDefinitionStoreException(
@@ -220,8 +225,11 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 		if (resourceLoader instanceof ResourcePatternResolver) {
 			// Resource pattern matching available.
 			try {
+				// 获得 Resource 数组，因为 Pattern 模式匹配下，可能有多个 Resource 。例如说，Ant 风格的 location
 				Resource[] resources = ((ResourcePatternResolver) resourceLoader).getResources(location);
+				// 加载 BeanDefinition 们
 				int count = loadBeanDefinitions(resources);
+				// 添加到 actualResources 中
 				if (actualResources != null) {
 					Collections.addAll(actualResources, resources);
 				}
@@ -236,9 +244,12 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 			}
 		}
 		else {
-			// Can only load single resources by absolute URL.
+			// Can only load single resources by absolute URL.  只能按绝对URL加载单个资源
+			// 获得 Resource 对象，
 			Resource resource = resourceLoader.getResource(location);
+			// 加载 BeanDefinition 们
 			int count = loadBeanDefinitions(resource);
+			// 添加到 actualResources 中
 			if (actualResources != null) {
 				actualResources.add(resource);
 			}

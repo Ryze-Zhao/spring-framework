@@ -115,7 +115,8 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 
 	/**
 	 * Create a new accessor for the given object.
-	 * @param object the object wrapped by this accessor
+	 * 为给定对象创建新的访问器。
+	 * @param object the object wrapped by this accessor    此访问器包装的对象
 	 */
 	protected AbstractNestablePropertyAccessor(Object object) {
 		registerDefaultEditors();

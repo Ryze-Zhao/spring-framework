@@ -35,38 +35,38 @@ import org.springframework.lang.Nullable;
 public interface PropertyAccessor {
 
 	/**
-	 * Path separator for nested properties.
-	 * Follows normal Java conventions: getFoo().getBar() would be "foo.bar".
+	 * Path separator for nested properties.Follows normal Java conventions: getFoo().getBar() would be "foo.bar".
+	 * 嵌套属性的路径分隔符。遵循正常的Java约定：getFoo().getBar()将是“foo.bar”。
 	 */
 	String NESTED_PROPERTY_SEPARATOR = ".";
 
 	/**
-	 * Path separator for nested properties.
-	 * Follows normal Java conventions: getFoo().getBar() would be "foo.bar".
+	 * Path separator for nested properties.Follows normal Java conventions: getFoo().getBar() would be "foo.bar".
+	 * 嵌套属性的路径分隔符。遵循正常的Java约定：getFoo().getBar()将是“foo.bar”。
 	 */
 	char NESTED_PROPERTY_SEPARATOR_CHAR = '.';
 
 	/**
-	 * Marker that indicates the start of a property key for an
-	 * indexed or mapped property like "person.addresses[0]".
+	 * Marker that indicates the start of a property key for an indexed or mapped property like "person.addresses[0]".
+	 * 指示索引或映射属性（如“person.addresses[0]”的属性键开始的标记。
 	 */
 	String PROPERTY_KEY_PREFIX = "[";
 
 	/**
-	 * Marker that indicates the start of a property key for an
-	 * indexed or mapped property like "person.addresses[0]".
+	 * Marker that indicates the start of a property key for an indexed or mapped property like "person.addresses[0]".
+	 * 指示索引或映射属性（如“person.addresses[0]”的属性键开始的标记。
 	 */
 	char PROPERTY_KEY_PREFIX_CHAR = '[';
 
 	/**
-	 * Marker that indicates the end of a property key for an
-	 * indexed or mapped property like "person.addresses[0]".
+	 * Marker that indicates the end of a property key for an indexed or mapped property like "person.addresses[0]".
+	 * 指示索引或映射属性（如“person.addresses[0]”的属性键开始的标记。
 	 */
 	String PROPERTY_KEY_SUFFIX = "]";
 
 	/**
-	 * Marker that indicates the end of a property key for an
-	 * indexed or mapped property like "person.addresses[0]".
+	 * Marker that indicates the end of a property key for an indexed or mapped property like "person.addresses[0]".
+	 * 指示索引或映射属性（如“person.addresses[0]”的属性键开始的标记。
 	 */
 	char PROPERTY_KEY_SUFFIX_CHAR = ']';
 
@@ -74,31 +74,35 @@ public interface PropertyAccessor {
 	/**
 	 * Determine whether the specified property is readable.
 	 * <p>Returns {@code false} if the property doesn't exist.
+	 * 确定指定的属性是否可读。 如果属性不存在，则返回false。
+	 *
 	 * @param propertyName the property to check
-	 * (may be a nested path and/or an indexed/mapped property)
-	 * @return whether the property is readable
+	 * (may be a nested path and/or an indexed/mapped property)     要检查的属性（可以是嵌套路径和/或索引/映射属性）
+	 * @return whether the property is readable     属性是否可读
 	 */
 	boolean isReadableProperty(String propertyName);
 
 	/**
 	 * Determine whether the specified property is writable.
 	 * <p>Returns {@code false} if the property doesn't exist.
+	 * 确定指定的属性是否可读。 如果属性不存在，则返回false。
+	 *
 	 * @param propertyName the property to check
-	 * (may be a nested path and/or an indexed/mapped property)
-	 * @return whether the property is writable
+	 * (may be a nested path and/or an indexed/mapped property)     要检查的属性（可以是嵌套路径和/或索引/映射属性）
+	 * @return whether the property is writable     属性是否可读
 	 */
 	boolean isWritableProperty(String propertyName);
 
 	/**
-	 * Determine the property type for the specified property,
-	 * either checking the property descriptor or checking the value
-	 * in case of an indexed or mapped element.
-	 * @param propertyName the property to check
-	 * (may be a nested path and/or an indexed/mapped property)
-	 * @return the property type for the particular property,
-	 * or {@code null} if not determinable
-	 * @throws PropertyAccessException if the property was valid but the
-	 * accessor method failed
+	 * Determine the property type for the specified property,either checking the property descriptor or checking the value in case of an indexed or mapped element.
+	 * 确定指定属性的属性类型，检查属性描述符或检查索引或映射元素的值。
+	 *
+	 * @param propertyName the property to check (may be a nested path and/or an indexed/mapped property)
+	 *                        要检查的属性（可以是嵌套路径和/或索引/映射属性）
+	 * @return the property type for the particular property,or {@code null} if not determinable
+	 *          特定属性的属性类型，如果不可确定，则为null
+	 * @throws PropertyAccessException if the property was valid but the accessor method failed
+	 *                                  如果属性有效但访问器方法失败
 	 */
 	@Nullable
 	Class<?> getPropertyType(String propertyName) throws BeansException;
@@ -106,38 +110,39 @@ public interface PropertyAccessor {
 	/**
 	 * Return a type descriptor for the specified property:
 	 * preferably from the read method, falling back to the write method.
-	 * @param propertyName the property to check
-	 * (may be a nested path and/or an indexed/mapped property)
-	 * @return the property type for the particular property,
-	 * or {@code null} if not determinable
-	 * @throws PropertyAccessException if the property was valid but the
-	 * accessor method failed
+	 * 返回指定属性的类型描述符：最好是从读取方法返回到写入方法。
+	 *
+	 * @param propertyName the property to check(may be a nested path and/or an indexed/mapped property)
+	 *                     要检查的属性（可以是嵌套路径和/或索引/映射属性）
+	 * @return the property type for the particular property,or {@code null} if not determinable
+	 *                      特定属性的属性类型，如果不可确定，则为null
+	 * @throws PropertyAccessException if the property was valid but the accessor method failed
+	 *                      如果属性有效但访问器方法失败
 	 */
 	@Nullable
 	TypeDescriptor getPropertyTypeDescriptor(String propertyName) throws BeansException;
 
 	/**
 	 * Get the current value of the specified property.
-	 * @param propertyName the name of the property to get the value of
-	 * (may be a nested path and/or an indexed/mapped property)
+	 * 获取指定属性的当前值。
+	 *
+	 * @param propertyName the name of the property to get the value of(may be a nested path and/or an indexed/mapped property)
+	 *                     要获取其值的属性的名称（可以是嵌套路径和/或索引/映射属性）
 	 * @return the value of the property
-	 * @throws InvalidPropertyException if there is no such property or
-	 * if the property isn't readable
-	 * @throws PropertyAccessException if the property was valid but the
-	 * accessor method failed
+	 * @throws InvalidPropertyException if there is no such property or if the property isn't readable
+	 *                                  如果没有此类属性或属性不可读
+	 * @throws PropertyAccessException if the property was valid but the accessor method failed
+	 *                                  如果属性有效但访问器方法失败
 	 */
 	@Nullable
 	Object getPropertyValue(String propertyName) throws BeansException;
 
 	/**
 	 * Set the specified value as current property value.
-	 * @param propertyName the name of the property to set the value of
-	 * (may be a nested path and/or an indexed/mapped property)
+	 * @param propertyName the name of the property to set the value of(may be a nested path and/or an indexed/mapped property)
 	 * @param value the new value
-	 * @throws InvalidPropertyException if there is no such property or
-	 * if the property isn't writable
-	 * @throws PropertyAccessException if the property was valid but the
-	 * accessor method failed or a type mismatch occurred
+	 * @throws InvalidPropertyException if there is no such property or if the property isn't writable
+	 * @throws PropertyAccessException if the property was valid but the accessor method failed or a type mismatch occurred
 	 */
 	void setPropertyValue(String propertyName, @Nullable Object value) throws BeansException;
 

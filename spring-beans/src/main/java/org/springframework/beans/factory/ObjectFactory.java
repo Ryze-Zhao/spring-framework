@@ -40,8 +40,8 @@ import org.springframework.beans.BeansException;
 public interface ObjectFactory<T> {
 
 	/**
-	 * Return an instance (possibly shared or independent)
-	 * of the object managed by this factory.
+	 * Return an instance (possibly shared or independent) of the object managed by this factory.
+	 * 返回此工厂管理的对象的实例（可能是共享的或独立的）。
 	 * @return the resulting instance
 	 * @throws BeansException in case of creation errors
 	 */

@@ -245,19 +245,27 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 
 	/**
 	 * Perform a scan within the specified base packages.
-	 * @param basePackages the packages to check for annotated classes
-	 * @return number of beans registered
+	 * 在指定的基本包内执行扫描。
+	 * @param basePackages the packages to check for annotated classes  用于检查注释类的包
+	 * @return number of beans registered   已注册的bean数
 	 */
 	public int scan(String... basePackages) {
+		// 获取容器中已经注册的Bean个数
 		int beanCountAtScanStart = this.registry.getBeanDefinitionCount();
 
+		// 启动扫描器扫描给定包
 		doScan(basePackages);
 
 		// Register annotation config processors, if necessary.
+		// 注册注解配置(Annotation config)处理器
 		if (this.includeAnnotationConfig) {
+			// 当用注解的方式启动项目时，将处理这些注解的基础设施类放到DefaultListableBeanFactory中，
+			// 因为无论如何，Spring终究需要某些基础类，用于xml中的配置类，或者我们的注解类，比如@Configuration、@ComponentScan、@ComponentScans、@Import、@ImportResource、@Bean等
+			// registerAnnotationConfigProcessors方法作用就是如此，将Spring几个基础类封装成BeanDefinition放到容器当中
 			AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
 		}
 
+		// 返回注册的Bean个数
 		return (this.registry.getBeanDefinitionCount() - beanCountAtScanStart);
 	}
 
@@ -266,29 +274,51 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 * returning the registered bean definitions.
 	 * <p>This method does <i>not</i> register an annotation config processor
 	 * but rather leaves this up to the caller.
-	 * @param basePackages the packages to check for annotated classes
-	 * @return set of beans registered if any for tooling registration purposes (never {@code null})
+	 * 在指定的基本包内执行扫描，返回已注册的bean定义。 此方法不注册注释配置处理器，而是将其留给调用方
+	 * @param basePackages the packages to check for annotated classes  用于检查注释类的包
+	 * @return set of beans registered if any for tooling registration purposes (never {@code null})    为工具注册目的注册的bean集（如果有）（从不为null）
 	 */
 	protected Set<BeanDefinitionHolder> doScan(String... basePackages) {
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
+		// 创建一个集合，存放扫描到Bean定义的封装类（存储扫描到的BeanDefinition信息）
 		Set<BeanDefinitionHolder> beanDefinitions = new LinkedHashSet<>();
+		// 遍历扫描所有给定的包，进行解析，注册
 		for (String basePackage : basePackages) {
+			// 调用父类ClassPathScanningCandidateComponentProvider#scanCandidateComponents(backPackages)方法，扫描给定类路径，获取符合条件的BeanDefinition
 			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
+			// 遍历扫描到的BeanDefinition，进行解析
 			for (BeanDefinition candidate : candidates) {
+				// 获取 BeanDefinition 中@Scope注解的值，即获取Bean的作用域
 				ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(candidate);
+				// 为Bean设置注解配置的作用域
 				candidate.setScope(scopeMetadata.getScopeName());
+				// 根据Bean信息生成BeanName
 				String beanName = this.beanNameGenerator.generateBeanName(candidate, this.registry);
+				// 如果扫描到的Bean不是Spring的注解Bean，则为Bean设置默认值，设置Bean的自动依赖注入装配属性等（对于配置类型BeanDefinition类型和注解类型BeanDefinition类型进行区分设置）
 				if (candidate instanceof AbstractBeanDefinition) {
+					// 如果这个类是AbstractBeanDefinition的子类，则为他设置默认值，比如lazy，init destory
 					postProcessBeanDefinition((AbstractBeanDefinition) candidate, beanName);
 				}
+				// 如果扫描到的Bean是Spring的注解Bean，则处理其通用的Spring注解
+				// 通用注解解析到candidate结构中，主要是处理Lazy, primary DependsOn, Role ,Description这五个注解
 				if (candidate instanceof AnnotatedBeanDefinition) {
+					// 处理注解Bean中通用的注解，在分析注解Bean定义类读取器时已经分析过
+					/*
+					 * 检查并且处理常用的注解
+					 * 这里的处理主要是指把常用注解的值设置到AnnotatedBeanDefinition当中
+					 * 当前前提是这个类必须是AnnotatedBeanDefinition类型的，说白了就是加了注解的类
+					 */
 					AnnotationConfigUtils.processCommonDefinitionAnnotations((AnnotatedBeanDefinition) candidate);
 				}
+
+				// 检查当前bean是否已经注册，不存在则注册
 				if (checkCandidate(beanName, candidate)) {
+					// 创建一个指定Bean名称的 BeanDefinitionHolder ，封装 注解中配置的作用域，为Bean应用相应的代理模式 数据
 					BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(candidate, beanName);
-					definitionHolder =
-							AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
+					// 根据通过 AnnotationMetadata 类中配置的作用域 ScopeMetadata ，创建相应的代理对象
+					definitionHolder =AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
 					beanDefinitions.add(definitionHolder);
+					// 向IoC容器注册 BeanDefinitionHolder，主要是一些@Component组件，@Bean注解方法并没有在此处注册
 					registerBeanDefinition(definitionHolder, this.registry);
 				}
 			}

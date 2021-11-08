@@ -45,14 +45,15 @@ public abstract class BeanDefinitionReaderUtils {
 
 
 	/**
-	 * Create a new GenericBeanDefinition for the given parent name and class name,
-	 * eagerly loading the bean class if a ClassLoader has been specified.
-	 * @param parentName the name of the parent bean, if any
-	 * @param className the name of the bean class, if any
-	 * @param classLoader the ClassLoader to use for loading bean classes
-	 * (can be {@code null} to just register bean classes by name)
-	 * @return the bean definition
-	 * @throws ClassNotFoundException if the bean class could not be loaded
+	 * Create a new GenericBeanDefinition for the given parent name and class name,eagerly loading the bean class if a ClassLoader has been specified.
+	 * 为给定的父名称和类名创建一个新的GenericBeanDefinition，如果指定了类加载器，则急切地加载bean类。
+	 *
+	 * @param parentName  the name of the parent bean, if any 父bean的名称（如果有的话）
+	 * @param className   the name of the bean class, if any bean类的名称，如果有的话
+	 * @param classLoader the ClassLoader to use for loading bean classes 用于加载bean类的类加载器（可以是{@code null}，以便只按名称注册bean类）
+	 *                    (can be {@code null} to just register bean classes by name)
+	 * @return the bean definition 返回BeanDefinition
+	 * @throws ClassNotFoundException if the bean class could not be loaded 如果无法加载bean类，则引发ClassNotFoundException
 	 */
 	public static AbstractBeanDefinition createBeanDefinition(
 			@Nullable String parentName, @Nullable String className, @Nullable ClassLoader classLoader) throws ClassNotFoundException {
@@ -151,19 +152,29 @@ public abstract class BeanDefinitionReaderUtils {
 
 	/**
 	 * Register the given bean definition with the given bean factory.
-	 * @param definitionHolder the bean definition including name and aliases
-	 * @param registry the bean factory to register with
-	 * @throws BeanDefinitionStoreException if registration failed
+	 * 向给定的 `BeanFactory` 注册给定的BeanDefinition。
+	 *
+	 * @param definitionHolder the bean definition including name and aliases   BeanDefinition，包括名称和别名
+	 * @param registry         the bean factory to register with    要注册的 `BeanFactory`
+	 * @throws BeanDefinitionStoreException if registration failed  如果注册失败
 	 */
-	public static void registerBeanDefinition(
-			BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry)
+	public static void registerBeanDefinition(BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry)
 			throws BeanDefinitionStoreException {
-
 		// Register bean definition under primary name.
+		// 获取解析的 BeanDefinition 的名称
 		String beanName = definitionHolder.getBeanName();
+		// 向IoC容器注册 BeanDefinition
+		/*
+		 * 情况一：
+		 *  DefaultListableBeanFactory类实现了BeanDefinitionRegistry接口
+		 * 情况二：
+		 *  GenericApplicationContext类实现了BeanDefinitionRegistry接口,并且在 GenericApplicationContext类中维护了一个DefaultListableBeanFactory beanFactory
+		 * 该步骤实际调用的是GenericApplicationContext类中的registerBeanDefinition()方法，{@link org.springframework.context.support.GenericApplicationContext#registerBeanDefinition(String,BeanDefinition)}
+		 */
 		registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());
 
 		// Register aliases for bean name, if any.
+		// 如果解析的BeanDefinition有别名，向容器为其注册别名
 		String[] aliases = definitionHolder.getAliases();
 		if (aliases != null) {
 			for (String alias : aliases) {

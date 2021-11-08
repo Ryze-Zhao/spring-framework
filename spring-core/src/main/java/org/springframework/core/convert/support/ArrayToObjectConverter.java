@@ -33,7 +33,9 @@ import org.springframework.lang.Nullable;
  * @since 3.0
  */
 final class ArrayToObjectConverter implements ConditionalGenericConverter {
-
+	/**
+	 * 借助了ConversionService.
+	 */
 	private final ConversionService conversionService;
 
 
@@ -47,6 +49,9 @@ final class ArrayToObjectConverter implements ConditionalGenericConverter {
 		return Collections.singleton(new ConvertiblePair(Object[].class, Object.class));
 	}
 
+	/**
+	 * 实现ConditionalConverter的方法，最终是委托给了ConversionService#canConvert方法.
+	 */
 	@Override
 	public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		return ConversionUtils.canConvertElements(sourceType.getElementTypeDescriptor(), targetType, this.conversionService);

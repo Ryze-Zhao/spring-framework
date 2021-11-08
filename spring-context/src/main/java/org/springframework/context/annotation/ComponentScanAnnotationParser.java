@@ -66,14 +66,21 @@ class ComponentScanAnnotationParser {
 
 
 	public Set<BeanDefinitionHolder> parse(AnnotationAttributes componentScan, final String declaringClass) {
+		/*
+		 * <Spring分析点41-1> 实例化一个扫描对象,完成对包的扫描解析工作
+		 * 注意:在此处之前也实例化了一个ClassPathBeanDefinitionScanner类型的scanner对象,
+		 * {@link AnnotationConfigApplicationContext#AnnotationConfigApplicationContext()}
+		 */
 		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(this.registry,
 				componentScan.getBoolean("useDefaultFilters"), this.environment, this.resourceLoader);
 
+		// BeanNameGenerator,beanNames生成器
 		Class<? extends BeanNameGenerator> generatorClass = componentScan.getClass("nameGenerator");
 		boolean useInheritedGenerator = (BeanNameGenerator.class == generatorClass);
-		scanner.setBeanNameGenerator(useInheritedGenerator ? this.beanNameGenerator :
-				BeanUtils.instantiateClass(generatorClass));
+		// <Spring分析点41-2> 对scanner扫描对象进行相关初始化配置
+		scanner.setBeanNameGenerator(useInheritedGenerator ? this.beanNameGenerator :BeanUtils.instantiateClass(generatorClass));
 
+		// web相关
 		ScopedProxyMode scopedProxyMode = componentScan.getEnum("scopedProxy");
 		if (scopedProxyMode != ScopedProxyMode.DEFAULT) {
 			scanner.setScopedProxyMode(scopedProxyMode);
@@ -92,6 +99,7 @@ class ComponentScanAnnotationParser {
 				scanner.addIncludeFilter(typeFilter);
 			}
 		}
+		// 遍历当中的过滤条件
 		for (AnnotationAttributes excludeFilterAttributes : componentScan.getAnnotationArray("excludeFilters")) {
 			List<TypeFilter> typeFilters = TypeFilterUtils.createTypeFiltersFor(excludeFilterAttributes, this.environment,
 				this.resourceLoader, this.registry);
@@ -100,11 +108,13 @@ class ComponentScanAnnotationParser {
 			}
 		}
 
+		// 修改默认的配置信息
 		boolean lazyInit = componentScan.getBoolean("lazyInit");
 		if (lazyInit) {
 			scanner.getBeanDefinitionDefaults().setLazyInit(true);
 		}
 
+		// <Spring分析点41-3> 解析配置的包路径信息
 		Set<String> basePackages = new LinkedHashSet<>();
 		String[] basePackagesArray = componentScan.getStringArray("basePackages");
 		for (String pkg : basePackagesArray) {
@@ -125,6 +135,7 @@ class ComponentScanAnnotationParser {
 				return declaringClass.equals(className);
 			}
 		});
+		// <Spring分析点41-4> 根据包路径信息执行解析操作
 		return scanner.doScan(StringUtils.toStringArray(basePackages));
 	}
 

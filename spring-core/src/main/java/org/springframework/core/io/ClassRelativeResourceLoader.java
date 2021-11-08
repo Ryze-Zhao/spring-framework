@@ -35,7 +35,9 @@ public class ClassRelativeResourceLoader extends DefaultResourceLoader {
 
 	/**
 	 * Create a new ClassRelativeResourceLoader for the given class.
-	 * @param clazz the class to load resources through
+	 * 为给定类创建新的ClassRelativeResourceLoader。 参数：
+	 *
+	 * @param clazz the class to load resources through 加载资源的类
 	 */
 	public ClassRelativeResourceLoader(Class<?> clazz) {
 		Assert.notNull(clazz, "Class must not be null");

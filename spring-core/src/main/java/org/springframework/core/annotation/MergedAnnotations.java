@@ -141,6 +141,8 @@ public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>
 	 * Determine if the specified annotation is either directly present or
 	 * meta-present.
 	 * <p>Equivalent to calling {@code get(annotationType).isPresent()}.
+	 * 使用应用注解（直接注解或元注解）
+	 *
 	 * @param annotationType the annotation type to check
 	 * @return {@code true} if the annotation is present
 	 */
@@ -159,6 +161,7 @@ public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>
 	/**
 	 * Determine if the specified annotation is directly present.
 	 * <p>Equivalent to calling {@code get(annotationType).isDirectlyPresent()}.
+	 * 使用直接应用注解
 	 * @param annotationType the annotation type to check
 	 * @return {@code true} if the annotation is directly present
 	 */
@@ -177,6 +180,8 @@ public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>
 	 * Get the {@linkplain MergedAnnotationSelectors#nearest() nearest} matching
 	 * annotation or meta-annotation of the specified type, or
 	 * {@link MergedAnnotation#missing()} if none is present.
+	 * 获取离得最近的注解（直接注解或元注解）
+	 *
 	 * @param annotationType the annotation type to get
 	 * @return a {@link MergedAnnotation} instance
 	 */
@@ -186,6 +191,8 @@ public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>
 	 * Get the {@linkplain MergedAnnotationSelectors#nearest() nearest} matching
 	 * annotation or meta-annotation of the specified type, or
 	 * {@link MergedAnnotation#missing()} if none is present.
+	 * 获取离得最近的注解（直接注解或元注解）
+	 *
 	 * @param annotationType the annotation type to get
 	 * @param predicate a predicate that must match, or {@code null} if only
 	 * type matching is required
@@ -198,6 +205,8 @@ public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>
 	/**
 	 * Get a matching annotation or meta-annotation of the specified type, or
 	 * {@link MergedAnnotation#missing()} if none is present.
+	 * 通过selector 获取合适的注解（直接注解或元注解）
+	 *
 	 * @param annotationType the annotation type to get
 	 * @param predicate a predicate that must match, or {@code null} if only
 	 * type matching is required
@@ -446,6 +455,7 @@ public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>
 		 * Find only directly declared annotations, without considering
 		 * {@link Inherited @Inherited} annotations and without searching
 		 * superclasses or implemented interfaces.
+		 * 仅查找直接注解，不考虑@Inherited，超类或者接口
 		 */
 		DIRECT,
 
@@ -456,6 +466,7 @@ public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>
 		 * {@link Inherited @Inherited} annotation is ignored for all other
 		 * {@linkplain AnnotatedElement annotated elements}. This strategy does
 		 * not search implemented interfaces.
+		 * 查找所有直接注解，或者superclass应用@Inherited了的注解。仅适用于Class。其他AnnotatedElement 不适用
 		 */
 		INHERITED_ANNOTATIONS,
 
@@ -464,6 +475,7 @@ public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>
 		 * is similar to {@link #INHERITED_ANNOTATIONS} except the annotations
 		 * do not need to be meta-annotated with {@link Inherited @Inherited}.
 		 * This strategy does not search implemented interfaces.
+		 * 查找所有直接注解，或者超类的注解，与INHERITED_ANNOTATIONS相似，但是元注解不需要应用@Inherited
 		 */
 		SUPERCLASS,
 
@@ -471,6 +483,7 @@ public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>
 		 * Perform a full search of the entire type hierarchy, including
 		 * superclasses and implemented interfaces. Superclass annotations do
 		 * not need to be meta-annotated with {@link Inherited @Inherited}.
+		 * 包含superclass，接口，注解不需要应用@Inherited
 		 */
 		TYPE_HIERARCHY,
 
@@ -482,6 +495,7 @@ public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>
 		 * need to be meta-annotated with {@link Inherited @Inherited}. When
 		 * searching a {@link Method} source, this strategy is identical to
 		 * {@link #TYPE_HIERARCHY}.
+		 * 类似TYPE_HIERARCHY，同时又查找内部类
 		 */
 		TYPE_HIERARCHY_AND_ENCLOSING_CLASSES
 	}

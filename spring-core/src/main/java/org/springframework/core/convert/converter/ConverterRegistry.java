@@ -28,6 +28,7 @@ public interface ConverterRegistry {
 	/**
 	 * Add a plain converter to this registry.
 	 * The convertible source/target type pair is derived from the Converter's parameterized types.
+	 * 注册converter(将普通转换器添加到此注册表。可转换源/目标类型对源自转换器的参数化类型。)
 	 * @throws IllegalArgumentException if the parameterized types could not be resolved
 	 */
 	void addConverter(Converter<?, ?> converter);
@@ -37,26 +38,34 @@ public interface ConverterRegistry {
 	 * The convertible source/target type pair is specified explicitly.
 	 * <p>Allows for a Converter to be reused for multiple distinct pairs without
 	 * having to create a Converter class for each pair.
+	 * 注册converter，避免对同一个converter重复注册.
+	 * 将普通转换器添加到此注册表。明确指定了可转换源/目标类型对。允许将转换器重新用于多个不同的对，而无需为每个对创建转换器类。
+	 *
 	 * @since 3.1
 	 */
 	<S, T> void addConverter(Class<S> sourceType, Class<T> targetType, Converter<? super S, ? extends T> converter);
 
 	/**
 	 * Add a generic converter to this registry.
+	 * 注册GenericConverter
 	 */
 	void addConverter(GenericConverter converter);
 
 	/**
 	 * Add a ranged converter factory to this registry.
 	 * The convertible source/target type pair is derived from the ConverterFactory's parameterized types.
+	 * 注册ConverterFactory
+	 * 将范围转换器工厂添加到此注册表。可转换源/目标类型对派生自ConverterFactory的参数化类型。
+	 *
 	 * @throws IllegalArgumentException if the parameterized types could not be resolved
 	 */
 	void addConverterFactory(ConverterFactory<?, ?> factory);
 
 	/**
 	 * Remove any converters from {@code sourceType} to {@code targetType}.
-	 * @param sourceType the source type
-	 * @param targetType the target type
+	 * 删除从sourceType到targetType的所有转换器。
+	 * @param sourceType the source type        源类型
+	 * @param targetType the target type        目标类型
 	 */
 	void removeConvertible(Class<?> sourceType, Class<?> targetType);
 

@@ -37,14 +37,17 @@ public interface AttributeAccessor {
 	 * <p>In general, users should take care to prevent overlaps with other
 	 * metadata attributes by using fully-qualified names, perhaps using
 	 * class or package names as prefix.
-	 * @param name the unique attribute key
+	 * 将{@code name}定义的属性设置为提供的{@code value}。 <p>如果{@code value}为{@code null}，则属性为{@link removeAttribute removed}。
+	 * <p>一般来说，用户应注意防止与其他应用程序重叠通过使用完全限定名（可能使用类或包名称作为前缀。
+	 *
+	 * @param name  the unique attribute key
 	 * @param value the attribute value to be attached
 	 */
 	void setAttribute(String name, @Nullable Object value);
 
 	/**
-	 * Get the value of the attribute identified by {@code name}.
-	 * <p>Return {@code null} if the attribute doesn't exist.
+	 * Get the value of the attribute identified by {@code name}.<p>Return {@code null} if the attribute doesn't exist.
+	 * 获取由{@code name}标识的属性的值。<p>如果属性不存在，则返回{@code null}。
 	 * @param name the unique attribute key
 	 * @return the current value of the attribute, if any
 	 */
@@ -84,8 +87,8 @@ public interface AttributeAccessor {
 	}
 
 	/**
-	 * Remove the attribute identified by {@code name} and return its value.
-	 * <p>Return {@code null} if no attribute under {@code name} is found.
+	 * Remove the attribute identified by {@code name} and return its value.<p>Return {@code null} if no attribute under {@code name} is found.
+	 * 删除由{@code name}标识的属性并返回其值。<p>如果{@code name}下找不到属性，则返回{@code null}。
 	 * @param name the unique attribute key
 	 * @return the last value of the attribute, if any
 	 */
@@ -93,14 +96,15 @@ public interface AttributeAccessor {
 	Object removeAttribute(String name);
 
 	/**
-	 * Return {@code true} if the attribute identified by {@code name} exists.
-	 * <p>Otherwise return {@code false}.
+	 * Return {@code true} if the attribute identified by {@code name} exists.<p>Otherwise return {@code false}.
+	 * 如果{@code name}标识的属性存在，则返回{@code true}。<p>否则返回{@code false}。
 	 * @param name the unique attribute key
 	 */
 	boolean hasAttribute(String name);
 
 	/**
 	 * Return the names of all attributes.
+	 * 返回所有属性的名称。
 	 */
 	String[] attributeNames();
 

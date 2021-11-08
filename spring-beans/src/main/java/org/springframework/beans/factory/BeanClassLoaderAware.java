@@ -36,7 +36,6 @@ package org.springframework.beans.factory;
  * @see InitializingBean
  */
 public interface BeanClassLoaderAware extends Aware {
-
 	/**
 	 * Callback that supplies the bean {@link ClassLoader class loader} to
 	 * a bean instance.
@@ -45,8 +44,10 @@ public interface BeanClassLoaderAware extends Aware {
 	 * {@link InitializingBean InitializingBean's}
 	 * {@link InitializingBean#afterPropertiesSet()}
 	 * method or a custom init-method.
+	 * 将 BeanClassLoader 提供给 bean 实例回调
+	 * 在 bean 属性填充之后、初始化回调之前回调，
+	 * 例如InitializingBean的InitializingBean.afterPropertiesSet()方法或自定义init方法
 	 * @param classLoader the owning class loader
 	 */
 	void setBeanClassLoader(ClassLoader classLoader);
-
 }

@@ -38,7 +38,8 @@ public interface ApplicationStartup {
 	 * <p>A step name describes the current action or phase. This technical
 	 * name should be "." namespaced and can be reused to describe other instances of
 	 * the same step during application startup.
-	 * @param name the step name
+	 * 创建新步骤并标记其开始。 步骤名称描述当前操作或阶段。此技术名称应为“.”名称空间，并可在应用程序启动期间重新用于描述同一步骤的其他实例。
+	 * @param name the step name    步骤名称
 	 */
 	StartupStep start(String name);
 

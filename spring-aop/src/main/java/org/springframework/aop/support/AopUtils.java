@@ -306,6 +306,10 @@ public abstract class AopUtils {
 		if (candidateAdvisors.isEmpty()) {
 			return candidateAdvisors;
 		}
+		/*
+		 * eligibleAdvisors: 存储可以应用于目标类的增强
+		 * canApply(candidate, clazz): 判断候选增强是否适用于目标类
+		 */
 		List<Advisor> eligibleAdvisors = new ArrayList<>();
 		for (Advisor candidate : candidateAdvisors) {
 			if (candidate instanceof IntroductionAdvisor && canApply(candidate, clazz)) {
@@ -340,6 +344,7 @@ public abstract class AopUtils {
 
 		// Use reflection to invoke the method.
 		try {
+			// 利用反射执行目标方法
 			ReflectionUtils.makeAccessible(method);
 			return method.invoke(target, args);
 		}

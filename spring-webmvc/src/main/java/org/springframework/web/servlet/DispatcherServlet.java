@@ -1036,8 +1036,11 @@ public class DispatcherServlet extends FrameworkServlet {
 			Exception dispatchException = null;
 
 			try {
+				// multipart请求处理，如果是则进行封装加工
 				processedRequest = checkMultipart(request);
 				multipartRequestParsed = (processedRequest != request);
+
+				// 查找请求处理器handler
 
 				// Determine handler for the current request.
 				mappedHandler = getHandler(processedRequest);
@@ -1045,6 +1048,11 @@ public class DispatcherServlet extends FrameworkServlet {
 					noHandlerFound(processedRequest, response);
 					return;
 				}
+
+				// 使用请求处理器适配器 HandlerAdapter 来定义
+				// 请求的DispatcherServlet的统一处理格式
+				// 即定义一种统一的模板来调用不同的Handler实现请求处理
+				// 其中Handler由拦截器链和请求处理方法HandlerMethod组成
 
 				// Determine handler adapter for the current request.
 				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
@@ -1059,9 +1067,15 @@ public class DispatcherServlet extends FrameworkServlet {
 					}
 				}
 
+				// 调用拦截器链各个拦截器的preHandle，进行前置处理
 				if (!mappedHandler.applyPreHandle(processedRequest, response)) {
 					return;
 				}
+
+				// 通过请求执行器适配器来调用请求执行器（如handlerMethod）处理请求
+				// 返回一个ModelAndView
+				//  Model表示模型，即包含数据在视图渲染中使用
+				//  View为定义到具体的JSP视图
 
 				// Actually invoke the handler.
 				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
@@ -1071,6 +1085,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 
 				applyDefaultViewName(processedRequest, mv);
+				// 拦截器链后置处理applyPostHandle
 				mappedHandler.applyPostHandle(processedRequest, response, mv);
 			}
 			catch (Exception ex) {
@@ -1081,6 +1096,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				// making them available for @ExceptionHandler methods and other scenarios.
 				dispatchException = new NestedServletException("Handler dispatch failed", err);
 			}
+			// 对客户端进行响应
 			processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);
 		}
 		catch (Exception ex) {

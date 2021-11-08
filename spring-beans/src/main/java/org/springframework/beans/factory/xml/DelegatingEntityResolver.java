@@ -38,10 +38,16 @@ import org.springframework.util.Assert;
  */
 public class DelegatingEntityResolver implements EntityResolver {
 
-	/** Suffix for DTD files. */
+	/**
+	 * Suffix for DTD files.
+	 * DTD文件的后缀
+	 */
 	public static final String DTD_SUFFIX = ".dtd";
 
-	/** Suffix for schema definition files. */
+	/**
+	 * Suffix for schema definition files.
+	 * 架构定义文件的后缀。
+	 */
 	public static final String XSD_SUFFIX = ".xsd";
 
 
@@ -51,10 +57,8 @@ public class DelegatingEntityResolver implements EntityResolver {
 
 
 	/**
-	 * Create a new DelegatingEntityResolver that delegates to
-	 * a default {@link BeansDtdResolver} and a default {@link PluggableSchemaResolver}.
-	 * <p>Configures the {@link PluggableSchemaResolver} with the supplied
-	 * {@link ClassLoader}.
+	 * Create a new DelegatingEntityResolver that delegates to a default {@link BeansDtdResolver} and a default {@link PluggableSchemaResolver}. <p>Configures the {@link PluggableSchemaResolver} with the supplied{@link ClassLoader}.
+	 * 创建一个新的DelegatingEntityResolver，将其委托给默认的BeansDtdResolver和默认的PluggableSchemaResolver。 使用提供的ClassLoader配置PluggableSchemaResolver。
 	 * @param classLoader the ClassLoader to use for loading
 	 * (can be {@code null}) to use the default ClassLoader)
 	 */
@@ -64,8 +68,9 @@ public class DelegatingEntityResolver implements EntityResolver {
 	}
 
 	/**
-	 * Create a new DelegatingEntityResolver that delegates to
-	 * the given {@link EntityResolver EntityResolvers}.
+	 * Create a new DelegatingEntityResolver that delegates tothe given {@link EntityResolver EntityResolvers}.
+	 * 创建一个新的DelegatingEntityResolver，将其委托给给定的{@link EntityResolver EntityResolvers}。
+	 *
 	 * @param dtdResolver the EntityResolver to resolve DTDs with
 	 * @param schemaResolver the EntityResolver to resolve XML schemas with
 	 */
@@ -81,17 +86,18 @@ public class DelegatingEntityResolver implements EntityResolver {
 	@Nullable
 	public InputSource resolveEntity(@Nullable String publicId, @Nullable String systemId)
 			throws SAXException, IOException {
-
 		if (systemId != null) {
 			if (systemId.endsWith(DTD_SUFFIX)) {
+				// DTD 模式
 				return this.dtdResolver.resolveEntity(publicId, systemId);
 			}
 			else if (systemId.endsWith(XSD_SUFFIX)) {
+				// DTD 模式
 				return this.schemaResolver.resolveEntity(publicId, systemId);
 			}
 		}
-
 		// Fall back to the parser's default behavior.
+		// 返回到解析器的默认行为。
 		return null;
 	}
 

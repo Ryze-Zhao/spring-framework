@@ -167,12 +167,12 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	}
 
 	/**
-	 * Create a new RootBeanDefinition for a scoped bean, constructing each instance
-	 * through calling the given supplier (possibly a lambda or method reference).
-	 * @param beanClass the class of the bean to instantiate
-	 * @param scope the name of the corresponding scope
-	 * @param instanceSupplier the supplier to construct a bean instance,
-	 * as an alternative to a declaratively specified factory method
+	 * Create a new RootBeanDefinition for a scoped bean, constructing each instance through calling the given supplier (possibly a lambda or method reference).
+	 * 为作用域bean创建一个新的RootBeanDefinition，通过调用给定的提供者（可能是lambda或方法引用）构造每个实例。
+	 * @param beanClass the class of the bean to instantiate    要实例化的bean的类
+	 * @param scope the name of the corresponding scope 对应作用域的名称
+	 * @param instanceSupplier the supplier to construct a bean instance,as an alternative to a declaratively specified factory method
+	 *                         构建bean实例的供应商，作为声明性指定工厂方法的替代方法
 	 * @since 5.0
 	 * @see #setInstanceSupplier
 	 */
@@ -180,6 +180,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 		super();
 		setBeanClass(beanClass);
 		setScope(scope);
+		// 设置 instanceSupplier 属性
 		setInstanceSupplier(instanceSupplier);
 	}
 

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!--	方式一	-->
+	<!--	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">-->
+	<!--		<property name="converters">-->
+	<!--			<set>-->
+	<!--				<ref bean="stringToCityConversion"/>-->
+	<!--			</set>-->
+	<!--		</property>-->
+	<!--	</bean>-->
+	<!--	<bean id="stringToCityConversion" class="org.springframework.zhao.customize_conversion.StringToCityConversion"/>-->
+
+	<!--	方式二	-->
+	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+		<property name="converters">
+			<list>
+				<bean id="stringToCityConversion"
+					  class="org.springframework.zhao.customize_conversion.StringToCityConversion"/>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cityService" class="org.springframework.zhao.customize_conversion.CityService">
+		<property name="city" value="guangdongsheng#440000"/>
+	</bean>
+</beans>

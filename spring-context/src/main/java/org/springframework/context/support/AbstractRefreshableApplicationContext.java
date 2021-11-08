@@ -116,17 +116,33 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * This implementation performs an actual refresh of this context's underlying
 	 * bean factory, shutting down the previous bean factory (if any) and
 	 * initializing a fresh bean factory for the next phase of the context's lifecycle.
+	 * 此实现执行此上下文的底层 `BeanFactory` 的实际刷新，关闭以前的 `BeanFactory` （如果有），并为上下文生命周期的下一阶段初始化新的 `BeanFactory` 。
 	 */
 	@Override
 	protected final void refreshBeanFactory() throws BeansException {
+		// 如果 beanFactory已存在，则销毁重新创建，这里的操作都是用了 对象锁进行同步
 		if (hasBeanFactory()) {
 			destroyBeans();
 			closeBeanFactory();
 		}
 		try {
+			// 创建 BeanFactory，内部会检测父工厂，默认父工厂为null，通常为DefaultListableBeanFactory
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
+			// 设置序列化id，可以从id反序列化到beanFactory对象
+			// id的值是在super()方法中进行设值的，这里只是单纯的获取id
 			beanFactory.setSerializationId(getId());
+			/*
+			 * 更新 allowBeanDefinitionOverriding 和 allowCircularReferences 的值，默认这段代码没用，不会修改默认值，除非你beanFactory.set*Name 修改了值
+			 *
+			 * 定制beanFactory,设置相关属性,包括是否允许覆盖同名称的不同定义的对象以及循环依赖
+			 * 设置@Autowired和@Qualifer注解解析器QualifierAnnotationAutowire CandidateResolver
+			 */
 			customizeBeanFactory(beanFactory);
+			/*
+			 *  初始化DodumentReader,并进行XML文件读取及解析 BeanDefinition文件
+			 *  1. Spring:    {@link AbstractXmlApplicationContext#loadBeanDefinitions}
+			 *  2. SpringMvc: {@link org.springframework.web.context.support.XmlWebApplicationContext#loadBeanDefinitions(org.springframework.beans.factory.support.DefaultListableBeanFactory)}
+			 */
 			loadBeanDefinitions(beanFactory);
 			this.beanFactory = beanFactory;
 		}

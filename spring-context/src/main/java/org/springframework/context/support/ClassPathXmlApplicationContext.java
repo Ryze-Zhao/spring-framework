@@ -140,6 +140,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 
 		super(parent);
 		setConfigLocations(configLocations);
+		// 默认为true
 		if (refresh) {
 			refresh();
 		}
@@ -152,6 +153,10 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 * <p>This is a convenience method to load class path resources relative to a
 	 * given Class. For full flexibility, consider using a GenericApplicationContext
 	 * with an XmlBeanDefinitionReader and a ClassPathResource argument.
+	 * 创建一个新的ClassPathXmlApplicationContext，从给定的XML文件加载定义并自动刷新上下文。
+	 * <p>这是相对于给定类加载类路径资源的方便方法。
+	 * 为了充分的灵活性，如果考虑使用GenericApplicationContext，可以使用XmlBeanDefinitionReader和ClassPathResource参数
+	 *
 	 * @param path relative (or absolute) path within the class path
 	 * @param clazz the class to load resources with (basis for the given paths)
 	 * @throws BeansException if context creation failed

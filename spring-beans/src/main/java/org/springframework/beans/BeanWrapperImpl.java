@@ -97,7 +97,8 @@ public class BeanWrapperImpl extends AbstractNestablePropertyAccessor implements
 
 	/**
 	 * Create a new BeanWrapperImpl for the given object.
-	 * @param object the object wrapped by this BeanWrapper
+	 * 为给定对象创建新的BeanRapperImpl。
+	 * @param object the object wrapped by this BeanWrapper 此BeanRapper包装的对象
 	 */
 	public BeanWrapperImpl(Object object) {
 		super(object);
@@ -198,10 +199,12 @@ public class BeanWrapperImpl extends AbstractNestablePropertyAccessor implements
 	 * Convert the given value for the specified property to the latter's type.
 	 * <p>This method is only intended for optimizations in a BeanFactory.
 	 * Use the {@code convertIfNecessary} methods for programmatic conversion.
-	 * @param value the value to convert
-	 * @param propertyName the target property
+	 * 将指定属性的给定值转换为后者的类型。 此方法仅用于BeanFactory中的优化。使用ConvertifRequired方法进行编程转换。
+	 *
+	 * @param value the value to convert        要转换的值
+	 * @param propertyName the target property      目标属性（请注意，此处不支持嵌套或索引属性）
 	 * (note that nested or indexed properties are not supported here)
-	 * @return the new value, possibly the result of type conversion
+	 * @return the new value, possibly the result of type conversion    新值，可能是类型转换的结果
 	 * @throws TypeMismatchException if type conversion failed
 	 */
 	@Nullable

@@ -37,6 +37,11 @@ public interface ConversionService {
 	 * even though a convert invocation may still generate a {@link ConversionException} if the
 	 * underlying elements are not convertible. Callers are expected to handle this exceptional case
 	 * when working with collections and maps.
+	 * 如果sourceType的对象可以转换为targetType，则返回true。
+	 * 如果此方法返回true，则表示convert（对象、类）能够将sourceType的实例转换为targetType。
+	 * 关于集合、数组和映射类型的特别说明：对于集合、数组和映射类型之间的转换，即使基础元素不可转换，
+	 * convert调用仍可能生成ConversionException，此方法仍将返回true。调用方在处理集合和映射时需要处理这种例外情况。
+	 *
 	 * @param sourceType the source type to convert from (may be {@code null} if source is {@code null})
 	 * @param targetType the target type to convert to (required)
 	 * @return {@code true} if a conversion can be performed, {@code false} if not
@@ -66,11 +71,13 @@ public interface ConversionService {
 
 	/**
 	 * Convert the given {@code source} to the specified {@code targetType}.
-	 * @param source the source object to convert (may be {@code null})
-	 * @param targetType the target type to convert to (required)
-	 * @return the converted object, an instance of targetType
-	 * @throws ConversionException if a conversion exception occurred
-	 * @throws IllegalArgumentException if targetType is {@code null}
+	 * 将给定源转换为指定的targetType。
+	 *
+	 * @param source the source object to convert (may be {@code null})     要转换的源对象（可能为空）
+	 * @param targetType the target type to convert to (required)           要转换为的目标类型（必需）
+	 * @return the converted object, an instance of targetType              转换的对象，targetType的实例
+	 * @throws ConversionException if a conversion exception occurred       如果发生转换异常
+	 * @throws IllegalArgumentException if targetType is {@code null}       如果targetType为null
 	 */
 	@Nullable
 	<T> T convert(@Nullable Object source, Class<T> targetType);

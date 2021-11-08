@@ -60,33 +60,37 @@ public interface ApplicationContext extends EnvironmentCapable, ListableBeanFact
 
 	/**
 	 * Return the unique id of this application context.
-	 * @return the unique id of the context, or {@code null} if none
+	 * 返回此 `ApplicationContext` 的唯一id。
+	 * @return the unique id of the context, or {@code null} if none 	上下文的唯一id，如果没有，则为null
 	 */
 	@Nullable
 	String getId();
 
 	/**
 	 * Return a name for the deployed application that this context belongs to.
-	 * @return a name for the deployed application, or the empty String by default
+	 * 返回此上下文所属的已部署应用程序的名称。
+	 * @return a name for the deployed application, or the empty String by default	已部署应用程序的名称，默认情况下为空字符串
 	 */
 	String getApplicationName();
 
 	/**
 	 * Return a friendly name for this context.
-	 * @return a display name for this context (never {@code null})
+	 * 已部署应用程序的名称，
+	 * @return a display name for this context (never {@code null})	默认情况下为空字符串
 	 */
 	String getDisplayName();
 
 	/**
 	 * Return the timestamp when this context was first loaded.
-	 * @return the timestamp (ms) when this context was first loaded
+	 * 返回首次加载此上下文时的时间戳。
+	 * @return the timestamp (ms) when this context was first loaded	首次加载此上下文时的时间戳（ms
 	 */
 	long getStartupDate();
 
 	/**
-	 * Return the parent context, or {@code null} if there is no parent
-	 * and this is the root of the context hierarchy.
-	 * @return the parent context, or {@code null} if there is no parent
+	 * Return the parent context, or {@code null} if there is no parent and this is the root of the context hierarchy.
+	 * 返回父上下文，如果没有父上下文且这是上下文层次结构的根，则返回null。
+	 * @return the parent context, or {@code null} if there is no parent	父上下文，如果没有父上下文，则为null
 	 */
 	@Nullable
 	ApplicationContext getParent();
@@ -104,11 +108,19 @@ public interface ApplicationContext extends EnvironmentCapable, ListableBeanFact
 	 * after the application context has been closed.</b> In current Spring Framework
 	 * versions, only refreshable application contexts behave that way; as of 4.2,
 	 * all application context implementations will be required to comply.
-	 * @return the AutowireCapableBeanFactory for this context
+	 *
+	 * 为此上下文公开AutowireCapableBeanFactory功能。
+	 * 这通常不被应用程序代码使用，除非是为了初始化位于 `ApplicationContext` 之外的bean实例，对它们应用springbean生命周期（全部或部分）。
+	 * 或者，ConfigurableApplicationContext接口公开的内部BeanFactory也提供对AutowireCapableBeanFactory接口的访问。
+	 * 本方法主要用作ApplicationContext接口上的一种方便、特定的工具。
+	 * 注意：从4.2开始，此方法将在 `ApplicationContext` 关闭后始终抛出IllegalStateException。
+	 * 在当前的Spring框架版本中，只有可刷新的 `ApplicationContext` 才会这样做；从4.2开始，所有 `ApplicationContext` 实现都需要遵守。
+	 *
+	 * @return the AutowireCapableBeanFactory for this context	此上下文的AutowireCapableBeanFactory
 	 * @throws IllegalStateException if the context does not support the
 	 * {@link AutowireCapableBeanFactory} interface, or does not hold an
 	 * autowire-capable bean factory yet (e.g. if {@code refresh()} has
-	 * never been called), or if the context has been closed already
+	 * never been called), or if the context has been closed already	如果上下文不支持AutowireCapableBeanFactory接口，或者尚未拥有支持autowire的 `BeanFactory` （例如，如果从未调用过refresh()），或者如果上下文已经关闭
 	 * @see ConfigurableApplicationContext#refresh()
 	 * @see ConfigurableApplicationContext#getBeanFactory()
 	 */

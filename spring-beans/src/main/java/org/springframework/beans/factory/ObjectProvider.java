@@ -45,9 +45,12 @@ public interface ObjectProvider<T> extends ObjectFactory<T>, Iterable<T> {
 	 * managed by this factory.
 	 * <p>Allows for specifying explicit construction arguments, along the
 	 * lines of {@link BeanFactory#getBean(String, Object...)}.
-	 * @param args arguments to use when creating a corresponding instance
-	 * @return an instance of the bean
-	 * @throws BeansException in case of creation errors
+	 * 返回此工厂管理的对象的实例（可能是共享的或独立的）。
+	 * 允许按照BeanFactory.getBean（String，Object…）的行指定显式构造参数。
+	 *
+	 * @param args arguments to use when creating a corresponding instance		创建相应实例时要使用的参数
+	 * @return an instance of the bean		bean的一个实例
+	 * @throws BeansException in case of creation errors		在创建错误的情况下
 	 * @see #getObject()
 	 */
 	T getObject(Object... args) throws BeansException;
