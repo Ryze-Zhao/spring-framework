@@ -8,7 +8,8 @@ pluginManagement {
 
 plugins {
 	id "com.gradle.enterprise" version "3.6.1"
-	id "io.spring.ge.conventions" version "0.0.7"
+	// 注释：否则提示 A build scan was not published as you have not authenticated with server 'ge.spring.io'.
+//	id "io.spring.ge.conventions" version "0.0.7"
 }
 
 include "spring-aop"
@@ -35,6 +36,7 @@ include "spring-webmvc"
 include "spring-websocket"
 include "framework-bom"
 include "integration-tests"
+//include 'study-try'
 
 rootProject.name = "spring"
 rootProject.children.each {project ->
@@ -55,5 +57,5 @@ settings.gradle.projectsLoaded {
 		}
 	}
 }
-include 'study-try'
+
 
