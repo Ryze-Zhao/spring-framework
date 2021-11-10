@@ -70,6 +70,10 @@ import org.springframework.util.ReflectionUtils;
  *
  * <p>Proxies created using this class are thread-safe if the underlying
  * (target) class is thread-safe.
+ * 基于类的代理，具体实现为通过创建目标类的子类来实现代理，即代理对象对应的类为目标类的子类。
+ * 所以目标类的需要被代理的方法不能为final，因为子类无法重写final的方法；同时被代理的方法需要是public或者protected，不能是static，private或者包可见，即不加可见修饰符。
+ * 如在事务中，@Transactional注解不能对private，static，final，包可见的方法添加事务功能，只能为public方法。
+ * 这个代理对象也需要通过代理工厂来创建，具体为继承了AdvisedSupport的代理工厂来创建，而不是直接创建。
  *
  * @author Rod Johnson
  * @author Rob Harrop
@@ -183,7 +187,7 @@ class CglibAopProxy implements AopProxy, Serializable {
 			validateClassIfNecessary(proxySuperClass, classLoader);
 
 			// Configure CGLIB Enhancer...
-			// 创建并配置CGLIB增强实例
+			// 创建目标类的子类来实现代理，即织入辅助功能
 			Enhancer enhancer = createEnhancer();
 			if (classLoader != null) {
 				enhancer.setClassLoader(classLoader);

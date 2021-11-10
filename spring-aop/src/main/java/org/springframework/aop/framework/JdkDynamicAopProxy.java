@@ -52,7 +52,9 @@ import org.springframework.util.ClassUtils;
  *
  * <p>Proxies are serializable so long as all Advisors (including Advices
  * and Pointcuts) and the TargetSource are serializable.
- *
+ * JDK的动态代理是基于接口的，故只能代理接口中定义的方法。
+ * 该类需要通过代理工厂，具体为继承了AdvisedSupport的代理工厂来创建，而不是直接创建，
+ * 因为AdvisedSupport提供了AOP的相关配置信息，如Advisors列表等。
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @author Rob Harrop
@@ -205,21 +207,28 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 			Class<?> targetClass = (target != null ? target.getClass() : null);
 
 			// Get the interception chain for this method.S
-			// 获取此方法的拦截链
+			// 获取该方法对应的方法拦截器列表
+			// 实现：通过该方法所在类对应的Advisors，获取该方法的辅助功能Advices列表，即方法拦截器列表。这里的实现为懒加载，
+			// 即当方法第一次调用的时候才创建该方法拦截器列表，然后使用一个ConcurrentHashMap缓存起来，之后的方法调用直接使用。
+
+			// 其中advised就是该方法的所在bean对应的ProxyFactory对象引用，通过ProxyFactory来创建AopProxy，即当前类对象实例。
 			List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
 
 			// Check whether we have any advice. If we don't, we can fallback on direct
 			// reflective invocation of the target, and avoid creating a MethodInvocation.
+			// 当前执行的方法不包括方法拦截器，即不需要额外的辅助功能，则可以直接执行
 			if (chain.isEmpty()) {
 				// We can skip creating a MethodInvocation: just invoke the target directly
 				// Note that the final invoker must be an InvokerInterceptor so we know it does
 				// nothing but a reflective operation on the target, and no hot swapping or fancy proxying.
+
 				Object[] argsToUse = AopProxyUtils.adaptArgumentsIfNecessary(method, args);
 				retVal = AopUtils.invokeJoinpointUsingReflection(target, method, argsToUse);
 			}
 			else {
 				// We need to create a method invocation...
 				// 创建一个MethodInvocation实例,该实例中维护这代理方法和拦截器链相关信息
+				// 如果当前方法包括方法拦截器，即在执行时需要其他额外的辅助功能，则创建ReflectiveMethodInvocation
 				MethodInvocation invocation =new ReflectiveMethodInvocation(proxy, target, method, args, targetClass, chain);
 				// Proceed to the joinpoint through the interceptor chain.
 				// 通过拦截器链进入连接点{@link ReflectiveMethodInvocation#proceed()}

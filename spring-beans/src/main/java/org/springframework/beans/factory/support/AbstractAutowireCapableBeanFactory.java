@@ -1195,8 +1195,16 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 				Class<?> targetType = determineTargetType(beanName, mbd);
 				if (targetType != null) {
+					// 调用InstantiationAwareBeanPostProcessor的postProcessBeforeInstantiation
+					// 如果返回不是null，则一般是AOP的代理对象
 					bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
 					if (bean != null) {
+						// 如果使用postProcessBeforeInstantiation创建了bean对象，则是当前bean对象的代理对象了
+						// 这个方法执行完，退出则直接返回该代理bean对象了，
+						// 故在这里调用一下其他BeanPostProcessor的postProcessAfterInitialization
+
+						// initialization
+						// 调用普通BeanPostProcessor的postProcessAfterInitialization
 						bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
 					}
 				}
@@ -1219,9 +1227,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 */
 	@Nullable
 	protected Object applyBeanPostProcessorsBeforeInstantiation(Class<?> beanClass, String beanName) {
+		// 查找实现了InstantiationAwareBeanPostProcessor接口的BeanPostProcessor
+		// 其中在spring-aop模块定义的AspectJAwareAdvisorAutoProxyCreator就实现了InstantiationAwareBeanPostProcessor接口
 		for (InstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().instantiationAware) {
+			// 调用postProcessBeforeInstantiation方法创建对象result
 			Object result = bp.postProcessBeforeInstantiation(beanClass, beanName);
 			if (result != null) {
+				// 如果创建成功则直接返回
 				return result;
 			}
 		}
