@@ -244,17 +244,24 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	}
 	/**
 	 * 在bean对象实例的创建过程中，在创建bean对象实例之前，先调用这个方法，看是否需要创建一个AOP代理对象直接返回
+	 * 在创建Bean的流程中还没调用构造器来实例化Bean的时候进行调用(实例化前后)，AOP解析切面以及事务解析事务注解都是在这里完成的
 	 * @author : HeHaoZhao
 	 */
 	@Override
 	public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) {
+		// 构建我们的缓存key
 		Object cacheKey = getCacheKey(beanClass, beanName);
 
 		// 返回null，则表示不是AOP的目标对象，不需要创建代理对象
 		if (!StringUtils.hasLength(beanName) || !this.targetSourcedBeans.contains(beanName)) {
+			// 如果被解析过直接返回
 			if (this.advisedBeans.containsKey(cacheKey)) {
 				return null;
 			}
+			/*
+			 * 判断是不是基础的Bean（Advice、PointCut、Advisor、AopInfrastructureBean）是就直接跳过
+			 * 判断是不是应该跳过 (AOP解析直接解析出我们的切面信息(并且把我们的切面信息进行缓存)，而事务在这里是不会解析的)
+			 */
 			if (isInfrastructureClass(beanClass) || shouldSkip(beanClass, beanName)) {
 				this.advisedBeans.put(cacheKey, Boolean.FALSE);
 				return null;
