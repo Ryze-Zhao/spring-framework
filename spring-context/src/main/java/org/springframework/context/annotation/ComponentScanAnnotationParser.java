@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2018 the original author or authors.
+ * Copyright 2002-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ class ComponentScanAnnotationParser {
 	}
 
 
-	public Set<BeanDefinitionHolder> parse(AnnotationAttributes componentScan, final String declaringClass) {
+	public Set<BeanDefinitionHolder> parse(AnnotationAttributes componentScan, String declaringClass) {
 		/*
 		 * <Spring分析点41-1> 实例化一个扫描对象,完成对包的扫描解析工作
 		 * 注意:在此处之前也实例化了一个ClassPathBeanDefinitionScanner类型的scanner对象,
