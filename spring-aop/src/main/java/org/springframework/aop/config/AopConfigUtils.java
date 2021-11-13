@@ -119,7 +119,7 @@ public abstract class AopConfigUtils {
 			Class<?> cls, BeanDefinitionRegistry registry, @Nullable Object source) {
 
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
-
+		// 判断容器之中是否有这个一个bean的定义信息，如果有就执行下列的操作
 		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
 			BeanDefinition apcDefinition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);
 			if (!cls.getName().equals(apcDefinition.getBeanClassName())) {
@@ -132,6 +132,7 @@ public abstract class AopConfigUtils {
 			return null;
 		}
 
+		// 如果没有，就创建一个AnnotationAwareAspectJAutoProxyCreator类型的bean的定义信息
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(cls);
 		beanDefinition.setSource(source);
 		beanDefinition.getPropertyValues().add("order", Ordered.HIGHEST_PRECEDENCE);

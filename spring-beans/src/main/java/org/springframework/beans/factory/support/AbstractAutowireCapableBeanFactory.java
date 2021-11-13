@@ -1190,6 +1190,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	@Nullable
 	protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition mbd) {
 		Object bean = null;
+		//查看是否被解析过了
 		if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {
 			// Make sure bean class is actually resolved at this point.
 			if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
@@ -1230,7 +1231,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// 查找实现了InstantiationAwareBeanPostProcessor接口的BeanPostProcessor
 		// 其中在spring-aop模块定义的AspectJAwareAdvisorAutoProxyCreator就实现了InstantiationAwareBeanPostProcessor接口
 		for (InstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().instantiationAware) {
-			// 调用postProcessBeforeInstantiation方法创建对象result
+			// 调用InstantiationAwareBeanPostProcessor接口的实现类postProcessBeforeInstantiation方法创建对象result
 			Object result = bp.postProcessBeforeInstantiation(beanClass, beanName);
 			if (result != null) {
 				// 如果创建成功则直接返回
