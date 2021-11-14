@@ -242,6 +242,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		this.earlyProxyReferences.put(cacheKey, bean);
 		return wrapIfNecessary(bean, beanName, cacheKey);
 	}
+
 	/**
 	 * 在bean对象实例的创建过程中，在创建bean对象实例之前，先调用这个方法，看是否需要创建一个AOP代理对象直接返回
 	 * 在创建Bean的流程中还没调用构造器来实例化Bean的时候进行调用(实例化前后)，AOP解析切面以及事务解析事务注解都是在这里完成的
@@ -308,6 +309,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);
 			if (this.earlyProxyReferences.remove(cacheKey) != bean) {
 				// 如果条件符合，则为bean生成代理对象
+				//那什么时候需要包装呢？
 				return wrapIfNecessary(bean, beanName, cacheKey);
 			}
 		}
@@ -368,15 +370,21 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 
 		// Create proxy if we have advice.
 		/*
-		 * 获取所有适合该bean的增强Advisor
+		 * 获取所有适合该bean的增强Advisor（增强器/通知方法）
 		 * {@link AbstractAdvisorAutoProxyCreator#getAdvicesAndAdvisorsForBean(java.lang.Class, java.lang.String, org.springframework.aop.TargetSource)
+		 * 1.而getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);做了什么呢？
+		 * 1.1.它会找到所有候选的增强器（找到哪些通知方法是需要切入到当前bean方法中的）
+		 * 1.2.获取到能在bean使用的增强器
+		 * 1.3.给增强器排序
 		 */
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
-		// 如果获取的增强不为null，则为该bean创建代理（DO_NOT_PROXY=null）
+		// 如果获取的增强不为null，则为该bean创建代理（注意：DO_NOT_PROXY=null）
+		// 如果这个bean是需要增强的，那么specificInterceptors就不为空，就能执行里面的操作
 		if (specificInterceptors != DO_NOT_PROXY) {
 			this.advisedBeans.put(cacheKey, Boolean.TRUE);
-			// 创建代理
+			// 如果bean需要增强，就创建代理对象
 			Object proxy = createProxy(bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
+			// 保存当前bean到advisedBeans中，表示当前bean已经被增强处理了
 			this.proxyTypes.put(cacheKey, proxy.getClass());
 			return proxy;
 		}
