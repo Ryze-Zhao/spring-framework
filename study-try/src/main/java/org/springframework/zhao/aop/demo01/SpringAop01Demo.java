@@ -10,6 +10,11 @@ import org.springframework.zhao.aop.demo01.service.AopDemoServiceImpl;
 import org.springframework.zhao.aop.demo01.service.SayNameService;
 import org.springframework.zhao.aop.demo01.service.SayNameServiceImpl;
 
+/**
+ * Spring AOP 1代
+ *
+ * @author : HeHaoZhao
+ */
 public class SpringAop01Demo {
     public static void main(String[] args) {
 	    SayNameService sayName = new SayNameServiceImpl();
