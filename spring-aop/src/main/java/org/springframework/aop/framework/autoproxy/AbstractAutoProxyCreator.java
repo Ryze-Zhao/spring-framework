@@ -381,10 +381,10 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		// 如果获取的增强不为null，则为该bean创建代理（注意：DO_NOT_PROXY=null）
 		// 如果这个bean是需要增强的，那么specificInterceptors就不为空，就能执行里面的操作
 		if (specificInterceptors != DO_NOT_PROXY) {
+			// 保存当前bean到advisedBeans中，表示当前bean已经被增强处理了
 			this.advisedBeans.put(cacheKey, Boolean.TRUE);
 			// 如果bean需要增强，就创建代理对象
 			Object proxy = createProxy(bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
-			// 保存当前bean到advisedBeans中，表示当前bean已经被增强处理了
 			this.proxyTypes.put(cacheKey, proxy.getClass());
 			return proxy;
 		}
@@ -504,7 +504,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 				evaluateProxyInterfaces(beanClass, proxyFactory);
 			}
 		}
-
+		// 把增强器保存在代理工厂之中
 		Advisor[] advisors = buildAdvisors(beanName, specificInterceptors);
 		// 为该代理工厂添加辅助功能包装器Advisors，结合Advisors来生成代理对象的方法拦截器
 		proxyFactory.addAdvisors(advisors);
@@ -522,8 +522,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		if (classLoader instanceof SmartClassLoader && classLoader != beanClass.getClassLoader()) {
 			classLoader = ((SmartClassLoader) classLoader).getOriginalClassLoader();
 		}
-		// 通过proxyFactory获取AopProxy
-		// 为目标类创建代理对象
+		// 通过proxyFactory获取AopProxy，为目标类创建代理对象
 		// 如果配置了(aop:config的proxy-target-class为true 或者 @EnableAspectJAutoProxy(proxyTargetClass=true)），则使用CGLIB
 		// 否则
 		//  如果目标类为接口 则使用JDK代理，

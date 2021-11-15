@@ -53,17 +53,22 @@ public class DefaultAdvisorChainFactory implements AdvisorChainFactory, Serializ
 
 		// This is somewhat tricky... We have to process introductions first,
 		// but we need to preserve order in the ultimate list.
+		// 先创建一个list保存所有的拦截器，创建的时候已经根据config中的增强器的长度规定好list的长度
+		// 这里config中的增强器包括：一个默认的ExposeInvocationInterceptor和四个增强器：logException，logReturn，logEnd，logStart
 		AdvisorAdapterRegistry registry = GlobalAdvisorAdapterRegistry.getInstance();
 		Advisor[] advisors = config.getAdvisors();
 		List<Object> interceptorList = new ArrayList<>(advisors.length);
 		Class<?> actualClass = (targetClass != null ? targetClass : method.getDeclaringClass());
 		Boolean hasIntroductions = null;
 
+		// 拿到所有的增强器进行遍历
 		for (Advisor advisor : advisors) {
+			// 如果PointcutAdvisor
 			if (advisor instanceof PointcutAdvisor) {
 				// Add it conditionally.
 				PointcutAdvisor pointcutAdvisor = (PointcutAdvisor) advisor;
 				if (config.isPreFiltered() || pointcutAdvisor.getPointcut().getClassFilter().matches(actualClass)) {
+
 					MethodMatcher mm = pointcutAdvisor.getPointcut().getMethodMatcher();
 					boolean match;
 					if (mm instanceof IntroductionAwareMethodMatcher) {
@@ -75,12 +80,17 @@ public class DefaultAdvisorChainFactory implements AdvisorChainFactory, Serializ
 					else {
 						match = mm.matches(method, actualClass);
 					}
+					// 1.这里是把增强器传过来，包装成一个interceptors
+					// 2.这里的包装的原理：
+					// 2.1.如果这个增强器是【MethodInterceptor】这个类型的话，就直接加进interceptor并返回
+					// 2.2.如果不是的话，会通过AdvisorAdapter转成interceptor，再返回
 					if (match) {
 						MethodInterceptor[] interceptors = registry.getInterceptors(advisor);
 						if (mm.isRuntime()) {
 							// Creating a new object instance in the getInterceptors() method
 							// isn't a problem as we normally cache created chains.
 							for (MethodInterceptor interceptor : interceptors) {
+								// 添加到interceptorList
 								interceptorList.add(new InterceptorAndDynamicMethodMatcher(interceptor, mm));
 							}
 						}
@@ -90,19 +100,26 @@ public class DefaultAdvisorChainFactory implements AdvisorChainFactory, Serializ
 					}
 				}
 			}
+			// 如果是IntroductionAdvisor
 			else if (advisor instanceof IntroductionAdvisor) {
 				IntroductionAdvisor ia = (IntroductionAdvisor) advisor;
 				if (config.isPreFiltered() || ia.getClassFilter().matches(actualClass)) {
+					// 包装
 					Interceptor[] interceptors = registry.getInterceptors(advisor);
+					// 添加到interceptorList
 					interceptorList.addAll(Arrays.asList(interceptors));
 				}
 			}
 			else {
+				// 包装
 				Interceptor[] interceptors = registry.getInterceptors(advisor);
+				// 添加到interceptorList
 				interceptorList.addAll(Arrays.asList(interceptors));
 			}
 		}
-
+		// 上述的逻辑简而言之就是遍历所有的增强器，并转为interceptor
+		// 返回interceptorList
+		// 拦截器链：每一个通知方法又被包装为方法拦截器，利用MethodInterceptor机制
 		return interceptorList;
 	}
 

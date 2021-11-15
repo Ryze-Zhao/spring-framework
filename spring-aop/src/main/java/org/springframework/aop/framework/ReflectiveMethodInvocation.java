@@ -188,8 +188,11 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 			// been evaluated statically before this object was constructed.
 			/*
 			 * 执行每个拦截器, 会先执行前置通知,再执行后置通知
-			 * 后置增强: {@link AspectJAfterAdvice#invoke(org.aopalliance.intercept.MethodInvocation)}
-			 * 前置增强: {@link MethodBeforeAdviceInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)}
+			 *  后置增强: {@link AspectJAfterAdvice#invoke(org.aopalliance.intercept.MethodInvocation)}
+			 *  前置增强: {@link MethodBeforeAdviceInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)}
+			 *
+			 * 注意：
+			 *  这里的this是CglibMethodInvocation这个对象
 			 *
 			 */
 			return ((MethodInterceptor) interceptorOrInterceptionAdvice).invoke(this);

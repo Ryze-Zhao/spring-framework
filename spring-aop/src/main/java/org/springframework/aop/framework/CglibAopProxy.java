@@ -687,20 +687,20 @@ class CglibAopProxy implements AopProxy, Serializable {
 				// Get as late as possible to minimize the time we "own" the target, in case it comes from a pool...
 				target = targetSource.getTarget();
 				Class<?> targetClass = (target != null ? target.getClass() : null);
-				// 获取拦截器链
+				// 获取拦截器链（根据proxyFactory对象获取将要执行的目标方法的拦截器链）
 				List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
 				Object retVal;
 				// Check whether we only have one InvokerInterceptor: that is,
 				// no real advice, but just reflective invocation of the target.
-				// 检查我们是否只有一个InvokerInterceptor：没有真正的增强，只是对目标的发射调用
+				// 检查我们是否只有一个InvokerInterceptor：即没有真正的增强，只是对目标方法调用（如果没有拦截器链，直接执行目标方法）
 				if (chain.isEmpty() && CglibMethodInvocation.isMethodProxyCompatible(method)) {
 					// We can skip creating a MethodInvocation: just invoke the target directly.
 					// Note that the final invoker must be an InvokerInterceptor, so we know
 					// it does nothing but a reflective operation on the target, and no hot
 					// swapping or fancy proxying.
 					/*
-					 * 跳过创建MethodInvocation的方法：直接调用目标即可
-					 * 请注意，最终的调用者必须是InvokerInterceptor，因此我们知道它仅对目标执行反射操作，并且不执行热交换或奇特代理
+					 * 跳过创建MethodInvocation的方法：直接调用目标方法即可
+					 * 请注意，最终的调用者必须是InvokerInterceptor，因此我们知道它仅对目标执行反射操作，并且不执行热交换或特殊代理
 					 */
 					Object[] argsToUse = AopProxyUtils.adaptArgumentsIfNecessary(method, args);
 					try {
@@ -711,12 +711,13 @@ class CglibAopProxy implements AopProxy, Serializable {
 						retVal = AopUtils.invokeJoinpointUsingReflection(target, method, argsToUse);
 					}
 				}
+				// 如果有拦截器链
 				else {
 					// We need to create a method invocation...
 					/*
-					 * 2.创建一个方法调用,执行目标方法
-					 *   (1) new CglibMethodInvocation():CglibMethodInvocation实例继承ReflectiveMethodInvocation
-					 *   (2) proceed():此处与JDK动态代理一样,都是通过ReflectiveMethodInvocation#proceed()方法完成增强的织入
+					 * 2.创建一个方法调用,执行目标方法（把需要执行的目标对象，方法，参数，拦截器链等传进来）
+					 * 2.1.new CglibMethodInvocation():CglibMethodInvocation实例继承ReflectiveMethodInvocation，创建一个CglibMethodInvocation对象
+					 * 2.2.proceed():此处与JDK动态代理一样,都是通过ReflectiveMethodInvocation#proceed()方法完成增强的织入
 					 */
 					retVal = new CglibMethodInvocation(proxy, target, method, args, targetClass, chain, methodProxy).proceed();
 				}

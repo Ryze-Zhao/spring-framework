@@ -61,6 +61,7 @@ public class AspectJAfterThrowingAdvice extends AbstractAspectJAdvice
 	@Nullable
 	public Object invoke(MethodInvocation mi) throws Throwable {
 		try {
+			// 在这里重新调用CglibMethodInvocation的proceed方法
 			return mi.proceed();
 		}
 		catch (Throwable ex) {
