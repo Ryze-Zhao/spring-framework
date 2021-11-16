@@ -177,6 +177,12 @@ public @interface Transactional {
 	 * <p>This is the preferred way to construct a rollback rule (in contrast to
 	 * {@link #rollbackForClassName}), matching the exception class and its subclasses.
 	 * <p>Similar to {@link org.springframework.transaction.interceptor.RollbackRuleAttribute#RollbackRuleAttribute(Class clazz)}.
+	 *
+	 * 定义零（0）个或多个异常类，这些异常类必须是Throwable的子类，指示哪些异常类型必须导致事务回滚。
+	 * 默认情况下，事务将在RuntimeException和Error上回滚，但不会在选中的异常（业务异常）上回滚。
+	 * 有关详细说明，请参见org.springframework.transaction.interceptor.defaultTransactionaAttribute.rollbackOn（Throwable）。
+	 * 这是构造回滚规则的首选方法（与rollbackForClassName相反），匹配异常类及其子类。
+	 * 类似于org.springframework.transaction.interceptor.RollbackRuleAttribute.RollbackRuleAttribute（类clazz）。
 	 * @see #rollbackForClassName
 	 * @see org.springframework.transaction.interceptor.DefaultTransactionAttribute#rollbackOn(Throwable)
 	 */
