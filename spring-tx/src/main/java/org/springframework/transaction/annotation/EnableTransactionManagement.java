@@ -173,6 +173,10 @@ public @interface EnableTransactionManagement {
 	 * {@code @Async} annotation will be upgraded to subclass proxying at the same
 	 * time. This approach has no negative impact in practice unless one is explicitly
 	 * expecting one type of proxy vs another, e.g. in tests.
+	 * 1.Spring是通过AOP的方式对bean创建代理对象来实现事务管理的
+	 * 1.1.创建代理对象有2种方式，jdk动态代理和cglib代理
+	 * 1.2.proxyTargetClass：为true的时候，就是强制使用cglib来创建代理
+	 *
 	 */
 	boolean proxyTargetClass() default false;
 
@@ -192,6 +196,9 @@ public @interface EnableTransactionManagement {
 	 * Indicate the ordering of the execution of the transaction advisor
 	 * when multiple advices are applied at a specific joinpoint.
 	 * <p>The default is {@link Ordered#LOWEST_PRECEDENCE}.
+	 * 1.用来指定事务拦截器的顺序
+	 * 1.1.我们知道一个方法上可以添加很多拦截器，拦截器是可以指定顺序的
+	 * 1.2.比如你可以自定义一些拦截器，放在事务拦截器之前或者之后执行，就可以通过order来控制
 	 */
 	int order() default Ordered.LOWEST_PRECEDENCE;
 

@@ -56,6 +56,9 @@ public interface PlatformTransactionManager extends TransactionManager {
 	 * <p>An exception to the above rule is the read-only flag, which should be
 	 * ignored if no explicit read-only mode is supported. Essentially, the
 	 * read-only flag is just a hint for potential optimization.
+	 * 获取一个事务（开启事务）
+	 * 通过事务管理器获取一个事务，返回TransactionStatus：内部包含事务的状态信息
+	 *
 	 * @param definition the TransactionDefinition instance (can be {@code null} for defaults),
 	 * describing propagation behavior, isolation level, timeout etc.
 	 * @return transaction status object representing the new or current transaction
@@ -87,6 +90,9 @@ public interface PlatformTransactionManager extends TransactionManager {
 	 * database right before commit, with the resulting DataAccessException
 	 * causing the transaction to fail. The original exception will be
 	 * propagated to the caller of this commit method in such a case.
+	 * 根据事务的状态信息提交事务
+	 *
+	 *
 	 * @param status object returned by the {@code getTransaction} method
 	 * @throws UnexpectedRollbackException in case of an unexpected rollback
 	 * that the transaction coordinator initiated
@@ -110,6 +116,8 @@ public interface PlatformTransactionManager extends TransactionManager {
 	 * The transaction will already have been completed and cleaned up when commit
 	 * returns, even in case of a commit exception. Consequently, a rollback call
 	 * after commit failure will lead to an IllegalTransactionStateException.
+	 * 根据事务的状态信息回滚事务
+	 *
 	 * @param status object returned by the {@code getTransaction} method
 	 * @throws TransactionSystemException in case of rollback or system errors
 	 * (typically caused by fundamental resource failures)

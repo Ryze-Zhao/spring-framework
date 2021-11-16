@@ -77,6 +77,8 @@ public @interface Transactional {
 
 	/**
 	 * Alias for {@link #transactionManager}.
+	 * 指定事务管理器的bean名称，如果容器中有多事务管理器PlatformTransactionManager，那么你得告诉spring，当前配置需要使用哪个事务管理器
+	 *
 	 * @see #transactionManager
 	 */
 	@AliasFor("transactionManager")
@@ -88,6 +90,8 @@ public @interface Transactional {
 	 * qualifier value (or the bean name) of a specific
 	 * {@link org.springframework.transaction.TransactionManager TransactionManager}
 	 * bean definition.
+	 * 同value，value和transactionManager选配一个就行，也可以为空，如果为空，默认会从容器中按照类型查找一个事务管理器bean
+	 *
 	 * @since 4.2
 	 * @see #value
 	 * @see org.springframework.transaction.PlatformTransactionManager
@@ -111,6 +115,8 @@ public @interface Transactional {
 	/**
 	 * The transaction propagation type.
 	 * <p>Defaults to {@link Propagation#REQUIRED}.
+	 * 事务的传播属性
+	 *
 	 * @see org.springframework.transaction.interceptor.TransactionAttribute#getPropagationBehavior()
 	 */
 	Propagation propagation() default Propagation.REQUIRED;
@@ -124,6 +130,8 @@ public @interface Transactional {
 	 * "true" on your transaction manager if you'd like isolation level declarations
 	 * to get rejected when participating in an existing transaction with a different
 	 * isolation level.
+	 * 事务的隔离级别，就是制定数据库的隔离级别，数据库隔离级别大家知道么？不知道的可以去补一下
+	 *
 	 * @see org.springframework.transaction.interceptor.TransactionAttribute#getIsolationLevel()
 	 * @see org.springframework.transaction.support.AbstractPlatformTransactionManager#setValidateExistingTransaction
 	 */
@@ -133,6 +141,9 @@ public @interface Transactional {
 	 * The timeout for this transaction (in seconds).
 	 * <p>Defaults to the default timeout of the underlying transaction system.
 	 * <p>Exclusively designed for use with {@link Propagation#REQUIRED} or
+	 * 事务执行的超时时间（秒），执行一个方法，比如有问题，那我不可能等你一天吧，可能最多我只能等你10秒，10秒后，还没有执行完毕，就弹出一个超时异常吧
+	 *
+	 *
 	 * {@link Propagation#REQUIRES_NEW} since it only applies to newly started
 	 * transactions.
 	 * @return the timeout in seconds
@@ -161,6 +172,9 @@ public @interface Transactional {
 	 * A transaction manager which cannot interpret the read-only hint will
 	 * <i>not</i> throw an exception when asked for a read-only transaction
 	 * but rather silently ignore the hint.
+	 * 是否是只读事务，比如某个方法中只有查询操作，我们可以指定事务是只读的
+	 * 设置了这个参数，可能数据库会做一些性能优化，提升查询速度
+	 *
 	 * @see org.springframework.transaction.interceptor.TransactionAttribute#isReadOnly()
 	 * @see org.springframework.transaction.support.TransactionSynchronizationManager#isCurrentTransactionReadOnly()
 	 */
@@ -203,6 +217,9 @@ public @interface Transactional {
 	 * {@link Exception} names such as {@code "BaseBusinessException"} there is no
 	 * need to use a FQN.
 	 * <p>Similar to {@link org.springframework.transaction.interceptor.RollbackRuleAttribute#RollbackRuleAttribute(String exceptionName)}.
+	 *
+	 * 和 rollbackFor 作用一样，只是这个地方使用的是类名
+	 *
 	 * @see #rollbackFor
 	 * @see org.springframework.transaction.interceptor.DefaultTransactionAttribute#rollbackOn(Throwable)
 	 */
@@ -216,6 +233,9 @@ public @interface Transactional {
 	 * to {@link #noRollbackForClassName}), matching the exception class and
 	 * its subclasses.
 	 * <p>Similar to {@link org.springframework.transaction.interceptor.NoRollbackRuleAttribute#NoRollbackRuleAttribute(Class clazz)}.
+	 *
+	 * 定义零(0)个或更多异常类，这些异常类必须是Throwable的子类，当方法抛出这些异常的时候，事务不会回滚
+	 *
 	 * @see #noRollbackForClassName
 	 * @see org.springframework.transaction.interceptor.DefaultTransactionAttribute#rollbackOn(Throwable)
 	 */
@@ -228,6 +248,9 @@ public @interface Transactional {
 	 * <p>See the description of {@link #rollbackForClassName} for further
 	 * information on how the specified names are treated.
 	 * <p>Similar to {@link org.springframework.transaction.interceptor.NoRollbackRuleAttribute#NoRollbackRuleAttribute(String exceptionName)}.
+	 *
+	 * 和 noRollbackFor 作用一样，只是这个地方使用的是类名
+	 *
 	 * @see #noRollbackFor
 	 * @see org.springframework.transaction.interceptor.DefaultTransactionAttribute#rollbackOn(Throwable)
 	 */

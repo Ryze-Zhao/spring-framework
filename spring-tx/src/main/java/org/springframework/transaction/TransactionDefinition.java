@@ -135,6 +135,7 @@ public interface TransactionDefinition {
 	/**
 	 * Use the default isolation level of the underlying datastore.
 	 * All other levels correspond to the JDBC isolation levels.
+	 * 默认隔离级别
 	 * @see java.sql.Connection
 	 */
 	int ISOLATION_DEFAULT = -1;
@@ -146,6 +147,7 @@ public interface TransactionDefinition {
 	 * transaction before any changes in that row have been committed (a "dirty read").
 	 * If any of the changes are rolled back, the second transaction will have
 	 * retrieved an invalid row.
+	 * 隔离级别：读未提交
 	 * @see java.sql.Connection#TRANSACTION_READ_UNCOMMITTED
 	 */
 	int ISOLATION_READ_UNCOMMITTED = 1;  // same as java.sql.Connection.TRANSACTION_READ_UNCOMMITTED;
@@ -155,6 +157,7 @@ public interface TransactionDefinition {
 	 * phantom reads can occur.
 	 * <p>This level only prohibits a transaction from reading a row
 	 * with uncommitted changes in it.
+	 * 隔离级别：读已提交
 	 * @see java.sql.Connection#TRANSACTION_READ_COMMITTED
 	 */
 	int ISOLATION_READ_COMMITTED = 2;  // same as java.sql.Connection.TRANSACTION_READ_COMMITTED;
@@ -166,6 +169,7 @@ public interface TransactionDefinition {
 	 * in it, and it also prohibits the situation where one transaction reads a row,
 	 * a second transaction alters the row, and the first transaction re-reads the row,
 	 * getting different values the second time (a "non-repeatable read").
+	 * 隔离级别：可重复读
 	 * @see java.sql.Connection#TRANSACTION_REPEATABLE_READ
 	 */
 	int ISOLATION_REPEATABLE_READ = 4;  // same as java.sql.Connection.TRANSACTION_REPEATABLE_READ;
@@ -179,14 +183,15 @@ public interface TransactionDefinition {
 	 * that satisfies that {@code WHERE} condition, and the first transaction
 	 * re-reads for the same condition, retrieving the additional "phantom" row
 	 * in the second read.
+	 * 隔离级别：序列化的方式
 	 * @see java.sql.Connection#TRANSACTION_SERIALIZABLE
 	 */
 	int ISOLATION_SERIALIZABLE = 8;  // same as java.sql.Connection.TRANSACTION_SERIALIZABLE;
 
 
 	/**
-	 * Use the default timeout of the underlying transaction system,
-	 * or none if timeouts are not supported.
+	 * Use the default timeout of the underlying transaction system, or none if timeouts are not supported.
+	 * 默认超时时间
 	 */
 	int TIMEOUT_DEFAULT = -1;
 
@@ -196,6 +201,9 @@ public interface TransactionDefinition {
 	 * <p>Must return one of the {@code PROPAGATION_XXX} constants
 	 * defined on {@link TransactionDefinition this interface}.
 	 * <p>The default is {@link #PROPAGATION_REQUIRED}.
+	 *
+	 * 返回事务传播行为，默认是REQUIRED
+	 *
 	 * @return the propagation behavior
 	 * @see #PROPAGATION_REQUIRED
 	 * @see org.springframework.transaction.support.TransactionSynchronizationManager#isActualTransactionActive()
@@ -218,6 +226,9 @@ public interface TransactionDefinition {
 	 * <p>The default is {@link #ISOLATION_DEFAULT}. Note that a transaction manager
 	 * that does not support custom isolation levels will throw an exception when
 	 * given any other level than {@link #ISOLATION_DEFAULT}.
+	 *
+	 * 返回事务的隔离级别
+	 *
 	 * @return the isolation level
 	 * @see #ISOLATION_DEFAULT
 	 * @see org.springframework.transaction.support.AbstractPlatformTransactionManager#setValidateExistingTransaction
@@ -235,6 +246,9 @@ public interface TransactionDefinition {
 	 * <p>Note that a transaction manager that does not support timeouts will throw
 	 * an exception when given any other timeout than {@link #TIMEOUT_DEFAULT}.
 	 * <p>The default is {@link #TIMEOUT_DEFAULT}.
+	 *
+	 * 返回事务超时时间(秒)
+	 *
 	 * @return the transaction timeout
 	 */
 	default int getTimeout() {
@@ -253,6 +267,9 @@ public interface TransactionDefinition {
 	 * it will <i>not necessarily</i> cause failure of write access attempts.
 	 * A transaction manager which cannot interpret the read-only hint will
 	 * <i>not</i> throw an exception when asked for a read-only transaction.
+	 *
+	 * 是否是只读事务
+	 *
 	 * @return {@code true} if the transaction is to be optimized as read-only
 	 * ({@code false} by default)
 	 * @see org.springframework.transaction.support.TransactionSynchronization#beforeCommit(boolean)
@@ -268,6 +285,9 @@ public interface TransactionDefinition {
 	 * transaction monitor, if applicable (for example, WebLogic's).
 	 * <p>In case of Spring's declarative transactions, the exposed name will be
 	 * the {@code fully-qualified class name + "." + method name} (by default).
+	 *
+	 * 获取事务名称
+	 *
 	 * @return the name of this transaction ({@code null} by default}
 	 * @see org.springframework.transaction.interceptor.TransactionAspectSupport
 	 * @see org.springframework.transaction.support.TransactionSynchronizationManager#getCurrentTransactionName()
@@ -285,6 +305,9 @@ public interface TransactionDefinition {
 	 * <p>For customization purposes, use the modifiable
 	 * {@link org.springframework.transaction.support.DefaultTransactionDefinition}
 	 * instead.
+	 *
+	 * 获取默认的事务定义信息
+	 *
 	 * @since 5.2
 	 */
 	static TransactionDefinition withDefaults() {
