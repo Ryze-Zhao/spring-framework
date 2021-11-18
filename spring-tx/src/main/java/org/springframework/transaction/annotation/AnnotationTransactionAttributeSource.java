@@ -84,6 +84,9 @@ public class AnnotationTransactionAttributeSource extends AbstractFallbackTransa
 	 * Create a custom AnnotationTransactionAttributeSource, supporting
 	 * public methods that carry the {@code Transactional} annotation
 	 * or the EJB3 {@link javax.ejb.TransactionAttribute} annotation.
+	 *
+	 * 解析事务注解信息
+	 *
 	 * @param publicMethodsOnly whether to support public methods that carry
 	 * the {@code Transactional} annotation only (typically for use
 	 * with proxy-based AOP), or protected/private methods as well
@@ -93,11 +96,14 @@ public class AnnotationTransactionAttributeSource extends AbstractFallbackTransa
 		this.publicMethodsOnly = publicMethodsOnly;
 		if (jta12Present || ejb3Present) {
 			this.annotationParsers = new LinkedHashSet<>(4);
+			// 这个是事务注解的解析器，用来解析Spring事务注解
 			this.annotationParsers.add(new SpringTransactionAnnotationParser());
 			if (jta12Present) {
+				// Jta事务注解的解析器
 				this.annotationParsers.add(new JtaTransactionAnnotationParser());
 			}
 			if (ejb3Present) {
+				// Ejb3事务注解的解析器
 				this.annotationParsers.add(new Ejb3TransactionAnnotationParser());
 			}
 		}

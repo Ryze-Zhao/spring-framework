@@ -341,6 +341,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 		// 获取事务属性配置信息：通过TransactionAttributeSource.getTransactionAttribute解析@Trasaction注解得到事务属性配置信息
 		final TransactionAttribute txAttr = (tas != null ? tas.getTransactionAttribute(method, targetClass) : null);
 		// 获取事务管理器
+		// 如果事先没有指定任何的TransactionManager，就会从容器中按照类型获取一个PlatformTransactionManager
 		final TransactionManager tm = determineTransactionManager(txAttr);
 
 		if (this.reactiveAdapterRegistry != null && tm instanceof ReactiveTransactionManager) {
@@ -383,6 +384,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 		if (txAttr == null || !(ptm instanceof CallbackPreferringPlatformTransactionManager)) {
 			// Standard transaction demarcation with getTransaction and commit/rollback calls.
 			// createTransactionIfNecessary内部，内部主要就是使用spring事务硬编码的方式开启事务，最终会返回一个TransactionInfo对象
+			// 如果是必需的就创建一个Transaction，也就是开启事务
 			TransactionInfo txInfo = createTransactionIfNecessary(ptm, txAttr, joinpointIdentification);
 
 			// 业务方法返回值
@@ -390,7 +392,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			try {
 				// This is an around advice: Invoke the next interceptor in the chain.
 				// This will normally result in a target object being invoked.
-				// 调用aop中的下一个拦截器，最终会调用到业务目标方法，获取到目标方法的返回值
+				// 调用AOP中的下一个拦截器，最终会调用到业务目标方法，获取到目标方法的返回值
 				retVal = invocation.proceedWithInvocation();
 			}
 			catch (Throwable ex) {
@@ -411,7 +413,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 					retVal = VavrDelegate.evaluateTryFailure(retVal, txAttr, status);
 				}
 			}
-			// 业务方法返回之后，只需事务提交操作
+			// 如果正常，利用事务管理器提交事务
 			commitTransactionAfterReturning(txInfo);
 			// 返回执行结果
 			return retVal;

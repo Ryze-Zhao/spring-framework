@@ -44,6 +44,7 @@ public class ProxyTransactionManagementConfiguration extends AbstractTransaction
 	/**
 	 * .
 	 * 注册Bean：事务顾问（Spring AOP中拦截器链就是一个个的Advisor对象）
+	 * 这里是给容器中导入一个事务增强器！
 	 */
 	@Bean(name = TransactionManagementConfigUtils.TRANSACTION_ADVISOR_BEAN_NAME)
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
@@ -51,6 +52,7 @@ public class ProxyTransactionManagementConfiguration extends AbstractTransaction
 			TransactionAttributeSource transactionAttributeSource, TransactionInterceptor transactionInterceptor) {
 
 		BeanFactoryTransactionAttributeSourceAdvisor advisor = new BeanFactoryTransactionAttributeSourceAdvisor();
+		// 这里是设置事务属性
 		advisor.setTransactionAttributeSource(transactionAttributeSource);
 		// 设置事务拦截器
 		advisor.setAdvice(transactionInterceptor);
@@ -74,17 +76,20 @@ public class ProxyTransactionManagementConfiguration extends AbstractTransaction
 
 	/**
 	 * .
-	 * 注册Bean：事务拦截器
+	 * 注册Bean：设置事务拦截器
 	 */
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	public TransactionInterceptor transactionInterceptor(TransactionAttributeSource transactionAttributeSource) {
 		TransactionInterceptor interceptor = new TransactionInterceptor();
+		// 设置事务属性
 		interceptor.setTransactionAttributeSource(transactionAttributeSource);
 		// 拦截器中设置事务管理器，txManager可以为空
 		if (this.txManager != null) {
 			interceptor.setTransactionManager(this.txManager);
 		}
+		// 这个interceptor实际上是一个MethodInterceptor--方法拦截器
+		// 会在执行目标方法的时候，执行拦截器链（AOP源码分析时有提及），而这个拦截器链只有一个事务拦截器--interceptor
 		return interceptor;
 	}
 

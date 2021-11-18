@@ -174,8 +174,8 @@ public @interface EnableTransactionManagement {
 	 * time. This approach has no negative impact in practice unless one is explicitly
 	 * expecting one type of proxy vs another, e.g. in tests.
 	 * 1.Spring是通过AOP的方式对bean创建代理对象来实现事务管理的
-	 * 1.1.创建代理对象有2种方式，jdk动态代理和cglib代理
-	 * 1.2.proxyTargetClass：为true的时候，就是强制使用cglib来创建代理
+	 * 1.1.创建代理对象有2种方式，JDK动态代理和CGLIB代理
+	 * 1.2.proxyTargetClass：为true的时候，就是 强制使用CGLIB 来创建代理
 	 *
 	 */
 	boolean proxyTargetClass() default false;

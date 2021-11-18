@@ -46,6 +46,8 @@ public class TransactionManagementConfigurationSelector extends AdviceModeImport
 	@Override
 	protected String[] selectImports(AdviceMode adviceMode) {
 		switch (adviceMode) {
+			// 而EnableTransactionManagement中又设置了AdviceMode.PROXY（默认值）
+			// 简单说就是@EnableTransactionManagement组件负责给容器中添加两个组件：AutoProxyRegistrar，ProxyTransactionManagementConfiguration
 			case PROXY:
 				return new String[] {AutoProxyRegistrar.class.getName(),
 						ProxyTransactionManagementConfiguration.class.getName()};
