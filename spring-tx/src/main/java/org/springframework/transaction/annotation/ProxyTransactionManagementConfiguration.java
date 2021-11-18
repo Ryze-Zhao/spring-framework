@@ -25,6 +25,8 @@ import org.springframework.transaction.interceptor.BeanFactoryTransactionAttribu
 import org.springframework.transaction.interceptor.TransactionAttributeSource;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 
+import javax.swing.*;
+
 /**
  * {@code @Configuration} class that registers the Spring infrastructure beans
  * necessary to enable proxy-based annotation-driven transaction management.
@@ -39,6 +41,10 @@ import org.springframework.transaction.interceptor.TransactionInterceptor;
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class ProxyTransactionManagementConfiguration extends AbstractTransactionManagementConfiguration {
 
+	/**
+	 * .
+	 * 注册Bean：事务顾问（Spring AOP中拦截器链就是一个个的Advisor对象）
+	 */
 	@Bean(name = TransactionManagementConfigUtils.TRANSACTION_ADVISOR_BEAN_NAME)
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	public BeanFactoryTransactionAttributeSourceAdvisor transactionAdvisor(
@@ -46,24 +52,36 @@ public class ProxyTransactionManagementConfiguration extends AbstractTransaction
 
 		BeanFactoryTransactionAttributeSourceAdvisor advisor = new BeanFactoryTransactionAttributeSourceAdvisor();
 		advisor.setTransactionAttributeSource(transactionAttributeSource);
+		// 设置事务拦截器
 		advisor.setAdvice(transactionInterceptor);
 		if (this.enableTx != null) {
+			// 设置AOP中事务拦截器的顺序
 			advisor.setOrder(this.enableTx.<Integer>getNumber("order"));
 		}
 		return advisor;
 	}
 
+	/**
+	 * .
+	 * 注册Bean:TransactionAttributeSource，TransactionAttributeSource用来获取获取事务属性配置信息：TransactionAttribute
+	 */
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	public TransactionAttributeSource transactionAttributeSource() {
 		return new AnnotationTransactionAttributeSource();
 	}
 
+
+	/**
+	 * .
+	 * 注册Bean：事务拦截器
+	 */
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	public TransactionInterceptor transactionInterceptor(TransactionAttributeSource transactionAttributeSource) {
 		TransactionInterceptor interceptor = new TransactionInterceptor();
 		interceptor.setTransactionAttributeSource(transactionAttributeSource);
+		// 拦截器中设置事务管理器，txManager可以为空
 		if (this.txManager != null) {
 			interceptor.setTransactionManager(this.txManager);
 		}

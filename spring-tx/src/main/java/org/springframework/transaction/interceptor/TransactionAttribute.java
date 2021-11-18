@@ -39,6 +39,9 @@ public interface TransactionAttribute extends TransactionDefinition {
 	 * Return a qualifier value associated with this transaction attribute.
 	 * <p>This may be used for choosing a corresponding transaction manager
 	 * to process this specific transaction.
+	 *
+	 * 事务管理器的bean名称
+	 *
 	 * @since 3.0
 	 */
 	@Nullable
@@ -54,6 +57,7 @@ public interface TransactionAttribute extends TransactionDefinition {
 
 	/**
 	 * Should we roll back on the given exception?
+	 * 判断指定的异常是否需要回滚事务
 	 * @param ex the exception to evaluate
 	 * @return whether to perform a rollback or not
 	 */

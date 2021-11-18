@@ -126,6 +126,8 @@ public class RuleBasedTransactionAttribute extends DefaultTransactionAttribute i
 		RollbackRuleAttribute winner = null;
 		int deepest = Integer.MAX_VALUE;
 
+		// @Trasaction中可以通过rollbackFor指定需要回滚的异常列表，通过noRollbackFor属性指定不需要回滚的异常
+		// 根据@Transactional中指定的回滚规则判断ex类型的异常是否需要回滚
 		if (this.rollbackRules != null) {
 			for (RollbackRuleAttribute rule : this.rollbackRules) {
 				int depth = rule.getDepth(ex);
@@ -137,6 +139,7 @@ public class RuleBasedTransactionAttribute extends DefaultTransactionAttribute i
 		}
 
 		// User superclass behavior (rollback on unchecked) if no rule matches.
+		// 若@Transactional注解中没有匹配到，这走默认的规则，将通过super.rollbackOn来判断
 		if (winner == null) {
 			return super.rollbackOn(ex);
 		}

@@ -43,6 +43,11 @@ public interface TransactionAttributeSource {
 	 * Returning {@code false} is therefore an optimization for non-affected
 	 * classes, whereas {@code true} simply means that the class needs to get
 	 * fully introspected for each method on the given class individually.
+	 *
+	 * 确定给定的类是否是这个TransactionAttributeSource元数据格式中的事务属性的候选类。
+	 * 如果此方法返回false，则不会遍历给定类上的方法，以进行getTransactionAttribute内省。
+	 * 因此，返回false是对不受影响的类的优化，而返回true仅仅意味着类需要对给定类上的每个方法进行完全自省。
+	 *
 	 * @param targetClass the class to introspect
 	 * @return {@code false} if the class is known to have no transaction
 	 * attributes at class or method level; {@code true} otherwise. The default
@@ -54,8 +59,10 @@ public interface TransactionAttributeSource {
 	}
 
 	/**
-	 * Return the transaction attribute for the given method,
-	 * or {@code null} if the method is non-transactional.
+	 * Return the transaction attribute for the given method,or {@code null} if the method is non-transactional.
+	 *
+	 * 返回给定方法的事务属性，如果该方法是非事务性的，则返回null。
+	 *
 	 * @param method the method to introspect
 	 * @param targetClass the target class (may be {@code null},
 	 * in which case the declaring class of the method must be used)
