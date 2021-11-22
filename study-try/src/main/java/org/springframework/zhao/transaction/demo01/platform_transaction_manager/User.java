@@ -1,4 +1,4 @@
-package org.springframework.zhao.transaction.demo01;
+package org.springframework.zhao.transaction.demo01.platform_transaction_manager;
 
 public class User {
 	private Integer id;

@@ -1,4 +1,4 @@
-package org.springframework.zhao.transaction.demo01;
+package org.springframework.zhao.transaction.demo01.platform_transaction_manager;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -7,11 +7,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
+
 @Configuration
-@ComponentScan("org.springframework.zhao.transaction.demo01")
+@ComponentScan("org.springframework.zhao.transaction.demo01.platform_transaction_manager")
 public class DataSourceConfig {
 
 	/**
@@ -53,7 +57,16 @@ public class DataSourceConfig {
 	 * @author : HeHaoZhao
 	 */
 	@Bean
-	public TransactionTemplate transactionTemplate(PlatformTransactionManager transactionManager) {
-		return new TransactionTemplate(transactionManager);
+	public TransactionDefinition transactionDefinition() {
+		return new DefaultTransactionDefinition();
+	}
+
+	/**
+	 * 3.开启事务：调用platformTransactionManager.getTransaction开启事务操作，得到事务状态(TransactionStatus)对象
+	 * @author : HeHaoZhao
+	 */
+	@Bean
+	public TransactionStatus transactionStatus(PlatformTransactionManager platformTransactionManager,TransactionDefinition transactionDefinition) {
+		return platformTransactionManager.getTransaction(transactionDefinition);
 	}
 }

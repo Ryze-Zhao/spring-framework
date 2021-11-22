@@ -12,6 +12,6 @@ public class TransactionDemo02 {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DataSourceConfig.class);
 		UserService userService = context.getBean(UserService.class);
 		userService.deleteAndSave();
-//		System.out.println(userService.userList());
+		System.out.println(userService.userList());
 	}
 }
