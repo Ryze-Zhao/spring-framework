@@ -61,12 +61,5 @@ public class DataSourceConfig {
 		return new DefaultTransactionDefinition();
 	}
 
-	/**
-	 * 3.开启事务：调用platformTransactionManager.getTransaction开启事务操作，得到事务状态(TransactionStatus)对象
-	 * @author : HeHaoZhao
-	 */
-	@Bean
-	public TransactionStatus transactionStatus(PlatformTransactionManager platformTransactionManager,TransactionDefinition transactionDefinition) {
-		return platformTransactionManager.getTransaction(transactionDefinition);
-	}
+
 }
