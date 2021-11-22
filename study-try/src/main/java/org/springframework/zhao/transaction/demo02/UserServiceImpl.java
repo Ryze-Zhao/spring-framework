@@ -9,6 +9,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 
+/**
+ *
+ * @author : HeHaoZhao
+ */
 @Component
 public class UserServiceImpl implements UserService {
 
@@ -16,19 +20,12 @@ public class UserServiceImpl implements UserService {
 	private JdbcTemplate jdbcTemplate;
 	/**
 	 * 自调用导致事务失效问题
-	 * @author : HeHaoZhao
 	 */
 	@Autowired
 	private UserService userService;
 
-
-	/**
-	 * 模拟业务操作1:先删除，再添加
-	 *
-	 * @author : HeHaoZhao
-	 */
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void deleteAndSave() {
 		//先删除表数据
 		jdbcTemplate.update("delete from user");
@@ -36,24 +33,14 @@ public class UserServiceImpl implements UserService {
 		userService.save();
 	}
 
-	/**
-	 * 模拟业务操作2:添加
-	 *
-	 * @author : HeHaoZhao
-	 */
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void save() {
 		jdbcTemplate.update("insert into user (name) VALUE (?)", "java");
 		jdbcTemplate.update("insert into user (name) VALUE (?)", "spring");
 		jdbcTemplate.update("insert into user (name) VALUE (?)", "myBatis");
 	}
 
-	/**
-	 * 查询表中所有数据
-	 *
-	 * @author : HeHaoZhao
-	 */
 	@Override
 	public List<User> userList() {
 		return jdbcTemplate.query("select * from user", new Object[]{}, new BeanPropertyRowMapper<User>(User.class));
