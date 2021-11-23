@@ -642,8 +642,9 @@ public class JdbcTemplate extends JdbcAccessor implements JdbcOperations {
 			String sql = getSql(psc);
 			logger.debug("Executing prepared SQL statement" + (sql != null ? " [" + sql + "]" : ""));
 		}
-
+		// 获取数据库连接
 		Connection con = DataSourceUtils.getConnection(obtainDataSource());
+		// 后面通过conn执行db操作
 		PreparedStatement ps = null;
 		try {
 			ps = psc.createPreparedStatement(con);

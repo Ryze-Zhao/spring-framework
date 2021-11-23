@@ -72,24 +72,18 @@ import org.springframework.util.Assert;
  * @see org.springframework.jdbc.datasource.DataSourceUtils#getConnection
  */
 public abstract class TransactionSynchronizationManager {
-
-	private static final ThreadLocal<Map<Object, Object>> resources =
-			new NamedThreadLocal<>("Transactional resources");
-
-	private static final ThreadLocal<Set<TransactionSynchronization>> synchronizations =
-			new NamedThreadLocal<>("Transaction synchronizations");
-
-	private static final ThreadLocal<String> currentTransactionName =
-			new NamedThreadLocal<>("Current transaction name");
-
-	private static final ThreadLocal<Boolean> currentTransactionReadOnly =
-			new NamedThreadLocal<>("Current transaction read-only status");
-
-	private static final ThreadLocal<Integer> currentTransactionIsolationLevel =
-			new NamedThreadLocal<>("Current transaction isolation level");
-
-	private static final ThreadLocal<Boolean> actualTransactionActive =
-			new NamedThreadLocal<>("Actual transaction active");
+	// 存储事务资源信息
+	private static final ThreadLocal<Map<Object, Object>> resources = new NamedThreadLocal<>("Transactional resources");
+	// 存储事务过程中的一些回调接口(TransactionSynchronization接口，这个可以在事务的过程中给开发者提供一些回调用的)
+	private static final ThreadLocal<Set<TransactionSynchronization>> synchronizations = new NamedThreadLocal<>("Transaction synchronizations");
+	// 存储当前正在运行的事务的名称
+	private static final ThreadLocal<String> currentTransactionName = new NamedThreadLocal<>("Current transaction name");
+	// 存储当前正在运行的事务是否是只读的
+	private static final ThreadLocal<Boolean> currentTransactionReadOnly = new NamedThreadLocal<>("Current transaction read-only status");
+	// 存储当前正在运行的事务的隔离级别
+	private static final ThreadLocal<Integer> currentTransactionIsolationLevel = new NamedThreadLocal<>("Current transaction isolation level");
+	// 存储当前正在运行的事务是否是活动状态，事务启动的时候会被激活
+	private static final ThreadLocal<Boolean> actualTransactionActive = new NamedThreadLocal<>("Actual transaction active");
 
 
 	//-------------------------------------------------------------------------
@@ -131,7 +125,9 @@ public abstract class TransactionSynchronizationManager {
 	 */
 	@Nullable
 	public static Object getResource(Object key) {
+		// 通过TransactionSynchronizationUtils.unwrapResourceIfNecessary(key)获取一个actualKey，我们传入的是datasouce，实际上最后actualKey和传入的datasource是一个对象
 		Object actualKey = TransactionSynchronizationUtils.unwrapResourceIfNecessary(key);
+		// 调用doGetResource方法获取对应的value
 		return doGetResource(actualKey);
 	}
 
@@ -140,6 +136,7 @@ public abstract class TransactionSynchronizationManager {
 	 */
 	@Nullable
 	private static Object doGetResource(Object actualKey) {
+		// resources这个ThreadLocal中获取获取数据ConnectionHolder对象
 		Map<Object, Object> map = resources.get();
 		if (map == null) {
 			return null;
@@ -159,9 +156,12 @@ public abstract class TransactionSynchronizationManager {
 
 	/**
 	 * Bind the given resource for the given key to the current thread.
-	 * @param key the key to bind the value to (usually the resource factory)
-	 * @param value the value to bind (usually the active resource object)
-	 * @throws IllegalStateException if there is already a value bound to the thread
+	 *
+	 * 将给定密钥的给定资源绑定到当前线程
+	 *
+	 * @param key the key to bind the value to (usually the resource factory)   将值绑定到的键（通常是资源工厂）
+	 * @param value the value to bind (usually the active resource object)      要绑定的值（通常是活动资源对象）
+	 * @throws IllegalStateException if there is already a value bound to the thread    如果已经有一个值绑定到线程
 	 * @see ResourceTransactionManager#getResourceFactory()
 	 */
 	public static void bindResource(Object key, Object value) throws IllegalStateException {
@@ -240,6 +240,7 @@ public abstract class TransactionSynchronizationManager {
 	/**
 	 * Return if transaction synchronization is active for the current thread.
 	 * Can be called before register to avoid unnecessary instance creation.
+	 * 获取同步是否启动，新事务第一次进来synchronizations.get()是null，所以这个方法返回的是false
 	 * @see #registerSynchronization
 	 */
 	public static boolean isSynchronizationActive() {
@@ -249,6 +250,7 @@ public abstract class TransactionSynchronizationManager {
 	/**
 	 * Activate transaction synchronization for the current thread.
 	 * Called by a transaction manager on transaction begin.
+	 * 初始化事务同步，主要就是在synchronizations ThreadLocal中放一个LinkedHashSet
 	 * @throws IllegalStateException if synchronization is already active
 	 */
 	public static void initSynchronization() throws IllegalStateException {

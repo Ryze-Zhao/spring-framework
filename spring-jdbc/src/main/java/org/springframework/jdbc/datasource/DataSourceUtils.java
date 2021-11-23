@@ -101,19 +101,26 @@ public abstract class DataSourceUtils {
 	 */
 	public static Connection doGetConnection(DataSource dataSource) throws SQLException {
 		Assert.notNull(dataSource, "No DataSource specified");
-
+		/*
+		 * 用 jdbcTemplate.dataSource 从TransactionSynchronizationManager的resource
+		 * ThreadLocal中获取对应的ConnectionHolder对象，在前面获取事务环节中，transactionManager.dataSource->ConnectionHolder被放到resource ThreadLocal，
+		 * jdbcTemplate.dataSource 和transactionManager.dataSource是同一个对象，所以是可以获取到ConnectionHolder的，此时就会使用事务开启数据库连接
+		 */
 		ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
+		// conHolder不为空 && conHolder中有数据库连接对象
 		if (conHolder != null && (conHolder.hasConnection() || conHolder.isSynchronizedWithTransaction())) {
 			conHolder.requested();
 			if (!conHolder.hasConnection()) {
 				logger.debug("Fetching resumed JDBC Connection from DataSource");
 				conHolder.setConnection(fetchConnection(dataSource));
 			}
+			// 返回conHolder中的数据库连接对象
 			return conHolder.getConnection();
 		}
 		// Else we either got no holder or an empty thread-bound holder here.
 
 		logger.debug("Fetching JDBC Connection from DataSource");
+		// 如果上面获取不到连接，会走这里，这里将会调用 jdbcTemplate.dataSource.getConnection()从数据源中获取一个新的db连接
 		Connection con = fetchConnection(dataSource);
 
 		if (TransactionSynchronizationManager.isSynchronizationActive()) {
@@ -141,7 +148,7 @@ public abstract class DataSourceUtils {
 				throw ex;
 			}
 		}
-
+		// 将连接返回
 		return con;
 	}
 
