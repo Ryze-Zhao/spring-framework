@@ -44,19 +44,29 @@ import org.springframework.core.Ordered;
  */
 public interface TransactionSynchronization extends Ordered, Flushable {
 
-	/** Completion status in case of proper commit. */
+	/**
+	 * Completion status in case of proper commit.
+	 * 提交状态
+	 */
 	int STATUS_COMMITTED = 0;
 
-	/** Completion status in case of proper rollback. */
+	/**
+	 * Completion status in case of proper rollback.
+	 * 回滚状态
+	 */
 	int STATUS_ROLLED_BACK = 1;
 
-	/** Completion status in case of heuristic mixed completion or system errors. */
+	/**
+	 * Completion status in case of heuristic mixed completion or system errors.
+	 * 状态未知，比如事务提交或者回滚的过程中发生了异常，那么事务的状态是未知的
+	 * */
 	int STATUS_UNKNOWN = 2;
 
 
 	/**
 	 * Return the execution order for this transaction synchronization.
 	 * <p>Default is {@link Ordered#LOWEST_PRECEDENCE}.
+	 * 返回此事务同步的执行顺序
 	 */
 	@Override
 	default int getOrder() {
@@ -66,6 +76,7 @@ public interface TransactionSynchronization extends Ordered, Flushable {
 	/**
 	 * Suspend this synchronization.
 	 * Supposed to unbind resources from TransactionSynchronizationManager if managing any.
+	 * 事务被挂起的时候会调用被挂起事务中所有TransactionSynchronization的resume方法
 	 * @see TransactionSynchronizationManager#unbindResource
 	 */
 	default void suspend() {
@@ -74,14 +85,15 @@ public interface TransactionSynchronization extends Ordered, Flushable {
 	/**
 	 * Resume this synchronization.
 	 * Supposed to rebind resources to TransactionSynchronizationManager if managing any.
+	 * 事务恢复的过程中会调用被恢复的事务中所有TransactionSynchronization的resume方法
 	 * @see TransactionSynchronizationManager#bindResource
 	 */
 	default void resume() {
 	}
 
 	/**
-	 * Flush the underlying session to the datastore, if applicable:
-	 * for example, a Hibernate/JPA session.
+	 * Flush the underlying session to the datastore, if applicable:for example, a Hibernate/JPA session.
+	 * 清理操作
 	 * @see org.springframework.transaction.TransactionStatus#flush()
 	 */
 	@Override
@@ -97,6 +109,7 @@ public interface TransactionSynchronization extends Ordered, Flushable {
 	 * to happen, such as flushing SQL statements to the database.
 	 * <p>Note that exceptions will get propagated to the commit caller and cause a
 	 * rollback of the transaction.
+	 * 事务提交之前调用
 	 * @param readOnly whether the transaction is defined as read-only transaction
 	 * @throws RuntimeException in case of errors; will be <b>propagated to the caller</b>
 	 * (note: do not throw TransactionException subclasses here!)
@@ -111,6 +124,7 @@ public interface TransactionSynchronization extends Ordered, Flushable {
 	 * <p>This method will be invoked after {@code beforeCommit}, even when
 	 * {@code beforeCommit} threw an exception. This callback allows for
 	 * closing resources before transaction completion, for any outcome.
+	 * 事务提交或者回滚之前调用
 	 * @throws RuntimeException in case of errors; will be <b>logged but not propagated</b>
 	 * (note: do not throw TransactionException subclasses here!)
 	 * @see #beforeCommit
@@ -131,6 +145,9 @@ public interface TransactionSynchronization extends Ordered, Flushable {
 	 * anymore!), unless it explicitly declares that it needs to run in a separate
 	 * transaction. Hence: <b>Use {@code PROPAGATION_REQUIRES_NEW} for any
 	 * transactional operation that is called from here.</b>
+	 *
+	 * 事务commit之后调用
+	 *
 	 * @throws RuntimeException in case of errors; will be <b>propagated to the caller</b>
 	 * (note: do not throw TransactionException subclasses here!)
 	 */
@@ -147,6 +164,9 @@ public interface TransactionSynchronization extends Ordered, Flushable {
 	 * following anymore!), unless it explicitly declares that it needs to run in a
 	 * separate transaction. Hence: <b>Use {@code PROPAGATION_REQUIRES_NEW}
 	 * for any transactional operation that is called from here.</b>
+	 *
+	 * 事务完成之后调用
+	 *
 	 * @param status completion status according to the {@code STATUS_*} constants
 	 * @throws RuntimeException in case of errors; will be <b>logged but not propagated</b>
 	 * (note: do not throw TransactionException subclasses here!)
