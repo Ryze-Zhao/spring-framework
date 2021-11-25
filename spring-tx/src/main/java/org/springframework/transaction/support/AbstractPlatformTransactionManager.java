@@ -352,7 +352,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		Object transaction = doGetTransaction();
 		boolean debugEnabled = logger.isDebugEnabled();
 
-		// 当前是否存在事务
+		// 当前是否存在事务（事务嵌套）
 		if (isExistingTransaction(transaction)) {
 			// Existing transaction found -> check propagation behavior to find out how to behave.
 			// 如果当前存在事务，走这里
@@ -371,11 +371,16 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			throw new IllegalTransactionStateException(
 					"No existing transaction found for transaction marked with propagation 'mandatory'");
 		}
-		// 事务传播行为(PROPAGATION_REQUIRED|PROPAGATION_REQUIRES_NEW|PROPAGATION_NESTED)走这里
+		/*
+		 * PROPAGATION_REQUIRED:当前存在事务就加入到当前的事务,没有就新开一个
+		 * PROPAGATION_REQUIRES_NEW:新开一个事务,若当前存在事务就挂起当前事务
+		 * PROPAGATION_NESTED:表示如果当前正有一个事务在运行中，则该方法应该运行在一个嵌套的事务中，
+		 *                      被嵌套的事务可以独立于封装事务进行提交或者回滚(保存点)，如果封装事务不存在,行为就像PROPAGATION_REQUIRES_NEW
+		 */
 		else if (def.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRED ||
 				def.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRES_NEW ||
 				def.getPropagationBehavior() == TransactionDefinition.PROPAGATION_NESTED) {
-			// 挂起事务
+			// 挂起事务，为什么传入null?因为逻辑走到这里了,经过了上面的isExistingTransaction(transaction) 判断当前是不存在事务的，所以这里是挂起当前事务传递一个null进去
 			SuspendedResourcesHolder suspendedResources = suspend(null);
 			if (debugEnabled) {
 				logger.debug("Creating new transaction with name [" + def.getName() + "]: " + def);
@@ -397,6 +402,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			}
 			// 其他事务传播行为的走这里(PROPAGATION_SUPPORTS、PROPAGATION_NOT_SUPPORTED、PROPAGATION_NEVER)
 			boolean newSynchronization = (getTransactionSynchronization() == SYNCHRONIZATION_ALWAYS);
+			// 把当前的事务信息绑定到线程变量去
 			return prepareTransactionStatus(def, null, true, newSynchronization, debugEnabled, null);
 		}
 	}

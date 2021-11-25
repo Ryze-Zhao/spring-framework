@@ -84,8 +84,9 @@ public class BeanFactoryAdvisorRetrievalHelper {
 		}
 
 		List<Advisor> advisors = new ArrayList<>();
-		// 遍历所有增强器的名称,将其实例化
+		// 遍历所有增强器的名称,将其实例化（如果事务就是BeanFactoryTransactionAttributeSourceAdvisor）
 		for (String name : advisorNames) {
+			// 判断是不是一个合适的bean
 			if (isEligibleBean(name)) {
 				if (this.beanFactory.isCurrentlyInCreation(name)) {
 					if (logger.isTraceEnabled()) {
@@ -95,6 +96,7 @@ public class BeanFactoryAdvisorRetrievalHelper {
 				else {
 					try {
 						// 实例化切面bean, 并添加到advisors集合中
+						// 如果是事务：显式调用getBean方法方法创建 BeanFactoryTransactionAttributeSourceAdvisor 并返回
 						advisors.add(this.beanFactory.getBean(name, Advisor.class));
 					}
 					catch (BeanCreationException ex) {

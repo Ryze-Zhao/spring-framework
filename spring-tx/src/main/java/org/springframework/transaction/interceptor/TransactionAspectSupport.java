@@ -344,6 +344,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 		// 如果事先没有指定任何的TransactionManager，就会从容器中按照类型获取一个PlatformTransactionManager
 		final TransactionManager tm = determineTransactionManager(txAttr);
 
+
 		if (this.reactiveAdapterRegistry != null && tm instanceof ReactiveTransactionManager) {
 			boolean isSuspendingFunction = KotlinDetector.isSuspendingFunction(method);
 			boolean hasSuspendingFlowReturnType = isSuspendingFunction &&
@@ -381,6 +382,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 		PlatformTransactionManager ptm = asPlatformTransactionManager(tm);
 		final String joinpointIdentification = methodIdentification(method, targetClass, txAttr);
 
+		// 处理声明式事务
 		if (txAttr == null || !(ptm instanceof CallbackPreferringPlatformTransactionManager)) {
 			// Standard transaction demarcation with getTransaction and commit/rollback calls.
 			// createTransactionIfNecessary内部，内部主要就是使用spring事务硬编码的方式开启事务，最终会返回一个TransactionInfo对象
@@ -397,12 +399,12 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			}
 			catch (Throwable ex) {
 				// target invocation exception
-				// 异常情况下，如何走？可能只需提交，也可能只需回滚，这个取决于事务的配置
+				// 抛出异常进行回滚处理
 				completeTransactionAfterThrowing(txInfo, ex);
 				throw ex;
 			}
 			finally {
-				// 清理事务信息
+				// 清空线程变量中transactionInfo的值
 				cleanupTransactionInfo(txInfo);
 			}
 
@@ -418,7 +420,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			// 返回执行结果
 			return retVal;
 		}
-
+		// 编程式事务
 		else {
 			Object result;
 			final ThrowableHolder throwableHolder = new ThrowableHolder();
@@ -608,6 +610,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 		TransactionStatus status = null;
 		if (txAttr != null) {
 			if (tm != null) {
+				// 获取一个事务状态
 				status = tm.getTransaction(txAttr);
 			}
 			else {
@@ -617,6 +620,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 				}
 			}
 		}
+		// 把事物状态和事物属性等信息封装成一个TransactionInfo对象
 		return prepareTransactionInfo(tm, txAttr, joinpointIdentification, status);
 	}
 
