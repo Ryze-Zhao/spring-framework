@@ -78,36 +78,31 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 	/**
 	 * Cache of singleton objects: bean name to bean instance.
-	 * 存放的是单例 bean 的映射。
-	 * 一级缓存，存放的是单例 bean 的映射。
-	 * 注意，这里的 bean 是已经创建完成的。
-	 *
-	 * 对应关系为 bean name --> bean instance。
+	 * 第一级缓存：存放 单例 Bean 的映射
+	 * 注意：
+	 *  第一级缓存的 Bean 都是已经实例化、初始化完毕的直接可使用的Bean
+	 *  Map 对应关系为 beanName --> bean instance
 	 */
 	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
 
 	/**
 	 * Cache of early singleton objects: bean name to bean instance.
-	 * 二级缓存，存放的是早期半成品（未初始化完）的 bean，对应关系也是 bean name --> bean instance。
-	 * 它与 {@link #singletonObjects} 区别在于， 它自己存放的 bean 不一定是完整。
-	 * 这个 Map 也是解决【循环依赖】的关键所在。
+	 * 第二级缓存：存放 早期半成品（通常为：实例化完成，但初始化未完成）的 Bean
 	 *
-	 * 存放的是 ObjectFactory，可以理解为创建单例 bean 的 factory 。存放的是【早期】的单例 bean 的映射。
-	 * 它与 {@link #singletonObjects} 的区别区别在于 earlySingletonObjects 中存放的 bean 不一定是完整的。
-	 *
-	 * 从 {@link #getSingleton(String)} 方法中，中我们可以了解，bean 在创建过程中就已经加入到 earlySingletonObjects 中了，
-	 * 所以当在 bean 的创建过程中就可以通过 getBean() 方法获取。
+	 * 注意：
+	 *  Map 对应关系也是 beanName --> bean instance。
+	 *  它与 {@link #singletonObjects} 区别在于 earlySingletonObjects 存放的 Bean 不一定是完整
+	 *  从 {@link #getSingleton(String)} 方法中，中我们可以知道 Bean 在实例化过程中就已经加入到 earlySingletonObjects 中了
 	 */
 	private final Map<String, Object> earlySingletonObjects = new ConcurrentHashMap<>(16);
 
 	/**
 	 * Cache of singleton factories: bean name to ObjectFactory.
 	 *
-	 * 三级缓存，存放的是 ObjectFactory，可以理解为创建早期半成品（未初始化完）的 bean 的 factory ，最终添加到二级缓存 {@link #earlySingletonObjects} 中
+	 * 第三级缓存：存放 ObjectFactory（创建早期半成品（通常为：实例化完成，但初始化未完成）的 BeanFactory），最终将对应Bean添加到二级缓存 {@link #earlySingletonObjects} 中
 	 *
-	 * 对应关系是 bean name --> ObjectFactory
-	 *
-	 * 这个 Map 也是【循环依赖】的关键所在。
+	 * 注意：
+	 *  Map 对应关系是 beanName --> ObjectFactory
 	 */
 	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
 
@@ -121,8 +116,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * Names of beans that are currently in creation.
 	 * 当前正在创建的bean的名称。
 	 */
-	private final Set<String> singletonsCurrentlyInCreation =
-			Collections.newSetFromMap(new ConcurrentHashMap<>(16));
+	private final Set<String> singletonsCurrentlyInCreation = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
 	/**
 	 * Names of beans currently excluded from in creation checks.
