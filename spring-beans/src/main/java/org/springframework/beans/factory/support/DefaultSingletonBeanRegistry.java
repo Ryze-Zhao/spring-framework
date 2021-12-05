@@ -242,10 +242,10 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 								// 获得 bean（调用预先设定的getObject方法,创建singletonObject）
 								singletonObject = singletonFactory.getObject();
 								// 添加 bean 到 earlySingletonObjects 中
-								// 记录在earlySingletonObjects缓存中,避免循环依赖(不等bean创建完成就将创建bean的ObjectFactory提早曝光加入缓存中,一旦下一个bean创建需要依赖上一个bean,则直接使用ObjectFactory)
+								// 记录在earlySingletonObjects(第二级缓存)中,避免循环依赖(不等bean创建完成就将创建bean的ObjectFactory提早曝光加入缓存中,一旦下一个bean创建需要依赖上一个bean,则直接使用ObjectFactory)
 								this.earlySingletonObjects.put(beanName, singletonObject);
 								// 从 singletonFactories 中移除对应的 ObjectFactory
-								// singletonFactories:用于保存BeanName和创建工厂bean之间的关系,与BeanName相关的bean已经被创建,所以需要从singletonFactories移除BeanName
+								// singletonFactories（第三级缓存）:用于保存BeanName和创建工厂bean之间的关系,与BeanName相关的bean已经被创建,所以需要从singletonFactories移除BeanName
 								this.singletonFactories.remove(beanName);
 							}
 						}
