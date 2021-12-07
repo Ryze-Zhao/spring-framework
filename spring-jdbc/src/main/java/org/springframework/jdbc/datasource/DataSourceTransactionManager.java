@@ -340,6 +340,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 
 	@Override
 	protected void doResume(@Nullable Object transaction, Object suspendedResources) {
+		// 恢复只是把suspendedResources重新绑定到线程中
 		TransactionSynchronizationManager.bindResource(obtainDataSource(), suspendedResources);
 	}
 
@@ -377,11 +378,13 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 
 	@Override
 	protected void doSetRollbackOnly(DefaultTransactionStatus status) {
+		// 将status中的transaction取出
 		DataSourceTransactionObject txObject = (DataSourceTransactionObject) status.getTransaction();
 		if (status.isDebug()) {
 			logger.debug("Setting JDBC transaction [" + txObject.getConnectionHolder().getConnection() +
 					"] rollback-only");
 		}
+		// transaction执行标记回滚
 		txObject.setRollbackOnly();
 	}
 
@@ -393,17 +396,20 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 		// 是否是一个新的ConnectionHolder，如果是新的事务，那么ConnectionHolder是新的
 		if (txObject.isNewConnectionHolder()) {
 			// 将transactionManager.dataSource->ConnectionHolder从resource ThreadLocal中移除
+			// 将数据库连接从当前线程中解除绑定，解绑过程与在挂起的过程中一致
 			TransactionSynchronizationManager.unbindResource(obtainDataSource());
 		}
 
 		// Reset connection.
 		// 下面重置Connection，将Connection恢复到最原始的状态
+		// 释放连接，当前事务完成，则需要将连接释放，如果有线程池，则重置数据库连接，放回线程池
 		Connection con = txObject.getConnectionHolder().getConnection();
 		try {
 			if (txObject.isMustRestoreAutoCommit()) {
-				// 自动提交
+				// 恢复数据库连接的自动提交属性
 				con.setAutoCommit(true);
 			}
+			// 重置数据库连接
 			// 恢复 connection 的隔离级别、是否是只读事务
 			DataSourceUtils.resetConnectionAfterTransaction(
 					con, txObject.getPreviousIsolationLevel(), txObject.isReadOnly());
@@ -417,6 +423,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 			if (logger.isDebugEnabled()) {
 				logger.debug("Releasing JDBC Connection [" + con + "] after transaction");
 			}
+			// 如果当前事务是独立的新创建的事务则在事务完成时释放数据库连接
 			// 释放连接，内部会调用conn.close()方法
 			DataSourceUtils.releaseConnection(con, this.dataSource);
 		}
@@ -494,6 +501,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 		}
 
 		public void setRollbackOnly() {
+			// 这里将transaction里面的connHolder标记回滚
 			getConnectionHolder().setRollbackOnly();
 		}
 

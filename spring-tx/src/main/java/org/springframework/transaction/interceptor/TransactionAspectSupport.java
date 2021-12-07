@@ -682,12 +682,13 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 	 * @param ex throwable encountered
 	 */
 	protected void completeTransactionAfterThrowing(@Nullable TransactionInfo txInfo, Throwable ex) {
+		// 当抛出异常时，先判断当前是否存在事务，这是基础依据
 		if (txInfo != null && txInfo.getTransactionStatus() != null) {
 			if (logger.isTraceEnabled()) {
 				logger.trace("Completing transaction for [" + txInfo.getJoinpointIdentification() +
 						"] after exception: " + ex);
 			}
-			// 判断事务是否需要回滚
+			// 判断事务是否需要回滚，依据是抛出的异常是 RunTimeException 或 Error 类型
 			if (txInfo.transactionAttribute != null && txInfo.transactionAttribute.rollbackOn(ex)) {
 				try {
 					// 通过事务管理器回滚事务
@@ -706,6 +707,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			else {
 				// We don't roll back on this exception.
 				// Will still roll back if TransactionStatus.isRollbackOnly() is true.
+				// 如果不满足回滚条件（上面说的： RunTimeException 或 Error），即使抛出异常也正常提交，除非手动配置
 				try {
 					// 通过事务管理器提交事务
 					txInfo.getTransactionManager().commit(txInfo.getTransactionStatus());
