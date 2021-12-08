@@ -52,7 +52,7 @@ public interface TransactionExecution {
 	/**
 	 * Return whether this transaction is completed, that is,
 	 * whether it has already been committed or rolled back.
-	 * 返回事物是否已经完成，无论提交或者回滚
+	 * 返回事务是否已经完成，无论提交或者回滚
 	 */
 	boolean isCompleted();
 

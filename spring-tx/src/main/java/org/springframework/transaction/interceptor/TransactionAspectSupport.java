@@ -624,7 +624,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 				}
 			}
 		}
-		// 把事物状态、事物属性等信息封装成一个TransactionInfo对象
+		// 把事务状态、事务属性等信息封装成一个TransactionInfo对象
 		return prepareTransactionInfo(tm, txAttr, joinpointIdentification, status);
 	}
 

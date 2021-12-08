@@ -897,7 +897,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 					// PROPAGATION_REQUIRES_NEW 创建一个新的子事务，
 					//         newTransactionStatus(definition, transaction, true, newSynchronization, debugEnabled, suspendedResources);
 					//         说明是新事务 ，会进入这个分支
-					// PROPAGATION_NESTED 创建的Status是  prepareTransactionStatus(definition, transaction, false...)是旧事物，
+					// PROPAGATION_NESTED 创建的Status是  prepareTransactionStatus(definition, transaction, false...)是旧事务，
 					//         使用的是外层的事务，不会进入
 					// PROPAGATION_SUPPORTS 或 PROPAGATION_REQUIRED或PROPAGATION_MANDATORY存在事务加入事务即可，
 					//         标记为旧事务,prepareTransactionStatus(definition, transaction, false..)
@@ -909,7 +909,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 					// 如果status中有事务，进入下面
 					// 根据上面分析，PROPAGATION_SUPPORTS 或 PROPAGATION_REQUIRED或PROPAGATION_MANDATORY
 					//         创建的Status是prepareTransactionStatus(definition, transaction, false..)
-					//         如果此事务时子事务，表示存在事务，并且事务为旧事物，将进入到这里
+					//         如果此事务时子事务，表示存在事务，并且事务为旧事务，将进入到这里
 					if (status.hasTransaction()) {
 						if (status.isLocalRollbackOnly() || isGlobalRollbackOnParticipationFailure()) {
 							if (status.isDebug()) {
