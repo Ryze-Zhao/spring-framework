@@ -50,21 +50,22 @@ public aspect AnnotationTransactionAspect extends AbstractTransactionAspect {
 	}
 
 	/**
-	 * Matches the execution of any public method in a type with the Transactional
-	 * annotation, or any subtype of a type with the Transactional annotation.
+	 * Matches the execution of any public method in a type with the Transactional annotation, or any subtype of a type with the Transactional annotation.
+	 * 作用在有Transactional注解或者包含Transactional的注解的public方法
 	 */
 	private pointcut executionOfAnyPublicMethodInAtTransactionalType() :
 		execution(public * ((@Transactional *)+).*(..)) && within(@Transactional *);
 
 	/**
 	 * Matches the execution of any method with the Transactional annotation.
+	 * 作用在任何有Transactional注解的方法
 	 */
 	private pointcut executionOfTransactionalMethod() :
 		execution(@Transactional * *(..));
 
 	/**
-	 * Definition of pointcut from super aspect - matched join points
-	 * will have Spring transaction management applied.
+	 * Definition of pointcut from super aspect - matched join points will have Spring transaction management applied.
+	 * 父类抽象方法，满足上面任一方法条件且满足父类条件的
 	 */
 	protected pointcut transactionalMethodExecution(Object txObject) :
 		(executionOfAnyPublicMethodInAtTransactionalType() || executionOfTransactionalMethod() ) && this(txObject);

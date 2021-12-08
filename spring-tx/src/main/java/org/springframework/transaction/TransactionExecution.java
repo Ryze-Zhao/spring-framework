@@ -30,6 +30,7 @@ public interface TransactionExecution {
 	 * Return whether the present transaction is new; otherwise participating
 	 * in an existing transaction, or potentially not running in an actual
 	 * transaction in the first place.
+	 * 返回当前事务是否为新事务（否则将参与到现有事务中，或者可能一开始就不在实际事务中运行）
 	 */
 	boolean isNewTransaction();
 
@@ -37,18 +38,21 @@ public interface TransactionExecution {
 	 * Set the transaction rollback-only. This instructs the transaction manager
 	 * that the only possible outcome of the transaction may be a rollback, as
 	 * alternative to throwing an exception which would in turn trigger a rollback.
+	 * 设置事务仅回滚。
 	 */
 	void setRollbackOnly();
 
 	/**
 	 * Return whether the transaction has been marked as rollback-only
 	 * (either by the application or by the transaction infrastructure).
+	 * 返回事务是否已标记为仅回滚
 	 */
 	boolean isRollbackOnly();
 
 	/**
 	 * Return whether this transaction is completed, that is,
 	 * whether it has already been committed or rolled back.
+	 * 返回事物是否已经完成，无论提交或者回滚
 	 */
 	boolean isCompleted();
 

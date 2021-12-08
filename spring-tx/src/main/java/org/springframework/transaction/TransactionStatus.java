@@ -44,6 +44,8 @@ public interface TransactionStatus extends TransactionExecution, SavepointManage
 	 * <p>This method is mainly here for diagnostic purposes, alongside
 	 * {@link #isNewTransaction()}. For programmatic handling of custom
 	 * savepoints, use the operations provided by {@link SavepointManager}.
+	 *
+	 * 返回该事务是否在内部携带保存点，也就是说，已经创建为基于保存点的嵌套事务
 	 * @see #isNewTransaction()
 	 * @see #createSavepoint()
 	 * @see #rollbackToSavepoint(Object)
@@ -58,6 +60,7 @@ public interface TransactionStatus extends TransactionExecution, SavepointManage
 	 * transaction manager does not have a flush concept. A flush signal may
 	 * get applied to the primary resource or to transaction synchronizations,
 	 * depending on the underlying resource.
+	 * 将会话刷新到数据存储区
 	 */
 	@Override
 	void flush();

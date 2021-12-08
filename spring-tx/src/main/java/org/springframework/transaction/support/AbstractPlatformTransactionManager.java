@@ -348,11 +348,11 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		// 事务定义信息，若传入的definition如果为空，取默认的
 		TransactionDefinition def = (definition != null ? definition : TransactionDefinition.withDefaults());
 
-		// 获取事务对象
+		// 获取事务对象Transaction
 		Object transaction = doGetTransaction();
 		boolean debugEnabled = logger.isDebugEnabled();
 
-		// 当前是否存在事务（事务嵌套）
+		// 当前是否存在事务（事务嵌套）（如果在这之前已经存在事务，就进入存在事务的方法中）
 		if (isExistingTransaction(transaction)) {
 			// Existing transaction found -> check propagation behavior to find out how to behave.
 			// 如果当前存在事务，走这里
@@ -360,6 +360,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		}
 
 		// Check definition settings for new transaction.
+		// 事务超时验证
 		if (def.getTimeout() < TransactionDefinition.TIMEOUT_DEFAULT) {
 			throw new InvalidTimeoutException("Invalid transaction timeout", def.getTimeout());
 		}
@@ -386,6 +387,9 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 				logger.debug("Creating new transaction with name [" + def.getName() + "]: " + def);
 			}
 			try {
+				// 注意这个方法
+				// new 一个status，存放刚刚创建的transaction，然后将其标记为新事务
+				// 新开一个连接的地方，非常重要
 				return startTransaction(def, transaction, debugEnabled, suspendedResources);
 			}
 			catch (RuntimeException | Error ex) {
@@ -400,7 +404,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 				logger.warn("Custom isolation level specified but no actual transaction initiated; " +
 						"isolation level will effectively be ignored: " + def);
 			}
-			// 其他事务传播行为的走这里(PROPAGATION_SUPPORTS、PROPAGATION_NOT_SUPPORTED、PROPAGATION_NEVER)
+			// 其他事务传播行为的走这里(PROPAGATION_SUPPORTS、PROPAGATION_NOT_SUPPORTED、PROPAGATION_NEVER)，即一律返回一个空事务，transaction=null
 			boolean newSynchronization = (getTransactionSynchronization() == SYNCHRONIZATION_ALWAYS);
 			// 把当前的事务信息绑定到线程变量去
 			return prepareTransactionStatus(def, null, true, newSynchronization, debugEnabled, null);
@@ -415,9 +419,12 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		// 是否开启新的事务同步
 		boolean newSynchronization = (getTransactionSynchronization() != SYNCHRONIZATION_NEVER);
 		// 创建事务状态对象DefaultTransactionStatus,DefaultTransactionStatus是TransactionStatus的默认实现
+
+		// new TransactionStatus，存放刚刚创建的transaction，然后将其标记为新事务
+		// 这里的 transaction 后面的一个参数决定是否是新事务
 		DefaultTransactionStatus status = newTransactionStatus(
 				definition, transaction, true, newSynchronization, debugEnabled, suspendedResources);
-		// doBegin用于开始事务
+		// doBegin用于开始事务（新开一个连接）
 		doBegin(transaction, definition);
 		// 准备事务同步
 		prepareSynchronization(status, definition);

@@ -380,6 +380,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 
 		// 将事务管理器tx转换为 PlatformTransactionManager
 		PlatformTransactionManager ptm = asPlatformTransactionManager(tm);
+		// 构造方法唯一标识(类.方法，如：service.UserServiceImpl.save)
 		final String joinpointIdentification = methodIdentification(method, targetClass, txAttr);
 
 		// 处理声明式事务
@@ -401,6 +402,8 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 				// target invocation exception
 				// 抛出异常进行回滚处理
 				completeTransactionAfterThrowing(txInfo, ex);
+				// 手动向上抛出异常，则下面的提交事务不会执行
+				// 如果子事务出现异常，则外层事务代码需catch住子事务的代码，不然外层事务也会回滚
 				throw ex;
 			}
 			finally {
@@ -598,6 +601,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			@Nullable TransactionAttribute txAttr, final String joinpointIdentification) {
 
 		// If no name specified, apply method identification as transaction name.
+		// 如果没有指定名称，则使用方法唯一标识，并使用 DelegatingTransactionAttribute 封装 txAttr
 		if (txAttr != null && txAttr.getName() == null) {
 			txAttr = new DelegatingTransactionAttribute(txAttr) {
 				@Override
@@ -610,7 +614,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 		TransactionStatus status = null;
 		if (txAttr != null) {
 			if (tm != null) {
-				// 获取一个事务状态
+				// 获取Transaction
 				status = tm.getTransaction(txAttr);
 			}
 			else {
@@ -620,7 +624,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 				}
 			}
 		}
-		// 把事物状态和事物属性等信息封装成一个TransactionInfo对象
+		// 把事物状态、事物属性等信息封装成一个TransactionInfo对象
 		return prepareTransactionInfo(tm, txAttr, joinpointIdentification, status);
 	}
 

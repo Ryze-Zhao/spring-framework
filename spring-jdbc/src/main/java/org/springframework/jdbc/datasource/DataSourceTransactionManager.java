@@ -242,13 +242,14 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 	@Override
 	protected Object doGetTransaction() {
 		// 创建数据源事务对象
+		// DataSourceTransactionObject 是一个事务管理器的一个内部类
 		DataSourceTransactionObject txObject = new DataSourceTransactionObject();
 		// 是否支持内部事务
 		txObject.setSavepointAllowed(isNestedTransactionAllowed());
 		// ConnectionHolder表示jdbc连接持有者，简单理解：数据的连接被丢到ConnectionHolder中了，
 		// ConnectionHolder中提供了一些方法来返回里面的连接，此处调用TransactionSynchronizationManager.getResource方法来获取ConnectionHolder对象
 		ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(obtainDataSource());
-		// 将conHolder丢到DataSourceTransactionObject中，第二个参数表示是否是一个新的连接，明显不是的吗，新的连接需要通过datasource来获取，通过datasource获取的连接才是新的连接
+		// 将conHolder丢到DataSourceTransactionObject中，第二个参数表示是否是一个新的连接，现在明显不是，新的连接需要通过datasource来获取，通过datasource获取的连接才是新的连接
 		txObject.setConnectionHolder(conHolder, false);
 		return txObject;
 	}

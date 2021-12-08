@@ -384,8 +384,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		if (specificInterceptors != DO_NOT_PROXY) {
 			// 保存当前bean到advisedBeans中，表示当前bean已经被增强处理了
 			this.advisedBeans.put(cacheKey, Boolean.TRUE);
-			// 如果bean需要增强，就创建代理对象
+			// 如果bean需要增强，就创建代理对象（JDK 动态代理或者 CGLIB 动态代理）
 			Object proxy = createProxy(bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
+			// 将代理对象的 Class 对象（目标类的子类）保存
 			this.proxyTypes.put(cacheKey, proxy.getClass());
 			return proxy;
 		}

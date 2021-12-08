@@ -223,10 +223,13 @@ public abstract class AopUtils {
 	 */
 	public static boolean canApply(Pointcut pc, Class<?> targetClass, boolean hasIntroductions) {
 		Assert.notNull(pc, "Pointcut must not be null");
+		// 通过Pointcut的条件判断此类是否匹配
 		if (!pc.getClassFilter().matches(targetClass)) {
 			return false;
 		}
 
+		// 此时的pc表示TransactionAttributeSourcePointcut
+		// pc.getMethodMatcher()返回的正是自身(this)
 		MethodMatcher methodMatcher = pc.getMethodMatcher();
 		if (methodMatcher == MethodMatcher.TRUE) {
 			// No need to iterate the methods if we're matching any method anyway...
@@ -242,11 +245,14 @@ public abstract class AopUtils {
 		if (!Proxy.isProxyClass(targetClass)) {
 			classes.add(ClassUtils.getUserClass(targetClass));
 		}
+		// 获取对应类的所有接口
 		classes.addAll(ClassUtils.getAllInterfacesForClassAsSet(targetClass));
-
+		// 对类进行遍历
 		for (Class<?> clazz : classes) {
+			// 反射获取类中所有的方法
 			Method[] methods = ReflectionUtils.getAllDeclaredMethods(clazz);
 			for (Method method : methods) {
+				// 根据匹配原则判断该方法是否能匹配Pointcut中的规则，如果有一个方法匹配则返回true
 				if (introductionAwareMethodMatcher != null ?
 						introductionAwareMethodMatcher.matches(method, targetClass, hasIntroductions) :
 						methodMatcher.matches(method, targetClass)) {
@@ -311,6 +317,12 @@ public abstract class AopUtils {
 		 * canApply(candidate, clazz): 判断候选增强是否适用于目标类
 		 */
 		List<Advisor> eligibleAdvisors = new ArrayList<>();
+		// 首先处理引介增强
+		/*
+		 * 引介增强是一种特殊的增强，其它的增强是方法级别的增强，即只能在方法前或方法后添加增强。
+		 * 而引介增强则不是添加到方法上的增强， 而是添加到类方法级别的增强，即可以为目标类动态实现某个接口，
+		 * 或者动态添加某些方法。
+		 */
 		for (Advisor candidate : candidateAdvisors) {
 			if (candidate instanceof IntroductionAdvisor && canApply(candidate, clazz)) {
 				eligibleAdvisors.add(candidate);
@@ -318,10 +330,12 @@ public abstract class AopUtils {
 		}
 		boolean hasIntroductions = !eligibleAdvisors.isEmpty();
 		for (Advisor candidate : candidateAdvisors) {
+			// 引介增强已经处理
 			if (candidate instanceof IntroductionAdvisor) {
 				// already processed
 				continue;
 			}
+			// 对于普通bean的 进行处理
 			if (canApply(candidate, clazz, hasIntroductions)) {
 				eligibleAdvisors.add(candidate);
 			}

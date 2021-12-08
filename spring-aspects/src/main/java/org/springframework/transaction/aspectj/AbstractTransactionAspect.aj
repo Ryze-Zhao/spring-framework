@@ -63,13 +63,19 @@ public abstract aspect AbstractTransactionAspect extends TransactionAspectSuppor
 		clearTransactionManagerCache();
 	}
 
+	/**
+	 * .
+	 * 增强逻辑在这，事务也在这实现
+	 */
 	@SuppressAjWarnings("adviceDidNotMatch")
 	Object around(final Object txObject): transactionalMethodExecution(txObject) {
 		MethodSignature methodSignature = (MethodSignature) thisJoinPoint.getSignature();
 		// Adapt to TransactionAspectSupport's invokeWithinTransaction...
 		try {
+			// 父类方法
 			return invokeWithinTransaction(methodSignature.getMethod(), txObject.getClass(), new InvocationCallback() {
 				public Object proceedWithInvocation() throws Throwable {
+					// 就是使用@Around注解时执行ProceedingJoinPoint.proceed()方法
 					return proceed(txObject);
 				}
 			});
@@ -87,6 +93,7 @@ public abstract aspect AbstractTransactionAspect extends TransactionAspectSuppor
 	 * Concrete subaspects must implement this pointcut, to identify
 	 * transactional methods. For each selected joinpoint, TransactionMetadata
 	 * will be retrieved using Spring's TransactionAttributeSource interface.
+	 * 由子类实现具体的pointcut
 	 */
 	protected abstract pointcut transactionalMethodExecution(Object txObject);
 
