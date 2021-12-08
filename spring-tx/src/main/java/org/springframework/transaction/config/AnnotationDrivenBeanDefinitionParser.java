@@ -77,9 +77,11 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 	}
 
 	private void registerTransactionAspect(Element element, ParserContext parserContext) {
+		// org.springframework.transaction.config.internalTransactionAspect
 		String txAspectBeanName = TransactionManagementConfigUtils.TRANSACTION_ASPECT_BEAN_NAME;
+		// org.springframework.transaction.aspectj.AnnotationTransactionAspect
 		String txAspectClassName = TransactionManagementConfigUtils.TRANSACTION_ASPECT_CLASS_NAME;
-		// 如果没有注册过该类，就新注册一个class为 AnnotationTransactionAspect 的bean
+		// 如果没有注册过 internalTransactionAspect 该类，就新注册一个class为 AnnotationTransactionAspect 的bean
 		if (!parserContext.getRegistry().containsBeanDefinition(txAspectBeanName)) {
 			RootBeanDefinition def = new RootBeanDefinition();
 			def.setBeanClassName(txAspectClassName);
