@@ -45,6 +45,7 @@ public class ProxyTransactionManagementConfiguration extends AbstractTransaction
 	 * .
 	 * 注册Bean：事务顾问（Spring AOP中拦截器链就是一个个的Advisor对象）
 	 * 这里是给容器中导入一个事务增强器！
+	 * 名字：org.springframework.transaction.config.internalTransactionAdvisor
 	 */
 	@Bean(name = TransactionManagementConfigUtils.TRANSACTION_ADVISOR_BEAN_NAME)
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)

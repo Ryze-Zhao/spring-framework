@@ -59,8 +59,11 @@ public class TransactionManagementConfigurationSelector extends AdviceModeImport
 	}
 
 	private String determineTransactionAspectClass() {
+		// ClassUtils.isPresen：用来判断指定类名的类是否存在，是否可以进行加载
 		return (ClassUtils.isPresent("javax.transaction.Transactional", getClass().getClassLoader()) ?
+				// org.springframework.transaction.aspectj.AspectJJtaTransactionManagementConfiguration
 				TransactionManagementConfigUtils.JTA_TRANSACTION_ASPECT_CONFIGURATION_CLASS_NAME :
+				// org.springframework.transaction.aspectj.AspectJTransactionManagementConfiguration
 				TransactionManagementConfigUtils.TRANSACTION_ASPECT_CONFIGURATION_CLASS_NAME);
 	}
 
