@@ -338,9 +338,9 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 
 		// If the transaction attribute is null, the method is non-transactional.
 		TransactionAttributeSource tas = getTransactionAttributeSource();
-		// 获取事务属性配置信息：通过TransactionAttributeSource.getTransactionAttribute解析@Trasaction注解得到事务属性配置信息
+		// 获取事务属性配置属性：通过TransactionAttributeSource.getTransactionAttribute解析@Trasaction注解得到事务属性配置属性
 		final TransactionAttribute txAttr = (tas != null ? tas.getTransactionAttribute(method, targetClass) : null);
-		// 获取事务管理器
+		// 获取beanFactory中的transactionManager属性
 		// 如果事先没有指定任何的TransactionManager，就会从容器中按照类型获取一个PlatformTransactionManager
 		final TransactionManager tm = determineTransactionManager(txAttr);
 
@@ -380,7 +380,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 
 		// 将事务管理器tx转换为 PlatformTransactionManager
 		PlatformTransactionManager ptm = asPlatformTransactionManager(tm);
-		// 构造方法唯一标识(类.方法，如：service.UserServiceImpl.save)
+		// 构造方法唯一标识(类.方法，如：service.UserServiceImpl#save)
 		final String joinpointIdentification = methodIdentification(method, targetClass, txAttr);
 
 		// 处理声明式事务

@@ -413,6 +413,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 
 	/**
 	 * Start a new transaction.
+	 * 启动新事务。
 	 */
 	private TransactionStatus startTransaction(TransactionDefinition definition, Object transaction,
 			boolean debugEnabled, @Nullable SuspendedResourcesHolder suspendedResources) {
@@ -540,6 +541,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 
 	/**
 	 * Create a TransactionStatus instance for the given arguments.
+	 * 为给定参数创建TransactionStatus实例
 	 */
 	protected DefaultTransactionStatus newTransactionStatus(
 			TransactionDefinition definition, @Nullable Object transaction, boolean newTransaction,

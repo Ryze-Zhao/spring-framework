@@ -278,7 +278,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 				// 将数据库连接丢到一个ConnectionHolder中，放到txObject中，注意第2个参数是true，表示第一个参数的ConnectionHolder是新创建的
 				txObject.setConnectionHolder(new ConnectionHolder(newCon), true);
 			}
-			// 连接中启动事务同步
+			// 设置新的连接为事务同步中
 			txObject.getConnectionHolder().setSynchronizedWithTransaction(true);
 			// 获取连接
 			con = txObject.getConnectionHolder().getConnection();
@@ -287,7 +287,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 			Integer previousIsolationLevel = DataSourceUtils.prepareConnectionForTransaction(con, definition);
 			// 设置隔离级别
 			txObject.setPreviousIsolationLevel(previousIsolationLevel);
-			// 设置是否是只读
+			// 设置是否 是只读
 			txObject.setReadOnly(definition.isReadOnly());
 
 			// Switch to manual commit if necessary. This is very expensive in some JDBC drivers,
@@ -305,7 +305,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 			}
 			// 准备事务连接
 			prepareTransactionalConnection(con, definition);
-			// 设置事务活动开启
+			// 设置connection 持有者的事务开启状态
 			txObject.getConnectionHolder().setTransactionActive(true);
 
 			// 根据事务定义信息获取事务超时时间
@@ -318,6 +318,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 			// Bind the connection holder to the thread.
 			// txObject中的ConnectionHolder是否是一个新的，确实是新的，所以这个地方返回true
 			if (txObject.isNewConnectionHolder()) {
+				// 将当前获取到的连接绑定到当前线程，绑定解绑围绕一个线程变量，这个变量就在TransactionSynchronizationManager中
 				// 将datasource->ConnectionHolder丢到resource ThreadLocal的map中
 				TransactionSynchronizationManager.bindResource(obtainDataSource(), txObject.getConnectionHolder());
 			}

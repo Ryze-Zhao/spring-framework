@@ -133,6 +133,7 @@ public abstract class TransactionSynchronizationManager {
 
 	/**
 	 * Actually check the value of the resource that is bound for the given key.
+	 * 实际检查为给定键绑定的资源的值
 	 */
 	@Nullable
 	private static Object doGetResource(Object actualKey) {
@@ -165,14 +166,17 @@ public abstract class TransactionSynchronizationManager {
 	 * @see ResourceTransactionManager#getResourceFactory()
 	 */
 	public static void bindResource(Object key, Object value) throws IllegalStateException {
+		// 线程变量是一个 map ，而这个key就是dataSource，这个value 就是 holder
 		Object actualKey = TransactionSynchronizationUtils.unwrapResourceIfNecessary(key);
 		Assert.notNull(value, "Value must not be null");
+		// 获取这个线程变量的 map
 		Map<Object, Object> map = resources.get();
 		// set ThreadLocal Map if none found
 		if (map == null) {
 			map = new HashMap<>();
 			resources.set(map);
 		}
+		// 将新的 holder 作为 value ，dataSource作为 key 放入到当前线程 map 中
 		Object oldValue = map.put(actualKey, value);
 		// Transparently suppress a ResourceHolder that was marked as void...
 		if (oldValue instanceof ResourceHolder && ((ResourceHolder) oldValue).isVoid()) {
