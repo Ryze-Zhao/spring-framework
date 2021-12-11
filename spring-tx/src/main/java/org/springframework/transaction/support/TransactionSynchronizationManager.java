@@ -220,12 +220,15 @@ public abstract class TransactionSynchronizationManager {
 	 */
 	@Nullable
 	private static Object doUnbindResource(Object actualKey) {
+		// 取得当前线程的线程变量Map
 		Map<Object, Object> map = resources.get();
 		if (map == null) {
 			return null;
 		}
+		// 将key为dataSourece的value移除出Map，然后将旧的Holder返回
 		Object value = map.remove(actualKey);
 		// Remove entire ThreadLocal if empty...
+		// 如果此时map为空，直接清除线程变量
 		if (map.isEmpty()) {
 			resources.remove();
 		}
@@ -233,6 +236,7 @@ public abstract class TransactionSynchronizationManager {
 		if (value instanceof ResourceHolder && ((ResourceHolder) value).isVoid()) {
 			value = null;
 		}
+		// 将旧Holder返回
 		return value;
 	}
 

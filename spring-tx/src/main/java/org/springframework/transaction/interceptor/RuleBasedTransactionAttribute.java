@@ -139,7 +139,7 @@ public class RuleBasedTransactionAttribute extends DefaultTransactionAttribute i
 		}
 
 		// User superclass behavior (rollback on unchecked) if no rule matches.
-		// 若@Transactional注解中没有匹配到，这走默认的规则，将通过super.rollbackOn来判断
+		// 若@Transactional注解中没有匹配到规则，这走默认的规则，将通过super.rollbackOn来判断
 		if (winner == null) {
 			return super.rollbackOn(ex);
 		}
