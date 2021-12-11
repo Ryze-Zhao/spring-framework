@@ -108,6 +108,7 @@ public class ProxyFactory extends ProxyCreatorSupport {
 	 */
 	public Object getProxy(@Nullable ClassLoader classLoader) {
 		/*
+		 * 根据 AOP 代理为目标 Bean 创建一个代理对象，并返回
 		 * 1. 代理类获取:
 		 *{@link ProxyCreatorSupport#createAopProxy()}
 		 * createAopProxy():
@@ -119,6 +120,9 @@ public class ProxyFactory extends ProxyCreatorSupport {
 		 * CGLIB动态代理{@link CglibAopProxy#getProxy(java.lang.ClassLoader)}
 		 *
 		 * getProxy(classLoader): 生成代理对象
+		 *
+		 *
+		 *
 		 */
 		return createAopProxy().getProxy(classLoader);
 	}

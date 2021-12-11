@@ -320,8 +320,7 @@ public abstract class AopUtils {
 		// 首先处理引介增强
 		/*
 		 * 引介增强是一种特殊的增强，其它的增强是方法级别的增强，即只能在方法前或方法后添加增强。
-		 * 而引介增强则不是添加到方法上的增强， 而是添加到类方法级别的增强，即可以为目标类动态实现某个接口，
-		 * 或者动态添加某些方法。
+		 * 而引介增强则不是添加到方法上的增强， 而是添加到类方法级别的增强，即可以为目标类动态实现某个接口，或者动态添加某些方法。
 		 */
 		for (Advisor candidate : candidateAdvisors) {
 			if (candidate instanceof IntroductionAdvisor && canApply(candidate, clazz)) {
@@ -360,6 +359,7 @@ public abstract class AopUtils {
 		try {
 			// 利用反射执行目标方法
 			ReflectionUtils.makeAccessible(method);
+			// 直接通过反射调用目标bean中的method
 			return method.invoke(target, args);
 		}
 		catch (InvocationTargetException ex) {

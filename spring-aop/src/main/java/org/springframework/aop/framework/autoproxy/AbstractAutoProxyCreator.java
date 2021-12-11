@@ -309,8 +309,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			// 根据给定的bean的class和name构建出个key,格式:beanClassName_beanName
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);
 			if (this.earlyProxyReferences.remove(cacheKey) != bean) {
-				// 如果条件符合，则为bean生成代理对象
-				//那什么时候需要包装呢？
+				// 如果它适合被代理，则需要指定封装bean
 				return wrapIfNecessary(bean, beanName, cacheKey);
 			}
 		}
@@ -353,7 +352,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			return bean;
 		}
 		// advisedBeans的key为cacheKey，value为boolean类型，表示是否进行过代理
-		// 对于已经处理过的bean,不需要再次进行处理，节省时间
+		// （无需增强）对于已经处理过的bean,不需要再次进行处理，节省时间
 		if (Boolean.FALSE.equals(this.advisedBeans.get(cacheKey))) {
 			return bean;
 		}
@@ -483,10 +482,12 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		if (this.beanFactory instanceof ConfigurableListableBeanFactory) {
 			AutoProxyUtils.exposeTargetClass((ConfigurableListableBeanFactory) this.beanFactory, beanName, beanClass);
 		}
-		// 每个bean对象都使用一个单例的ProxyFactory来创建代理对象，因为每个bean需要的辅助方法不一样,然后将该ProxyFactory对象引用作为构造函数参数创建对应的代理对象
+		// 创建一个代理工厂：每个bean对象都使用一个单例的ProxyFactory来创建代理对象，因为每个bean需要的辅助方法不一样,然后将该ProxyFactory对象引用作为构造函数参数创建对应的代理对象
 		ProxyFactory proxyFactory = new ProxyFactory();
+		// 复制当前 ProxyConfig 的一些属性（例如 proxyTargetClass、exposeProxy）
 		proxyFactory.copyFrom(this);
 
+		// 判断是否是代理类（也就是是否开启了CGLIB代理） 默认是false
 		// 检查是否配置了<aop:config />节点的proxy-target-class属性为true
 		if (proxyFactory.isProxyTargetClass()) {
 			// Explicit handling of JDK proxy targets (for introduction advice scenarios)
@@ -499,27 +500,37 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		}
 		else {
 			// No proxyTargetClass flag enforced, let's apply our default checks...
+			// 如果这个 Bean 配置了进行类代理，则设置为 `proxyTargetClass` 为 `true`
 			if (shouldProxyTargetClass(beanClass, beanName)) {
 				proxyFactory.setProxyTargetClass(true);
 			}
 			else {
+				// 检测当前Bean 实现的接口是否包含可代理的接口 ，如果没有，则将proxyTargetClass 设置为true 表示需要进行CGLIB 提升
 				evaluateProxyInterfaces(beanClass, proxyFactory);
 			}
 		}
 		// 把增强器保存在代理工厂之中
+		// 对入参的 advisors 进一步处理，因为其中还可能存在Advice类型 需要将他们包装成 DefaultPointcutAdvisor
+		// 如果配置了 `interceptorNames` 拦截器，也会添加进来
 		Advisor[] advisors = buildAdvisors(beanName, specificInterceptors);
-		// 为该代理工厂添加辅助功能包装器Advisors，结合Advisors来生成代理对象的方法拦截器
+		// 代理工厂添加 Advisor 数组：为该代理工厂添加辅助功能包装器Advisors，结合Advisors来生成代理对象的方法拦截器
 		proxyFactory.addAdvisors(advisors);
-		// 目标类
+		// 代理工厂设置 TargetSource 对象（目标类）
 		proxyFactory.setTargetSource(targetSource);
+		// 对 ProxyFactory 进行加工处理，抽象方法，目前没有子类实现
 		customizeProxyFactory(proxyFactory);
 
+		// 用来控制代理工厂被配置之后，是否还允许修改通知。（默认为 false） (即在代理被配置之后，不允许修改代理的配置)。
 		proxyFactory.setFrozen(this.freezeProxy);
+		// 这个 AdvisedSupport 配置管理器是否已经过滤过目标类（默认为 false）
 		if (advisorsPreFiltered()) {
+			// 设置 `preFiltered` 为 `true`
+			//  这样 Advisor 们就不会根据 ClassFilter 进行过滤了，而直接通过 MethodMatcher 判断是否处理被拦截方法
 			proxyFactory.setPreFiltered(true);
 		}
 
 		// Use original ClassLoader if bean class not locally loaded in overriding class loader
+		// 如果 bean 类未在覆盖类加载器中本地加载，则使用原始 ClassLoader
 		ClassLoader classLoader = getProxyClassLoader();
 		if (classLoader instanceof SmartClassLoader && classLoader != beanClass.getClassLoader()) {
 			classLoader = ((SmartClassLoader) classLoader).getOriginalClassLoader();

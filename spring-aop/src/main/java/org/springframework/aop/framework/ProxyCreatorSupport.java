@@ -108,6 +108,9 @@ public class ProxyCreatorSupport extends AdvisedSupport {
 		 * DefaultAopProxyFactory是AopProxyFactory(接口)的实现类, 通过DefaultAopProxyFactory#createAopProxy()
 		 * 根据条件获取JdkDynamicAopProxy或CglibAopProxy实例, 所以创建代理类是可以传递this
 		 */
+		// 先获取 AOP 代理工厂，默认为 DefaultAopProxyFactory，只有这个实现
+		// 然后通过它根据创建当前 AdvisedSupport 配置管理器创建一个 AOP 代理（JdkDynamicAopProxy 或者 ObjenesisCglibAopProxy）
+
 		return getAopProxyFactory().createAopProxy(this);
 	}
 

@@ -62,6 +62,9 @@ public class AspectJAfterThrowingAdvice extends AbstractAspectJAdvice
 	public Object invoke(MethodInvocation mi) throws Throwable {
 		try {
 			// 在这里重新调用CglibMethodInvocation的proceed方法
+			// 直接调用MethodInvocation的proceed方法
+			// 从proceed()方法中我们知道dm.interceptor.invoke(this)传过来的参数就是 ReflectiveMethodInvocation 执行器本身
+			// 也就是说这里又直接调用了 ReflectiveMethodInvocation 的proceed()方法
 			return mi.proceed();
 		}
 		catch (Throwable ex) {

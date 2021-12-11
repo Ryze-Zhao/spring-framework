@@ -120,13 +120,14 @@ public abstract class AopConfigUtils {
 			Class<?> cls, BeanDefinitionRegistry registry, @Nullable Object source) {
 
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
-		// 判断容器之中是否有这个一个bean的定义信息，如果有就执行下列的操作
+		// 如果已经存在了自动代理创建器 且存在的自动代理创建器与现在的不一致，那么需要根据优先级判断到底需要使用哪一个
 		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
 			BeanDefinition apcDefinition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);
 			if (!cls.getName().equals(apcDefinition.getBeanClassName())) {
 				int currentPriority = findPriorityForClass(apcDefinition.getBeanClassName());
 				int requiredPriority = findPriorityForClass(cls);
 				if (currentPriority < requiredPriority) {
+					// 改变bean最重要的就是改变bean所对应的className属性
 					apcDefinition.setBeanClassName(cls.getName());
 				}
 			}
@@ -134,6 +135,7 @@ public abstract class AopConfigUtils {
 		}
 
 		// 如果没有，就创建一个AnnotationAwareAspectJAutoProxyCreator类型的bean的定义信息
+		// 注册BeanDefinition，beanName为internalAutoProxyCreator，Class为AnnotationAwareAspectJAutoProxyCreator.class
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(cls);
 		beanDefinition.setSource(source);
 		beanDefinition.getPropertyValues().add("order", Ordered.HIGHEST_PRECEDENCE);

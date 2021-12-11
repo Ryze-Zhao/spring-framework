@@ -61,7 +61,7 @@ public class DefaultAdvisorChainFactory implements AdvisorChainFactory, Serializ
 		Class<?> actualClass = (targetClass != null ? targetClass : method.getDeclaringClass());
 		Boolean hasIntroductions = null;
 
-		// 拿到所有的增强器进行遍历
+		// 拿到所有的增强器进行遍历（获取bean中的所有增强器）
 		for (Advisor advisor : advisors) {
 			// 如果PointcutAdvisor
 			if (advisor instanceof PointcutAdvisor) {
@@ -78,6 +78,8 @@ public class DefaultAdvisorChainFactory implements AdvisorChainFactory, Serializ
 						match = ((IntroductionAwareMethodMatcher) mm).matches(method, actualClass, hasIntroductions);
 					}
 					else {
+						// 根据增强器中的Pointcut判断增强器是否能匹配当前类中的method
+						// 我们要知道目标Bean中并不是所有的方法都需要增强，也有一些普通方法
 						match = mm.matches(method, actualClass);
 					}
 					// 1.这里是把增强器传过来，包装成一个interceptors
@@ -85,6 +87,8 @@ public class DefaultAdvisorChainFactory implements AdvisorChainFactory, Serializ
 					// 2.1.如果这个增强器是【MethodInterceptor】这个类型的话，就直接加进interceptor并返回
 					// 2.2.如果不是的话，会通过AdvisorAdapter转成interceptor，再返回
 					if (match) {
+						// 如果能匹配，就将 advisor 封装成 MethodInterceptor 加入到 interceptorList 中
+						// 具体实现在 DefaultAdvisorAdapterRegistry
 						MethodInterceptor[] interceptors = registry.getInterceptors(advisor);
 						if (mm.isRuntime()) {
 							// Creating a new object instance in the getInterceptors() method

@@ -54,6 +54,7 @@ public class AfterReturningAdviceInterceptor implements MethodInterceptor, After
 	@Override
 	@Nullable
 	public Object invoke(MethodInvocation mi) throws Throwable {
+		// 直接调用MethodInvocation的proceed方法
 		// 在这里重新调用CglibMethodInvocation的proceed方法
 		// 又回到上上面那一段代码去，但是此时的索引不再是1，而是2，也就是说，此时即将调用的是下一个拦截器的invoke方法
 		// 但是要注意一点，这里是方法执行后的返回通知，也就是说:

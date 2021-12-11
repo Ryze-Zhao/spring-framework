@@ -48,6 +48,7 @@ public class AspectJAfterAdvice extends AbstractAspectJAdvice
 		try {
 			/*
 			 * 如果是后置增强,则先调用MethodInvocation#proceed()方法, 执行其他增强, 等其他所有增强和切入点方法执行完成后,再执行后置增强{@link ReflectiveMethodInvocation#proceed()}
+			 * 直接调用MethodInvocation的proceed方法
 			 */
 			return mi.proceed();
 		}
@@ -55,6 +56,8 @@ public class AspectJAfterAdvice extends AbstractAspectJAdvice
 			/*
 			 * 当所有拦截器执行完成之后,执行后置增强,后置增强的执行是在finally块中,因此, 及时目标方法出现异常, 后置通知也会执行
 			 * 同理也可以知道, 异常增强方法是在catch块中执行的
+			 *
+			 * 激活增强方法
 			 */
 			invokeAdviceMethod(getJoinPointMatch(), null, null);
 		}

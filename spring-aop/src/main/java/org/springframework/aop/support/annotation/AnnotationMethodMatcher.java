@@ -83,6 +83,7 @@ public class AnnotationMethodMatcher extends StaticMethodMatcher {
 	}
 
 	private boolean matchesMethod(Method method) {
+		// 可以看出判断该Advisor是否使用于bean中的method，只需看method上是否有Advisor的注解
 		return (this.checkInherited ? AnnotatedElementUtils.hasAnnotation(method, this.annotationType) :
 				method.isAnnotationPresent(this.annotationType));
 	}
