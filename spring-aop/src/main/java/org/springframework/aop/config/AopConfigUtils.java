@@ -121,11 +121,13 @@ public abstract class AopConfigUtils {
 
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
 		// 如果已经存在了自动代理创建器 且存在的自动代理创建器与现在的不一致，那么需要根据优先级判断到底需要使用哪一个
+		// 自动代理创建器 名称：org.springframework.aop.config.internalAutoProxyCreator
 		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
 			BeanDefinition apcDefinition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);
 			if (!cls.getName().equals(apcDefinition.getBeanClassName())) {
 				int currentPriority = findPriorityForClass(apcDefinition.getBeanClassName());
 				int requiredPriority = findPriorityForClass(cls);
+				// 如果当前已存在的自动代理创建器优先级 小于 传入的自动代理创建器优先级，那么用传入的替换当前已存在的
 				if (currentPriority < requiredPriority) {
 					// 改变bean最重要的就是改变bean所对应的className属性
 					apcDefinition.setBeanClassName(cls.getName());
@@ -134,13 +136,13 @@ public abstract class AopConfigUtils {
 			return null;
 		}
 
-		// 如果没有，就创建一个AnnotationAwareAspectJAutoProxyCreator类型的bean的定义信息
+		// 如果没有，就创建一个AnnotationAwareAspectJAutoProxyCreator类型的BeanDefinition
 		// 注册BeanDefinition，beanName为internalAutoProxyCreator，Class为AnnotationAwareAspectJAutoProxyCreator.class
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(cls);
 		beanDefinition.setSource(source);
 		beanDefinition.getPropertyValues().add("order", Ordered.HIGHEST_PRECEDENCE);
 		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		// 主要作用就是往Spring容器中注册AnnotationAwareAspectJAutoProxyCreator的Bean的定义信息
+		// 主要作用就是往Spring容器中注册AnnotationAwareAspectJAutoProxyCreator的BeanDefinition
 		registry.registerBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME, beanDefinition);
 		return beanDefinition;
 	}

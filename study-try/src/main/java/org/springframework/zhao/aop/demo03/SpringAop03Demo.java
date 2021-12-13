@@ -13,8 +13,8 @@ public class SpringAop03Demo {
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(Demo03Config.class);
 		JdkAccountService jdkAccountService = ac.getBean(JdkAccountService.class);
-		CglibAccountService cglibAccountService = ac.getBean(CglibAccountService.class);
+//		CglibAccountService cglibAccountService = ac.getBean(CglibAccountService.class);
 		jdkAccountService.setQuery();
-		cglibAccountService.setQuery();
+//		cglibAccountService.setQuery();
 	}
 }

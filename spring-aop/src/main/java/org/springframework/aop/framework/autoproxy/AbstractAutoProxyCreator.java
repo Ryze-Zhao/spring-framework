@@ -351,17 +351,18 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		if (StringUtils.hasLength(beanName) && this.targetSourcedBeans.contains(beanName)) {
 			return bean;
 		}
-		// advisedBeans的key为cacheKey，value为boolean类型，表示是否进行过代理
 		// （无需增强）对于已经处理过的bean,不需要再次进行处理，节省时间
+		// advisedBeans的key为cacheKey，value为boolean类型，表示是否进行过代理
 		if (Boolean.FALSE.equals(this.advisedBeans.get(cacheKey))) {
 			return bean;
 		}
 
 		/*
-		 * 如果目标类代表一个基础设施类,基础设施类不应代理,或者配置了指定bean不需要自动代理
+		 * 如果目标类代表一个 基础设施类（Advice、Pointcut、Advisor、AopInfrastructureBean） 或者 配置了指定Bean 不需要自动代理
+		 *
 		 * isInfrastructureClass(): 如果目标类继承自Advice、Pointcut、Advisor、AopInfrastructureBean
-		 *         或者带有@Aspect注解，或被Ajc（AspectJ编译器）编译都会被认定为内部基础设置类, 从而该目标类将会跳过扩展
-		 * shouldSkip(): 判断目标bean是否需要跳过{@link AspectJAwareAdvisorAutoProxyCreator#shouldSkip(java.lang.Class, java.lang.String)}
+		 *                          或者带有@Aspect注解，或被Ajc（AspectJ编译器）编译都会被认定为内部基础设置类, 从而该目标类将会跳过扩展
+		 * shouldSkip(): 判断目标bean是否需要跳过（配置了指定Bean）{@link AspectJAwareAdvisorAutoProxyCreator#shouldSkip(java.lang.Class, java.lang.String)}
 		 */
 		if (isInfrastructureClass(bean.getClass()) || shouldSkip(bean.getClass(), beanName)) {
 			this.advisedBeans.put(cacheKey, Boolean.FALSE);
@@ -370,20 +371,20 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 
 		// Create proxy if we have advice.
 		/*
-		 * 获取所有适合该bean的增强Advisor（增强器/通知方法）
-		 * {@link AbstractAdvisorAutoProxyCreator#getAdvicesAndAdvisorsForBean(java.lang.Class, java.lang.String, org.springframework.aop.TargetSource)
-		 * 1.而getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);做了什么呢？
+		 * 获取所有适合该bean的增强Advisor（增强器/通知方法）{@link AbstractAdvisorAutoProxyCreator#getAdvicesAndAdvisorsForBean(java.lang.Class, java.lang.String, org.springframework.aop.TargetSource)}
+		 * 1.getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);做了什么呢？
 		 * 1.1.它会找到所有候选的增强器（找到哪些通知方法是需要切入到当前bean方法中的）
 		 * 1.2.获取到能在bean使用的增强器
 		 * 1.3.给增强器排序
 		 */
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
-		// 如果获取的增强不为null，则为该bean创建代理（注意：DO_NOT_PROXY=null）
-		// 如果这个bean是需要增强的，那么specificInterceptors就不为空，就能执行里面的操作
+
+		// 如果获取的增强specificInterceptors不为null，则为该bean创建代理（注意：这时DO_NOT_PROXY是null的）
+		// 因此能进入if的，specificInterceptors就不为空，就能执行里面的操作
 		if (specificInterceptors != DO_NOT_PROXY) {
 			// 保存当前bean到advisedBeans中，表示当前bean已经被增强处理了
 			this.advisedBeans.put(cacheKey, Boolean.TRUE);
-			// 如果bean需要增强，就创建代理对象（JDK 动态代理或者 CGLIB 动态代理）
+			// 如果bean需要增强，就创建代理对象（JDK 动态代理 或者 CGLIB 动态代理）
 			Object proxy = createProxy(bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
 			// 将代理对象的 Class 对象（目标类的子类）保存
 			this.proxyTypes.put(cacheKey, proxy.getClass());

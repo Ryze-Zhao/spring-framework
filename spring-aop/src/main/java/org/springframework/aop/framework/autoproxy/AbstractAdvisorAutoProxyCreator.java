@@ -97,7 +97,8 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 		List<Advisor> candidateAdvisors = findCandidateAdvisors();
 		// 寻找所有的增强中只用于bean的增强应用
 		List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
-		//  模版方法，由子类拓展增强器(用作子类对已经查找完成的增强器进行拓展){@link AspectJAwareAdvisorAutoProxyCreator#extendAdvisors(java.util.List)}
+		//  模版方法，由子类拓展增强器(用作子类对已经查找完成的增强器进行拓展)
+		//  {@link AspectJAwareAdvisorAutoProxyCreator#extendAdvisors(java.util.List)}
 		extendAdvisors(eligibleAdvisors);
 		// 如果获取的Advisor集合eligibleAdvisors不为空,则根据优先级进行排序
 		if (!eligibleAdvisors.isEmpty()) {
