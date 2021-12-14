@@ -73,7 +73,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	@Override
 	@Nullable
 	protected Object[] getAdvicesAndAdvisorsForBean(Class<?> beanClass, String beanName, @Nullable TargetSource targetSource) {
-        // 获取合适的增强器
+        // 获取可以应用于 当前处理BeanName 的增强器
 		List<Advisor> advisors = findEligibleAdvisors(beanClass, beanName);
 		// 数组为空，返回null
 		if (advisors.isEmpty()) {
@@ -93,9 +93,9 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 * @see #extendAdvisors
 	 */
 	protected List<Advisor> findEligibleAdvisors(Class<?> beanClass, String beanName) {
-		// 获取所有的增强
+		// 找到Spring IoC容器中所有的增强
 		List<Advisor> candidateAdvisors = findCandidateAdvisors();
-		// 寻找所有的增强中只用于bean的增强应用
+		// 寻找所有的增强中适合于bean的增强应用（匹配）
 		List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
 		//  模版方法，由子类拓展增强器(用作子类对已经查找完成的增强器进行拓展)
 		//  {@link AspectJAwareAdvisorAutoProxyCreator#extendAdvisors(java.util.List)}
@@ -109,10 +109,12 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 
 	/**
 	 * Find all candidate Advisors to use in auto-proxying.
+	 * 查找自动代理中使用的所有Advisors
 	 * @return the List of candidate Advisors
 	 */
 	protected List<Advisor> findCandidateAdvisors() {
 		Assert.state(this.advisorRetrievalHelper != null, "No BeanFactoryAdvisorRetrievalHelper available");
+		// 通过通知者检测帮助类来帮助我们找到通知
 		return this.advisorRetrievalHelper.findAdvisorBeans();
 	}
 
@@ -128,7 +130,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	protected List<Advisor> findAdvisorsThatCanApply(List<Advisor> candidateAdvisors, Class<?> beanClass, String beanName) {
 		ProxyCreationContext.setCurrentProxiedBeanName(beanName);
 		try {
-			// 过滤已经得到的advisors
+			// 从候选的通知器中找到合适正在创建的实例对象的通知器
 			return AopUtils.findAdvisorsThatCanApply(candidateAdvisors, beanClass);
 		}
 		finally {

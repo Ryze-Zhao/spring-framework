@@ -95,14 +95,10 @@ public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorA
 		 * 1.1.通过<aop>标签添加的增强，这部分会在解析配置文件的时候添加到Spring容器中，只需要获取当前容器中Advisor类型的bean就可以获取到该类增强
 		 * 1.2.通过注解添加的增强，获取此类增强还需要对bean进行遍历解析
 		 */
-		/*
-		 * 在这里调用父类方法加载配置文件中的AOP声明
-		 * 当使用注解方式配置AOP的时候并不是对xml配置文件的支持进行了丢弃
-		 */
 		List<Advisor> advisors = super.findCandidateAdvisors();
 		// Build Advisors for all AspectJ aspects in the bean factory.
 		if (this.aspectJAdvisorsBuilder != null) {
-			// 获取Bean的注解增强的功能
+			// 获取Bean的注解增强器
 			advisors.addAll(this.aspectJAdvisorsBuilder.buildAspectJAdvisors());
 		}
 		return advisors;

@@ -244,13 +244,15 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	}
 
 	/**
-	 * 在bean对象实例的创建过程中，在创建bean对象实例之前，先调用这个方法，看是否需要创建一个AOP代理对象直接返回
-	 * 在创建Bean的流程中还没调用构造器来实例化Bean的时候进行调用(实例化前后)，AOP解析切面以及事务解析事务注解都是在这里完成的
+	 * .
+	 * 在bean对象实例的创建过程中，在创建Bean对象实例化之前
+	 * 先调用这个方法，看是否需要创建一个AOP代理对象直接返回（AOP解析切面以及解析事务注解都在这里完成）
+	 *
 	 * @author : HeHaoZhao
 	 */
 	@Override
 	public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) {
-		// 构建我们的缓存key
+		// 构建 缓存key
 		Object cacheKey = getCacheKey(beanClass, beanName);
 
 		// 返回null，则表示不是AOP的目标对象，不需要创建代理对象
@@ -262,7 +264,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			/*
 			 * 判断是不是基础的Bean（Advice、PointCut、Advisor、AopInfrastructureBean）是就直接跳过
 			 * 判断是不是应该跳过 (AOP解析直接解析出我们的切面信息(并且把我们的切面信息进行缓存))
-			 * 而事务在这里是不会解析的，为什么？原因：事务的话已经在事务拦截器通过@Bean，而其他Aop的需要寻找)
+			 * 而事务相关组件在这里是不会解析的，为什么？原因：事务已经在事务拦截器通过@Bean注入到IoC容器了，而其他Aop的需要寻找)
 			 */
 			if (isInfrastructureClass(beanClass) || shouldSkip(beanClass, beanName)) {
 				this.advisedBeans.put(cacheKey, Boolean.FALSE);
@@ -279,8 +281,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 				this.targetSourcedBeans.add(beanName);
 			}
 			// specificInterceptors类型为Advisor[]，是当前bean需要的辅助功能列表
-			// 因为Advisor集成了pointcut和advice，故可以知道当前bean是否在pointcut拦截范围内，
-			// 如果在获取配置对应的advice列表，该列表作为代理对象的interceptor方法拦截器
+			// 因为Advisor集成了pointcut和advice，故可以知道当前bean是否在pointcut拦截范围内，如果在获取配置对应的advice列表，该列表作为代理对象的interceptor方法拦截器
 			// getAdvicesAndAdvisorsForBean由子类实现
 			Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(beanClass, beanName, targetSource);
 			// 基于以上辅助功能列表，创建该bean对应的代理对象proxy
@@ -408,6 +409,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * @see #shouldSkip
 	 */
 	protected boolean isInfrastructureClass(Class<?> beanClass) {
+		// 判断当前bean是否是基础设施类的Advice、Pointcut、Advisor、AopInfrastructureBean
 		boolean retVal = Advice.class.isAssignableFrom(beanClass) ||
 				Pointcut.class.isAssignableFrom(beanClass) ||
 				Advisor.class.isAssignableFrom(beanClass) ||

@@ -230,31 +230,38 @@ public abstract class AopUtils {
 
 		// 此时的pc表示TransactionAttributeSourcePointcut
 		// pc.getMethodMatcher()返回的正是自身(this)
+
+		// 通过切点获取到一个方法匹配器对象
 		MethodMatcher methodMatcher = pc.getMethodMatcher();
 		if (methodMatcher == MethodMatcher.TRUE) {
 			// No need to iterate the methods if we're matching any method anyway...
 			return true;
 		}
 
+		// 判断匹配器是不是IntroductionAwareMethodMatcher
 		IntroductionAwareMethodMatcher introductionAwareMethodMatcher = null;
 		if (methodMatcher instanceof IntroductionAwareMethodMatcher) {
 			introductionAwareMethodMatcher = (IntroductionAwareMethodMatcher) methodMatcher;
 		}
 
+		// 创建一个集合用于保存targetClass的class对象
 		Set<Class<?>> classes = new LinkedHashSet<>();
+		// 判断当前class是不是代理的class对象
 		if (!Proxy.isProxyClass(targetClass)) {
+			// 加入到集合中去
 			classes.add(ClassUtils.getUserClass(targetClass));
 		}
-		// 获取对应类的所有接口
+		// 获取对应类的所有接口（获取到targetClass所实现的接口的class对象，然后加入到集合中）
 		classes.addAll(ClassUtils.getAllInterfacesForClassAsSet(targetClass));
-		// 对类进行遍历
+		// 对类进行遍历（循环所有的class对象）
 		for (Class<?> clazz : classes) {
-			// 反射获取类中所有的方法
+			// 反射获取类中所有的方法（通过class获取到所有的方法）
 			Method[] methods = ReflectionUtils.getAllDeclaredMethods(clazz);
 			for (Method method : methods) {
 				// 根据匹配原则判断该方法是否能匹配Pointcut中的规则，如果有一个方法匹配则返回true
 				if (introductionAwareMethodMatcher != null ?
 						introductionAwareMethodMatcher.matches(method, targetClass, hasIntroductions) :
+						// 通过方法匹配器进行匹配
 						methodMatcher.matches(method, targetClass)) {
 					return true;
 				}
@@ -287,11 +294,15 @@ public abstract class AopUtils {
 	 * @return whether the pointcut can apply on any method
 	 */
 	public static boolean canApply(Advisor advisor, Class<?> targetClass, boolean hasIntroductions) {
+		// 判断我们的增强器是否是IntroductionAdvisor
 		if (advisor instanceof IntroductionAdvisor) {
 			return ((IntroductionAdvisor) advisor).getClassFilter().matches(targetClass);
 		}
+		// 判断我们事务的增强器BeanFactoryTransactionAttributeSourceAdvisor是否实现了PointcutAdvisor
 		else if (advisor instanceof PointcutAdvisor) {
+			// 转为PointcutAdvisor类型
 			PointcutAdvisor pca = (PointcutAdvisor) advisor;
+			// 找到真正能用的增强器
 			return canApply(pca.getPointcut(), targetClass, hasIntroductions);
 		}
 		else {
@@ -309,6 +320,7 @@ public abstract class AopUtils {
 	 * (may be the incoming List as-is)
 	 */
 	public static List<Advisor> findAdvisorsThatCanApply(List<Advisor> candidateAdvisors, Class<?> clazz) {
+		// 若候选的增强器集合为空 直接返回
 		if (candidateAdvisors.isEmpty()) {
 			return candidateAdvisors;
 		}
@@ -317,24 +329,26 @@ public abstract class AopUtils {
 		 * canApply(candidate, clazz): 判断候选增强是否适用于目标类
 		 */
 		List<Advisor> eligibleAdvisors = new ArrayList<>();
-		// 首先处理引介增强
+		// 首先处理引介增强器
 		/*
 		 * 引介增强是一种特殊的增强，其它的增强是方法级别的增强，即只能在方法前或方法后添加增强。
 		 * 而引介增强则不是添加到方法上的增强， 而是添加到类方法级别的增强，即可以为目标类动态实现某个接口，或者动态添加某些方法。
 		 */
 		for (Advisor candidate : candidateAdvisors) {
+			// 判断我们的增强器对象是不是实现了IntroductionAdvisor
 			if (candidate instanceof IntroductionAdvisor && canApply(candidate, clazz)) {
 				eligibleAdvisors.add(candidate);
 			}
 		}
 		boolean hasIntroductions = !eligibleAdvisors.isEmpty();
 		for (Advisor candidate : candidateAdvisors) {
-			// 引介增强已经处理
+			// 判断我们的增强器对象是不是实现了IntroductionAdvisor
 			if (candidate instanceof IntroductionAdvisor) {
 				// already processed
+				// 在上面已经处理过 ，不需要处理
 				continue;
 			}
-			// 对于普通bean的 进行处理
+			// 对于普通bean的 进行处理（真正的判断增强器是否合适当前类型）
 			if (canApply(candidate, clazz, hasIntroductions)) {
 				eligibleAdvisors.add(candidate);
 			}

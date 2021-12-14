@@ -77,25 +77,32 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 	 * Look for AspectJ-annotated aspect beans in the current bean factory,
 	 * and return to a list of Spring AOP Advisors representing them.
 	 * <p>Creates a Spring Advisor for each AspectJ advice method.
+	 * 去容器中获取到所有的切面信息保存到缓存中
 	 * @return the list of {@link org.springframework.aop.Advisor} beans
 	 * @see #isEligibleBean
 	 */
 	public List<Advisor> buildAspectJAdvisors() {
-		//先尝试从缓存中获取
+		// 先尝试从缓存中获取
 		List<String> aspectNames = this.aspectBeanNames;
-
+		// 缓存字段aspectNames没有值 注意实例化第一个单实例bean的时候就会触发解析切面
 		if (aspectNames == null) {
 			synchronized (this) {
 				aspectNames = this.aspectBeanNames;
 				if (aspectNames == null) {
 					// advisors集合存储容器中所有的切面类中定义的增强/通知Advice (注意是增强/通知, 没有切入点)
+					// advisors 用于保存所有解析出来的Advisors集合对象
 					List<Advisor> advisors = new ArrayList<>();
+					// 用于保存切面的名称的集合
 					aspectNames = new ArrayList<>();
-					// 获取所有的beanName
+					/*
+					 * 获取所有的beanName
+					 * AOP功能中在这里传入的是Object对象，代表去容器中获取到所有的组件的名称，然后再进行遍历，这个过程是十分的消耗性能的，所以说Spring会在这里加入了保存切面信息的缓存。
+					 * 但是事务功能不一样，事务模块的功能是直接去容器中获取Advisor类型的，选择范围小，基本不消耗性能，所以Spring在事务模块中没有加入缓存来保存我们的事务相关的advisor
+					 */
 					String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 							this.beanFactory, Object.class, true, false);
 
-					// 遍历所有的beanName,找出添加了@Aspect的类, 进行解析,注册   <===== 重点
+					// 遍历我们从IOC容器中获取处的所有Bean的名称，找出添加了@Aspect的类, 进行解析,注册   <===== 重点
 					for (String beanName : beanNames) {
 						// 不合法的bean则略过,由子类定义规则,默认返回true
 						if (!isEligibleBean(beanName)) {
@@ -103,21 +110,25 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 						}
 						// We must be careful not to instantiate beans eagerly as in this case they
 						// would be cached by the Spring container but would not have been weaved.
-						// 获取对应的bean类型
+						// 通过beanName 获取对应的bean类型（class对象）
 						Class<?> beanType = this.beanFactory.getType(beanName, false);
 						if (beanType == null) {
 							continue;
 						}
-						// 如果存在@Aspect注解的类
+						// 根据class对象判断存在不存在切面 @Aspect
 						if (this.advisorFactory.isAspect(beanType)) {
+							// 证明是切面类
+
+							//加入到缓存中
 							aspectNames.add(beanName);
-							// 保存bean类型以及@Aspect注解信息
+							// 保存bean类型以及@Aspect注解信息（把beanName和class对象构建成为一个AspectMetadata）
 							AspectMetadata amd = new AspectMetadata(beanType, beanName);
 							// 检查@Aspect注解的value值，验证生成的增强是否是单例
 							if (amd.getAjType().getPerClause().getKind() == PerClauseKind.SINGLETON) {
-								MetadataAwareAspectInstanceFactory factory =
-										new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
+								// 构建切面注解的实例工厂
+								MetadataAwareAspectInstanceFactory factory = new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
 								// classAdvisors集合存储的是该切面类中的所有的增强/通知{@link ReflectiveAspectJAdvisorFactory#getAdvisors(MetadataAwareAspectInstanceFactory)}
+								// 真正的去获取我们的Advisor
 								List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
 								// 如果bean是单例，则缓存bean的增强器
 								if (this.beanFactory.isSingleton(beanName)) {
