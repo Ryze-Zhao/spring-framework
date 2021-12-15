@@ -91,11 +91,11 @@ public final class ExposeInvocationInterceptor implements MethodInterceptor, Pri
 	@Override
 	@Nullable
 	public Object invoke(MethodInvocation mi) throws Throwable {
-		// 这部分其实是把CglibMethodInvocation设置成线程共享
+		// 把MethodInvocation 设置成线程共享
 		MethodInvocation oldInvocation = invocation.get();
 		invocation.set(mi);
 		try {
-			// 在这里重新调用CglibMethodInvocation的proceed方法
+			// 在这里重新调用 MethodInvocation#proceed方法，调用下一个拦截器
 			return mi.proceed();
 		}
 		finally {

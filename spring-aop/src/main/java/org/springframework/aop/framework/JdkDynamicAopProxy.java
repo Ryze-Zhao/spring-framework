@@ -217,15 +217,15 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 
 			// Get the interception chain for this method.S
 			// 获取该方法对应的方法拦截器列表（具体实现是在 DefaultAdvisorChainFactory）
-			// 实现：通过该方法所在类对应的Advisors，获取该方法的辅助功能Advices列表，即方法拦截器列表。这里的实现为懒加载，
-			// 即当方法第一次调用的时候才创建该方法拦截器列表，然后使用一个ConcurrentHashMap缓存起来，之后的方法调用直接使用。
+			// 实现：通过该方法所在类对应的Advisors，获取该方法适合的所有Advices列表，即方法拦截器列表
+			// 这里的实现为懒加载，即当方法第一次调用的时候才创建该方法拦截器列表，然后使用一个ConcurrentHashMap缓存起来，之后的方法调用直接使用
 
 			// 其中advised就是该方法的所在bean对应的ProxyFactory对象引用，通过ProxyFactory来创建AopProxy，即当前类对象实例。
 			List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
 
 			// Check whether we have any advice. If we don't, we can fallback on direct
 			// reflective invocation of the target, and avoid creating a MethodInvocation.
-			// 当前执行的方法不包括方法拦截器，即不需要额外的辅助功能，则可以直接执行
+			// 当前执行的方法不包括方法拦截器，即不需要额外的增强功能，则可以直接执行
 			if (chain.isEmpty()) {
 				// We can skip creating a MethodInvocation: just invoke the target directly
 				// Note that the final invoker must be an InvokerInterceptor so we know it does
@@ -236,12 +236,11 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 			}
 			else {
 				// We need to create a method invocation...
-				//  将拦截器封装在ReflectiveMethodInvocation，以便于使用其proceed进行链接表用拦截器
-				// 创建一个MethodInvocation实例,该实例中维护这代理方法和拦截器链相关信息
-				// 如果当前方法包括方法拦截器，即在执行时需要其他额外的辅助功能，则创建ReflectiveMethodInvocation
+				// 如果当前方法包括方法拦截器，即在执行时需要其他额外的增强功能，则创建ReflectiveMethodInvocation
+				// 将拦截器封装在ReflectiveMethodInvocation，以便于使用其proceed进行链接表用拦截器（该实例中维护这代理方法和拦截器链相关信息）
 				MethodInvocation invocation =new ReflectiveMethodInvocation(proxy, target, method, args, targetClass, chain);
 				// Proceed to the joinpoint through the interceptor chain.
-				// 通过拦截器链进入连接点{@link ReflectiveMethodInvocation#proceed()}
+				// 通过拦截器链 执行 连接点{@link ReflectiveMethodInvocation#proceed()}
 				retVal = invocation.proceed();
 			}
 

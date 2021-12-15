@@ -54,14 +54,12 @@ public class AfterReturningAdviceInterceptor implements MethodInterceptor, After
 	@Override
 	@Nullable
 	public Object invoke(MethodInvocation mi) throws Throwable {
-		// 直接调用MethodInvocation的proceed方法
-		// 在这里重新调用CglibMethodInvocation的proceed方法
-		// 又回到上上面那一段代码去，但是此时的索引不再是1，而是2，也就是说，此时即将调用的是下一个拦截器的invoke方法
+		// 在这里重新调用 MethodInvocation#proceed方法，调用下一个拦截器
+		Object retVal = mi.proceed();
 		// 但是要注意一点，这里是方法执行后的返回通知，也就是说:
 		//  如果方法正常执行，那将什么事都没有
 		//  如果方法运行出错了，这个方法又没有处理异常的逻辑，只能向上抛，而他的上层正是AfterThrowing，由AfterThrowing处理异常
 		// 这也解释了，为什么只有方法正常运行时才能执行AfterReturning，出现异常就执行不了！
-		Object retVal = mi.proceed();
 		this.advice.afterReturning(retVal, mi.getMethod(), mi.getArguments(), mi.getThis());
 		return retVal;
 	}

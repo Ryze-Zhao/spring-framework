@@ -54,11 +54,10 @@ public class MethodBeforeAdviceInterceptor implements MethodInterceptor, BeforeA
 	@Override
 	@Nullable
 	public Object invoke(MethodInvocation mi) throws Throwable {
-		// 如果是前置通知,则先执行增强方法, 再调用proceed()去获取其他拦截器
-		// 调用增强器的before方法，明显是通过反射的方式调用，到这里增强方法before的业务逻辑执行
+		// 如果是前置通知，则先执行增强方法, 再调用proceed()去获取其他拦截器
+		// 调用增强器的before方法，是通过反射的方式调用，到这里增强方法before的业务逻辑执行
 		this.advice.before(mi.getMethod(), mi.getArguments(), mi.getThis());
-		// 调用MethodInvocation#proceed()执行切入点方法 {@link ReflectiveMethodInvocation#proceed()}
-		// 又调用了调用MethodInvocation的proceed方法
+		// 在这里重新调用 MethodInvocation#proceed方法，调用下一个拦截器
 		return mi.proceed();
 	}
 

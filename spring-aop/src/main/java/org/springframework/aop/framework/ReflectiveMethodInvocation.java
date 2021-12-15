@@ -159,27 +159,27 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 	@Nullable
 	public Object proceed() throws Throwable {
 		// We start with an index of -1 and increment early.
-		// currentInterceptorIndex: 当前需要执行拦截器在集合中位置, 默认为-1，当最后一个拦截器执行完之后, 回调该方法才会执行切入点方法
 		/*
+		 * currentInterceptorIndex: 当前需要执行拦截器在集合中位置, 默认为-1，当最后一个拦截器执行完之后, 回调该方法才会执行切入点方法
 		 * 首先，判断是不是所有的interceptor（也可以想像成advisor）都被执行完了。
-		 *     判断的方法是看 currentInterceptorIndex 这个变量的值，有没有增加到Interceptor总个数这个数值
+		 *     判断的方法是看 currentInterceptorIndex 这个变量的值，有没有增加到Interceptor总数
 		 *     如果到了，就执行被代理方法 invokeJoinpoint()；如果没到，就继续执行Interceptor。
 		 * */
 		if (this.currentInterceptorIndex == this.interceptorsAndDynamicMethodMatchers.size() - 1) {
 			// 执行切入点
 			return invokeJoinpoint();
 		}
-		// 根据索引获取到拦截器; 每调用一次proceed(), 会获取到下一个拦截器,然后进行处理
-		// 如果Interceptor没有被全部执行完，就取出要执行的Interceptor，并执行
+		// 根据索引获取到拦截器; 每调用一次proceed(), 会获取到下一个拦截器，然后进行处理
+		// 如果Interceptor没有被全部执行完，就取出对应的 Interceptor，并执行其invoke方法
 		// currentInterceptorIndex 先自增
 		Object interceptorOrInterceptionAdvice = this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);
-		// 如果获取到的增强是内部框架类（如果Interceptor是PointCut类型）
+		// 如果获取到的增强是内部框架类（即：如果Interceptor是PointCut类型，在DefaultAdvisorChainFactory#getInterceptorsAndDynamicInterceptionAdvice加入的）
 		if (interceptorOrInterceptionAdvice instanceof InterceptorAndDynamicMethodMatcher) {
-			// Evaluate dynamic method matcher here: static part will already have
-			// been evaluated and found to match.
-			InterceptorAndDynamicMethodMatcher dm =
-					(InterceptorAndDynamicMethodMatcher) interceptorOrInterceptionAdvice;
+			// Evaluate dynamic method matcher here: static part will already have been evaluated and found to match.
+			// 在此处匹配动态方法匹配器：静态方法匹配器 在之前已经匹配了
+			InterceptorAndDynamicMethodMatcher dm = (InterceptorAndDynamicMethodMatcher) interceptorOrInterceptionAdvice;
 			Class<?> targetClass = (this.targetClass != null ? this.targetClass : this.method.getDeclaringClass());
+
 			// 如果当前方法符合Interceptor的PointCut限制，就执行Interceptor
 			if (dm.methodMatcher.matches(this.method, targetClass, this.arguments)) {
 				// 这里将this当变量传进去，这是非常重要的一点
@@ -193,7 +193,7 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 				return proceed();
 			}
 		}
-		// 如果Interceptor不是PointCut类型，就直接执行Interceptor里面的增强。
+		// 如果获取到的增强不是内部框架类（即：如果Interceptor不是PointCut类型）就直接执行Interceptor里面的增强。
 		else {
 			// It's an interceptor, so we just invoke it: The pointcut will have
 			// been evaluated statically before this object was constructed.
