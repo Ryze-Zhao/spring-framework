@@ -563,7 +563,7 @@ public abstract class AnnotationUtils {
 		// Shortcut: directly present on the element, with no merging needed?
 		if (AnnotationFilter.PLAIN.matches(annotationType) ||
 				AnnotationsScanner.hasPlainJavaAnnotationsOnly(clazz)) {
-			// 判断此Class 是否存在Aspect.class注解
+			// 判断此Class 是否存在annotationType这个注解（对于AOP就是Aspect.class注解）
 			A annotation = clazz.getDeclaredAnnotation(annotationType);
 			if (annotation != null) {
 				return annotation;
