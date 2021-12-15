@@ -52,18 +52,13 @@ public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
 	@Override
 	public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
 		/*
-		 * config.isOptimize(): 代理是否应执行积极的优化 (默认:false)
-		 * config.isProxyTargetClass(): 是否直接代理目标类以及任何接口 (默认:false); 如果配置<aop:aspectj-autoproxy proxy-target-class="true" />则强制使用CGLIB代理
-		 * hasNoUserSuppliedProxyInterfaces(config): 目标类是否有实现的接口,没有的话返回true (JDK动态代理基于接口,所以只有目标类存在接口才会使用JDK动态代理)
-		 */
-
-		// 判断是否满足下面条件的
-		/*
-		 * config.isOptimize() 需要优化，默认为 `false`详细来说就是:用来控制通过CGLIB创建的代理是否使用激进的优化策略
-		 *       除非完全了解AOP代理如何处理优化，否则不推荐用户使用这个设置,目前这个属性仅用于CGLIB 代理，对于JDK动态代理（缺省代理）无效
-		 * config.isProxyTargetClass() 使用类代理，也就是使用 CGLIB 动态代理 默认为 `false`
-		 *      设置方式：<aop:aspectj-autoproxy proxy-target-class="true"/>
-		 * hasNoUserSuppliedProxyInterfaces(config) // 是否存在代理接口
+		 * 判断是否满足下面条件的
+		 * 1. config.isOptimize(): 代理是否应执行积极的优化 (默认:false)
+		 *     用来控制通过CGLIB创建的代理是否使用激进的优化策略，除非完全了解AOP代理如何处理优化，否则不推荐用户使用这个设置，目前这个属性仅用于CGLIB 代理，对于JDK动态代理无效
+		 *
+		 * 2. config.isProxyTargetClass(): 是否直接代理目标类以及任何接口 (默认:false)，也就是用户确定要使用CGLIB（但如果Spring判断到目标类更适合使用JDK代理的话，依然会使用JDK代理）
+		 *
+		 * 3. hasNoUserSuppliedProxyInterfaces(config): 目标类是否有实现的接口,没有的话返回true (JDK动态代理基于接口,所以只有目标类存在接口才会使用JDK动态代理)
 		 */
 		if (!NativeDetector.inNativeImage() &&
 				(config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config))) {
@@ -72,8 +67,7 @@ public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
 				throw new AopConfigException("TargetSource cannot determine target class: " +
 						"Either an interface or a target is required for proxy creation.");
 			}
-			// 如果目标类是接口, 或者是目标类本身就是一个代理类; 则使用JDK动态代理
-			// 如果目标类是一个接口或者是 java.lang.reflect.Proxy 的子类 则还是使用 JDK 动态代理，创建一个 JdkDynamicAopProxy 对象，
+			// 如果目标类是一个接口 或者 是 java.lang.reflect.Proxy 的子类 则还是使用 JDK 动态代理，创建一个 JdkDynamicAopProxy 对象，
 			// 传入 AdvisedSupport 配置管理器，并返回
 			if (targetClass.isInterface() || Proxy.isProxyClass(targetClass)) {
 				return new JdkDynamicAopProxy(config);

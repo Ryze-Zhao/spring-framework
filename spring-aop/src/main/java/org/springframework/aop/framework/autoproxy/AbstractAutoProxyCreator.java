@@ -485,15 +485,21 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		if (this.beanFactory instanceof ConfigurableListableBeanFactory) {
 			AutoProxyUtils.exposeTargetClass((ConfigurableListableBeanFactory) this.beanFactory, beanName, beanClass);
 		}
-		// 创建一个代理工厂：每个bean对象都使用一个单例的ProxyFactory来创建代理对象，因为每个bean需要的辅助方法不一样,然后将该ProxyFactory对象引用作为构造函数参数创建对应的代理对象
+		// 创建一个代理工厂：每个Bean对象都使用一个单例的ProxyFactory来创建代理对象，因为每个Bean需要的辅助方法不一样,然后将该ProxyFactory对象引用作为构造函数参数创建对应的代理对象
 		ProxyFactory proxyFactory = new ProxyFactory();
 		// 复制当前 ProxyConfig 的一些属性（例如 proxyTargetClass、exposeProxy）
 		proxyFactory.copyFrom(this);
 
-		// 判断是否是代理类（也就是是否开启了CGLIB代理） 默认是false
-		// 检查是否配置了<aop:config />节点的proxy-target-class属性为true
+		/*
+		 * 1.判断是否配置了proxyTargetClass属性
+		 * 1.1.注解：proxyTargetClass属性
+		 * 1.2.XML：<aop:config />节点的proxy-target-class属性
+		 *
+		 * 默认为false，意思是使用JDK代理；若true，使用CGLIB代理（但如果Spring判断到目标类更适合使用JDK代理的话，依然会使用JDK代理）
+		 */
 		if (proxyFactory.isProxyTargetClass()) {
 			// Explicit handling of JDK proxy targets (for introduction advice scenarios)
+			// 因为使用CGLIB代理，因此需要显式处理原先可以使用JDK代理的beanClass
 			if (Proxy.isProxyClass(beanClass)) {
 				// Must allow for introductions; can't just set interfaces to the proxy's interfaces only.
 				for (Class<?> ifc : beanClass.getInterfaces()) {
@@ -503,17 +509,19 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		}
 		else {
 			// No proxyTargetClass flag enforced, let's apply our default checks...
-			// 如果这个 Bean 配置了进行类代理，则设置为 `proxyTargetClass` 为 `true`
+			// 如果这个 Bean 配置了进行类代理（意思就是没实现接口，无法使用JDK代理，需要使用CGLIB代理），则设置为 `proxyTargetClass` 为 `true`
 			if (shouldProxyTargetClass(beanClass, beanName)) {
 				proxyFactory.setProxyTargetClass(true);
 			}
 			else {
-				// 检测当前Bean 实现的接口是否包含可代理的接口 ，如果没有，则将proxyTargetClass 设置为true 表示需要进行CGLIB 提升
+				// 检测当前Bean 实现的接口是否包含可代理的接口
+				//  如果有可代理的接口，使用JDK代理
+				//  如果没有可代理的接口，则将proxyTargetClass 设置为true，表示需要使用CGLIB（其实跟类代理一致）
 				evaluateProxyInterfaces(beanClass, proxyFactory);
 			}
 		}
 		// 把增强器保存在代理工厂之中
-		// 对入参的 advisors 进一步处理，因为其中还可能存在Advice类型 需要将他们包装成 DefaultPointcutAdvisor
+		// 对入参的 specificInterceptors（也就是 advisors） 处理，因为其中还可能存在Advice类型 需要将他们包装成 DefaultPointcutAdvisor
 		// 如果配置了 `interceptorNames` 拦截器，也会添加进来
 		Advisor[] advisors = buildAdvisors(beanName, specificInterceptors);
 		// 代理工厂添加 Advisor 数组：为该代理工厂添加辅助功能包装器Advisors，结合Advisors来生成代理对象的方法拦截器
@@ -525,7 +533,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 
 		// 用来控制代理工厂被配置之后，是否还允许修改通知。（默认为 false） (即在代理被配置之后，不允许修改代理的配置)。
 		proxyFactory.setFrozen(this.freezeProxy);
-		// 这个 AdvisedSupport 配置管理器是否已经过滤过目标类（默认为 false）
+		// 这个 AdvisedSupport 配置管理器是否已经过滤了目标类（默认为 false）
 		if (advisorsPreFiltered()) {
 			// 设置 `preFiltered` 为 `true`
 			//  这样 Advisor 们就不会根据 ClassFilter 进行过滤了，而直接通过 MethodMatcher 判断是否处理被拦截方法
@@ -538,11 +546,20 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		if (classLoader instanceof SmartClassLoader && classLoader != beanClass.getClassLoader()) {
 			classLoader = ((SmartClassLoader) classLoader).getOriginalClassLoader();
 		}
-		// 通过proxyFactory获取AopProxy，为目标类创建代理对象
-		// 如果配置了(aop:config的proxy-target-class为true 或者 @EnableAspectJAutoProxy(proxyTargetClass=true)），则使用CGLIB
-		// 否则
-		//  如果目标类为接口 则使用JDK代理，
-		//  再否则使用CGLIB
+
+		/*
+		 * 通过 proxyFactory 获取AopProxy，为目标类创建代理对象
+		 *  如果配置了(aop:config的proxy-target-class为true 或者 @EnableAspectJAutoProxy(proxyTargetClass=true)），则使用CGLIB（默认为false）
+		 *  if(proxyTargetClass){
+		 *      使用CGLIB代理（但如果Spring判断到目标类更适合使用JDK代理的话，依然会使用JDK代理）
+		 *  }else{
+		 *      if(目标类 有 实现接口){
+		 *        使用JDK 代理
+		 *      }else{
+		 *        使用CGLIB 代理
+		 *      }
+		 *  }
+		 */
 		return proxyFactory.getProxy(classLoader);
 	}
 

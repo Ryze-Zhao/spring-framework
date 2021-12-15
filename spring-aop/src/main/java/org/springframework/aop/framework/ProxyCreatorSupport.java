@@ -70,6 +70,7 @@ public class ProxyCreatorSupport extends AdvisedSupport {
 
 	/**
 	 * Return the AopProxyFactory that this ProxyConfig uses.
+	 * 返回此ProxyConfig使用的AopProxyFactory。
 	 */
 	public AopProxyFactory getAopProxyFactory() {
 		return this.aopProxyFactory;
@@ -104,13 +105,14 @@ public class ProxyCreatorSupport extends AdvisedSupport {
 		}
 		/*
 		 * {@link org.springframework.aop.framework.DefaultAopProxyFactory#createAopProxy(org.springframework.aop.framework.AdvisedSupport)}
-		 * ProxyFactory的父类ProxyCreatorSupport中的方法,父类ProxyCreatorSupport中维护着变量AopProxyFactory,
-		 * DefaultAopProxyFactory是AopProxyFactory(接口)的实现类, 通过DefaultAopProxyFactory#createAopProxy()
-		 * 根据条件获取JdkDynamicAopProxy或CglibAopProxy实例, 所以创建代理类是可以传递this
+		 *
+		 * AbstractAutoProxyCreator#createProxy：已经将增强相关配置信息封装到ProxyFactory中
+		 *  而 ProxyCreatorSupport 是 ProxyFactory的父类，父类ProxyCreatorSupport维护着AopProxyFactory变量
+		 *  而 DefaultAopProxyFactory 是 AopProxyFactory接口 的实现类（默认只有这个实现）
+		 *       通过 DefaultAopProxyFactory#createAopProxy() 方法根据条件获取JdkDynamicAopProxy或CglibAopProxy实例，所以创建代理类时通过传递this来传递增强/通知信息
+		 *       （然后通过它根据创建当前 AdvisedSupport 配置管理器创建一个 AOP 代理（JdkDynamicAopProxy 或者 ObjenesisCglibAopProxy））
+		 *
 		 */
-		// 先获取 AOP 代理工厂，默认为 DefaultAopProxyFactory，只有这个实现
-		// 然后通过它根据创建当前 AdvisedSupport 配置管理器创建一个 AOP 代理（JdkDynamicAopProxy 或者 ObjenesisCglibAopProxy）
-
 		return getAopProxyFactory().createAopProxy(this);
 	}
 

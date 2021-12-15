@@ -108,20 +108,16 @@ public class ProxyFactory extends ProxyCreatorSupport {
 	 */
 	public Object getProxy(@Nullable ClassLoader classLoader) {
 		/*
-		 * 根据 AOP 代理为目标 Bean 创建一个代理对象，并返回
-		 * 1. 代理类获取:
-		 *{@link ProxyCreatorSupport#createAopProxy()}
-		 * createAopProxy():
-		 *      ProxyFactory的父类ProxyCreatorSupport中的方法,父类ProxyCreatorSupport中维护着变量AopProxyFactory,
-		 *      DefaultAopProxyFactory是AopProxyFactory(接口)的实现类, 通过DefaultAopProxyFactory#createAopProxy()根据条件获取JdkDynamicAopProxy或CglibAopProxy实例
+		 * 根据 AOP 代理的信息为目标 Bean 创建一个代理对象，并返回
+		 * 1.代理类获取:{@link ProxyCreatorSupport#createAopProxy()}
+		 *  createAopProxy():
+		 *      ProxyFactory 父类 ProxyCreatorSupport 的方法,父类ProxyCreatorSupport中维护着变量AopProxyFactory,
+		 *      DefaultAopProxyFactory 是 AopProxyFactory(接口)的实现类, 通过 DefaultAopProxyFactory#createAopProxy() 根据条件获取JdkDynamicAopProxy或CglibAopProxy实例
 		 *
-		 * 2. 代理目标类:
-		 * JDK动态代理{@link JdkDynamicAopProxy#getProxy(java.lang.ClassLoader)}
-		 * CGLIB动态代理{@link CglibAopProxy#getProxy(java.lang.ClassLoader)}
-		 *
-		 * getProxy(classLoader): 生成代理对象
-		 *
-		 *
+		 * 2.生成代理对象:
+		 *  getProxy(classLoader)
+		 *      JDK动态代理{@link JdkDynamicAopProxy#getProxy(java.lang.ClassLoader)}
+		 *      CGLIB动态代理{@link CglibAopProxy#getProxy(java.lang.ClassLoader)}
 		 *
 		 */
 		return createAopProxy().getProxy(classLoader);
