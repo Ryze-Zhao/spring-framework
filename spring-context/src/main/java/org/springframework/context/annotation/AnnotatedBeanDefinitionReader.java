@@ -243,7 +243,9 @@ public class AnnotatedBeanDefinitionReader {
 
 	/**
 	 * Register a bean from the given bean class, deriving its metadata from class-declared annotations.
-	 * 从给定的bean类注册一个bean，从类声明的注释中派生其元数据。
+	 * 对传入的 Spring 配置类解析，其实也是解析为一个 `BeanDefinition` 然后注册到容器中
+	 *
+	 *
 	 *
 	 * @param beanClass the class of the bean   bean的类
 	 * @param name an explicit name for the bean bean的显式名称
