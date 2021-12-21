@@ -297,6 +297,7 @@ class BeanDefinitionValueResolver {
 
 	/**
 	 * Resolve a reference to another bean in the factory.
+	 * 解析对工厂中另一个Bean的引用
 	 */
 	@Nullable
 	private Object resolveReference(Object argName, RuntimeBeanReference ref) {
@@ -327,13 +328,16 @@ class BeanDefinitionValueResolver {
 				}
 				else {
 					resolvedName = String.valueOf(doEvaluate(ref.getBeanName()));
+					// 获取resolvedName的Bean对象 重点
 					bean = this.beanFactory.getBean(resolvedName);
 				}
+				// 注册beanName到dependentBeanName的依赖关系到Bean的工中
 				this.beanFactory.registerDependentBean(resolvedName, this.beanName);
 			}
 			if (bean instanceof NullBean) {
 				bean = null;
 			}
+			// 返回解析出来的对用的ref所封装的Bean对象
 			return bean;
 		}
 		catch (BeansException ex) {

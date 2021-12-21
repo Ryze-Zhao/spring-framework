@@ -1862,12 +1862,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		boolean resolveNecessary = false;
 		// 遍历属性，将属性转换为对应类的对应属性的类型
 		for (PropertyValue pv : original) {
-			// 属性值不需要转换
+			// 判断当前属性是否已经解析过
 			if (pv.isConverted()) {
 				deepCopy.add(pv);
 			}
 			// 属性值需要转换
 			else {
+				// 获取属性名称
 				String propertyName = pv.getName();
 				// 原始的属性值，即转换之前的属性值
 				Object originalValue = pv.getValue();
@@ -1880,9 +1881,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				}
 				// 转换属性值，例如将引用转换为IoC容器中实例化对象引用 ！！！！！ 对属性值的解析！！
 				Object resolvedValue = valueResolver.resolveValueIfNecessary(pv, originalValue);
-				// 转换之后的属性值
+				// 转换之后的属性值（默认转换后的值等于解析出来的值）
 				Object convertedValue = resolvedValue;
-				// 属性值是否可以转换
+				// 属性值是否可以转换（判断转换标记 ）
 				boolean convertible = bw.isWritableProperty(propertyName) &&
 						!PropertyAccessorUtils.isNestedOrIndexedProperty(propertyName);
 				// 使用用户自定义的类型转换器转换属性值
