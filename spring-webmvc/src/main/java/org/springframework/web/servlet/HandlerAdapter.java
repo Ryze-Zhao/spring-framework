@@ -53,6 +53,11 @@ public interface HandlerAdapter {
 	 * Given a handler instance, return whether or not this {@code HandlerAdapter}
 	 * can support it. Typical HandlerAdapters will base the decision on the handler
 	 * type. HandlerAdapters will usually only support one handler type each.
+	 *
+	 * 给定一个处理程序实例，返回此HandlerAdapter是否支持它
+	 * 典型的HandlerAdapter将根据处理程序类型进行决策
+	 * HandlerAdapter通常只支持一种处理程序类型
+	 *
 	 * <p>A typical implementation:
 	 * <p>{@code
 	 * return (handler instanceof MyHandler);
@@ -65,6 +70,8 @@ public interface HandlerAdapter {
 	/**
 	 * Use the given handler to handle this request.
 	 * The workflow that is required may vary widely.
+	 * 使用给定的处理程序处理此请求。所需的工作流程可能存在很大差异
+	 *
 	 * @param request current HTTP request
 	 * @param response current HTTP response
 	 * @param handler the handler to use. This object must have previously been passed

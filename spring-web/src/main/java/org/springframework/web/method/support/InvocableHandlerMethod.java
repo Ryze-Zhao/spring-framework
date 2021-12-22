@@ -147,6 +147,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 		if (logger.isTraceEnabled()) {
 			logger.trace("Arguments: " + Arrays.toString(args));
 		}
+		// 执行Handler方法
 		return doInvoke(args);
 	}
 
@@ -197,6 +198,10 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	 */
 	@Nullable
 	protected Object doInvoke(Object... args) throws Exception {
+		/*
+		 *  获取桥接方法实例, 并执行该方法
+		 *  执行Control类中编写的方法
+		 */
 		Method method = getBridgedMethod();
 		try {
 			if (KotlinDetector.isSuspendingFunction(method)) {

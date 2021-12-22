@@ -370,11 +370,16 @@ public class HandlerMethod {
 	 */
 	public HandlerMethod createWithResolvedBean() {
 		Object handler = this.bean;
+		// 如果bean不是实例而是一个BeanName,则从工厂中获取该bean实例
 		if (this.bean instanceof String) {
 			Assert.state(this.beanFactory != null, "Cannot resolve bean name without BeanFactory");
 			String beanName = (String) this.bean;
+			// 从工厂中获取bean
 			handler = this.beanFactory.getBean(beanName);
 		}
+		/*
+		 * 问题: 这里为什么要重新创建一个HandlerMethod实例,而不是在原有的HandlerMethod实例上进行修改?
+		 */
 		return new HandlerMethod(this, handler);
 	}
 

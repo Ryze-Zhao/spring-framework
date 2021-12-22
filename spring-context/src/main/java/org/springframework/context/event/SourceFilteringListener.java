@@ -106,6 +106,7 @@ public class SourceFilteringListener implements GenericApplicationListener {
 			throw new IllegalStateException(
 					"Must specify a delegate object or override the onApplicationEventInternal method");
 		}
+		// 通过监听适配器调用对应监听器的onApplicationEvent()方法
 		this.delegate.onApplicationEvent(event);
 	}
 

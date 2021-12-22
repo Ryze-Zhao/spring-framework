@@ -75,6 +75,8 @@ public interface View {
 	 * Return the content type of the view, if predetermined.
 	 * <p>Can be used to check the view's content type upfront,
 	 * i.e. before an actual rendering attempt.
+	 * 获取返回值的contentType
+	 *
 	 * @return the content type String (optionally including a character set),
 	 * or {@code null} if not predetermined
 	 */
@@ -88,6 +90,8 @@ public interface View {
 	 * <p>The first step will be preparing the request: In the JSP case, this would mean
 	 * setting model objects as request attributes. The second step will be the actual
 	 * rendering of the view, for example including the JSP via a RequestDispatcher.
+	 * 通过用户提供的模型数据与视图信息渲染视图
+	 *
 	 * @param model a Map with name Strings as keys and corresponding model
 	 * objects as values (Map can also be {@code null} in case of empty model)
 	 * @param request current HTTP request
