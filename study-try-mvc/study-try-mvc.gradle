@@ -16,6 +16,7 @@ dependencies {
     implementation project(":spring-context")
     implementation project(":spring-context-support")
     implementation project(":spring-instrument")
+    implementation project(":spring-oxm")
 
     // AspectJ
     implementation 'org.aspectj:aspectjrt:1.9.7'

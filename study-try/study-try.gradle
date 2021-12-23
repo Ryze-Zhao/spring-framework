@@ -17,6 +17,8 @@ dependencies {
     implementation project(":spring-instrument")
 
     // 其他依赖
+    // groovy支持
+    implementation 'org.codehaus.groovy:groovy:3.0.9'
 
     // AspectJ
     implementation 'org.aspectj:aspectjrt:1.9.7'
@@ -28,6 +30,7 @@ dependencies {
     implementation project(":spring-jdbc")
     implementation project(":spring-tx")
     implementation 'mysql:mysql-connector-java:6.0.6'
+
 
 }
 
