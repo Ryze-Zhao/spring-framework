@@ -1,0 +1,4 @@
+# 自己实现servlet 3.0 规范
+org.springframework.zhao.custom_servlet_3.CustomServletContainerInitializer
+# 使用spring提供的
+#org.springframework.web.SpringServletContainerInitializer
