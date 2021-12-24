@@ -1195,6 +1195,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	/**
 	 * ApplicationListener endpoint that receives events from this servlet's WebApplicationContext
 	 * only, delegating to {@code onApplicationEvent} on the FrameworkServlet instance.
+	 * ApplicationListener端点，该端点仅从该servlet的WebApplicationContext接收事件，并将事件委托给FrameworkServlet实例上的onApplicationEvent
 	 */
 	private class ContextRefreshListener implements ApplicationListener<ContextRefreshedEvent> {
 
