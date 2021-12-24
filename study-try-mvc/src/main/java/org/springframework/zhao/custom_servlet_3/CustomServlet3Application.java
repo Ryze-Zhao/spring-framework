@@ -8,6 +8,8 @@ import org.apache.catalina.startup.Tomcat;
  * .
  * 功能描述:自实现servlet 3.0 规范
  *
+ * 该demo若需要启动时，其他demo需要删除，原因有多个实现WebApplicationInitializer的onStartup文件，这里会报错
+ *
  * @author : HeHaoZhao
  */
 public class CustomServlet3Application {
