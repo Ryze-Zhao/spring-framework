@@ -527,7 +527,9 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		long startTime = System.currentTimeMillis();
 
 		try {
+			// 初始化WebApplicationContext
 			this.webApplicationContext = initWebApplicationContext();
+			// 初始化FrameworkServlet（空方法）
 			initFrameworkServlet();
 		}
 		catch (ServletException | RuntimeException ex) {
@@ -664,10 +666,10 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		}
 		// 通过反射创建mvc容器
 		ConfigurableWebApplicationContext wac = (ConfigurableWebApplicationContext) BeanUtils.instantiateClass(contextClass);
-		// 设置根上下文为父上下文
 		wac.setEnvironment(getEnvironment());
+		// 设置根上下文为父上下文
 		wac.setParent(parent);
-		// 设置springmvc.xml的路径
+		// 设置SpringMvc.xml的路径
 		String configLocation = getContextConfigLocation();
 		if (configLocation != null) {
 			wac.setConfigLocation(configLocation);

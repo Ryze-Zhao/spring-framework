@@ -51,6 +51,9 @@ public interface ThemeResolver {
 	/**
 	 * Resolve the current theme name via the given request.
 	 * Should return a default theme as fallback in any case.
+	 *
+	 * 通过给定的请求解析当前主题名称。在任何情况下都应返回默认主题作为回退
+	 *
 	 * @param request the request to be used for resolution
 	 * @return the current theme name
 	 */
@@ -58,6 +61,8 @@ public interface ThemeResolver {
 
 	/**
 	 * Set the current theme name to the given one.
+	 * 将当前主题名称设置为给定名称
+	 *
 	 * @param request the request to be used for theme name modification
 	 * @param response the response to be used for theme name modification
 	 * @param themeName the new theme name ({@code null} or empty to reset it)
