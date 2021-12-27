@@ -538,6 +538,8 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Initialize the MultipartResolver used by this class.
 	 * <p>If no bean is defined with the given name in the BeanFactory for this namespace,
 	 * no multipart handling is provided.
+	 * 初始化 MultipartResolver。
+	 * 如果在BeanFactory中没有这个名称的bean，则默认不支持文件上传
 	 */
 	private void initMultipartResolver(ApplicationContext context) {
 		try {
@@ -562,6 +564,8 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Initialize the LocaleResolver used by this class.
 	 * <p>If no bean is defined with the given name in the BeanFactory for this namespace,
 	 * we default to AcceptHeaderLocaleResolver.
+	 * 初始化 LocalResolver。
+	 * 如果在BeanFactory中没有这个名称的bean，则默认处理器为 AcceptHeaderLocaleResolver（定义于DispatcherServlet.properties）
 	 */
 	private void initLocaleResolver(ApplicationContext context) {
 		try {
@@ -587,6 +591,8 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Initialize the ThemeResolver used by this class.
 	 * <p>If no bean is defined with the given name in the BeanFactory for this namespace,
 	 * we default to a FixedThemeResolver.
+	 * 初始化 ThemeResolver
+	 * 如果在BeanFactory中没有这个名称的bean，则默认处理器为 FixedThemeResolver（定义于DispatcherServlet.properties）
 	 */
 	private void initThemeResolver(ApplicationContext context) {
 		try {
@@ -612,6 +618,9 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Initialize the HandlerMappings used by this class.
 	 * <p>If no HandlerMapping beans are defined in the BeanFactory for this namespace,
 	 * we default to BeanNameUrlHandlerMapping.
+	 *
+	 * 初始化 HandlerMappings
+	 * 如果在BeanFactory中没有这个名称的bean，则默认处理器为 BeanNameUrlHandlerMapping（定义于DispatcherServlet.properties）
 	 */
 	private void initHandlerMappings(ApplicationContext context) {
 		this.handlerMappings = null;
@@ -658,6 +667,9 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Initialize the HandlerAdapters used by this class.
 	 * <p>If no HandlerAdapter beans are defined in the BeanFactory for this namespace,
 	 * we default to SimpleControllerHandlerAdapter.
+	 *
+	 * 初始化 HandlerMappings
+	 * 如果在BeanFactory中没有这个名称的bean，则默认处理器为 SimpleControllerHandlerAdapter（定义于DispatcherServlet.properties）
 	 */
 	private void initHandlerAdapters(ApplicationContext context) {
 		this.handlerAdapters = null;
@@ -699,6 +711,9 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Initialize the HandlerExceptionResolver used by this class.
 	 * <p>If no bean is defined with the given name in the BeanFactory for this namespace,
 	 * we default to no exception resolver.
+	 *
+	 * 初始化 HandlerExceptionResolver。
+	 * 如果在BeanFactory中没有这个名称的bean，则默认为无异常解析器
 	 */
 	private void initHandlerExceptionResolvers(ApplicationContext context) {
 		this.handlerExceptionResolvers = null;
@@ -738,6 +753,9 @@ public class DispatcherServlet extends FrameworkServlet {
 	/**
 	 * Initialize the RequestToViewNameTranslator used by this servlet instance.
 	 * <p>If no implementation is configured then we default to DefaultRequestToViewNameTranslator.
+	 *
+	 * 初始化 RequestToViewNameTranslator
+	 * 如果在BeanFactory中没有这个名称的bean，则默认处理器为 RequestToViewNameTranslator（定义于DispatcherServlet.properties）
 	 */
 	private void initRequestToViewNameTranslator(ApplicationContext context) {
 		try {
@@ -764,23 +782,29 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Initialize the ViewResolvers used by this class.
 	 * <p>If no ViewResolver beans are defined in the BeanFactory for this
 	 * namespace, we default to InternalResourceViewResolver.
+	 *
+	 * 初始化 ViewResolvers
+	 * 如果在BeanFactory中没有这个名称的bean，则默认处理器为 InternalResourceViewResolver（定义于DispatcherServlet.properties）
 	 */
 	private void initViewResolvers(ApplicationContext context) {
 		this.viewResolvers = null;
 
 		if (this.detectAllViewResolvers) {
 			// Find all ViewResolvers in the ApplicationContext, including ancestor contexts.
+			// 如果detectAllViewResolvers为true，那么就会去容器里找所有的（包含所有祖先上下文）容器里的所有的此接口下的此类的bean，最后都放进去（可以有多个）
 			Map<String, ViewResolver> matchingBeans =
 					BeanFactoryUtils.beansOfTypeIncludingAncestors(context, ViewResolver.class, true, false);
 			if (!matchingBeans.isEmpty()) {
 				this.viewResolvers = new ArrayList<>(matchingBeans.values());
 				// We keep ViewResolvers in sorted order.
+				// 保持排序
 				AnnotationAwareOrderComparator.sort(this.viewResolvers);
 			}
 		}
 		else {
 			try {
 				ViewResolver vr = context.getBean(VIEW_RESOLVER_BEAN_NAME, ViewResolver.class);
+				// 使用了singletonList，是为了性能考虑，节约内存
 				this.viewResolvers = Collections.singletonList(vr);
 			}
 			catch (NoSuchBeanDefinitionException ex) {
@@ -788,8 +812,8 @@ public class DispatcherServlet extends FrameworkServlet {
 			}
 		}
 
-		// Ensure we have at least one ViewResolver, by registering
-		// a default ViewResolver if no other resolvers are found.
+		// Ensure we have at least one ViewResolver, by registering a default ViewResolver if no other resolvers are found.
+		// 若还为null，就采用默认配置的视图解析器InternalResourceViewResolver
 		if (this.viewResolvers == null) {
 			this.viewResolvers = getDefaultStrategies(context, ViewResolver.class);
 			if (logger.isTraceEnabled()) {
@@ -803,6 +827,10 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Initialize the {@link FlashMapManager} used by this servlet instance.
 	 * <p>If no implementation is configured then we default to
 	 * {@code org.springframework.web.servlet.support.DefaultFlashMapManager}.
+	 *
+	 * 初始化 FlashMapManager
+	 * 如果在BeanFactory中没有这个名称的bean，则默认处理器为 DefaultFlashMapManager（定义于DispatcherServlet.properties：SessionFlashMapManager）
+	 *
 	 */
 	private void initFlashMapManager(ApplicationContext context) {
 		try {
@@ -948,8 +976,8 @@ public class DispatcherServlet extends FrameworkServlet {
 
 
 	/**
-	 * Exposes the DispatcherServlet-specific request attributes and delegates to {@link #doDispatch}
-	 * for the actual dispatching.
+	 * Exposes the DispatcherServlet-specific request attributes and delegates to {@link #doDispatch} for the actual dispatching.
+	 * 将DispatcherServlet特定的请求属性和委托公开给doDispatch以进行实际调度
 	 */
 	@Override
 	protected void doService(HttpServletRequest request, HttpServletResponse response) throws Exception {

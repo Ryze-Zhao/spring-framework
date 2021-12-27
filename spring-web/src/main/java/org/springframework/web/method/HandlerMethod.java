@@ -205,6 +205,7 @@ public class HandlerMethod {
 	private HandlerMethod(HandlerMethod handlerMethod, Object handler) {
 		Assert.notNull(handlerMethod, "HandlerMethod is required");
 		Assert.notNull(handler, "Handler object is required");
+		// 反射执行Method时需要传入实例对象
 		this.bean = handler;
 		this.beanFactory = handlerMethod.beanFactory;
 		this.messageSource = handlerMethod.messageSource;

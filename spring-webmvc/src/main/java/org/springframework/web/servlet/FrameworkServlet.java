@@ -885,6 +885,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 
 	/**
 	 * Override the parent class implementation in order to intercept PATCH requests.
+	 * 重写父类实现以拦截请求
 	 */
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response)
@@ -895,6 +896,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			processRequest(request, response);
 		}
 		else {
+			// 调用了父类HttpServlet#service方法，但由于FrameworkServlet重写了doGet、doPost等方法，所以最终还是会调用到FrameworkServlet#processRequest方法
 			super.service(request, response);
 		}
 	}
@@ -1018,6 +1020,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		initContextHolders(request, localeContext, requestAttributes);
 
 		try {
+			// 调用DispatcherServlet#doService()方法
 			doService(request, response);
 		}
 		catch (ServletException | IOException ex) {

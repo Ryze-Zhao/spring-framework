@@ -235,12 +235,14 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 	 */
 	@Nullable
 	protected Object lookupHandler(String lookupPath, HttpServletRequest request) throws Exception {
+		// 尝试直接匹配
 		Object handler = getDirectMatch(lookupPath, request);
 		if (handler != null) {
 			return handler;
 		}
 
 		// Pattern match?
+		// 尝试模式匹配
 		List<String> matchingPatterns = new ArrayList<>();
 		for (String registeredPattern : this.handlerMap.keySet()) {
 			if (getPathMatcher().match(registeredPattern, lookupPath)) {
