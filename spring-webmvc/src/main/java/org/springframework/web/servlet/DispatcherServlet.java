@@ -1086,10 +1086,13 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	@SuppressWarnings("deprecation")
 	protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// 请求对象
 		HttpServletRequest processedRequest = request;
+		// 处理器执行链对象
 		HandlerExecutionChain mappedHandler = null;
 		boolean multipartRequestParsed = false;
 
+		// 获取异步处理管理器，servlet3.0后支持异步处理，可以在子线程中响应用户请求
 		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
 
 		try {
@@ -1099,15 +1102,17 @@ public class DispatcherServlet extends FrameworkServlet {
 			Exception dispatchException = null;
 
 			try {
-				// multipart请求处理，如果是则进行封装加工
+				// <Spring分析点42-1> 解析multipart类型的请求，上传文件用的就是multipart类型的请求方式，如果是则进行封装加工
 				processedRequest = checkMultipart(request);
+				// 用来标记是否是multipart类型的请求
 				multipartRequestParsed = (processedRequest != request);
 
 				// 查找请求处理器handler
-
 				// Determine handler for the current request.
+				// <Spring分析点42-2> 根据请求获取HandlerExecutionChain对象
 				mappedHandler = getHandler(processedRequest);
 				if (mappedHandler == null) {
+					// 如果没有找到处理器，就404了
 					noHandlerFound(processedRequest, response);
 					return;
 				}
@@ -1118,6 +1123,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				// 其中Handler由拦截器链和请求处理方法HandlerMethod组成
 
 				// Determine handler adapter for the current request.
+				// <Spring分析点42-3> 根据处理器获取HandlerAdapter
 				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
 
 				// Process last-modified header, if supported by the handler.
@@ -1133,26 +1139,24 @@ public class DispatcherServlet extends FrameworkServlet {
 				/*
 				 * 执行HandlerExecutionChain中的拦截器
 				 *
-				 * 调用拦截器链各个拦截器的preHandle，进行前置处理
+				 * <Spring分析点42-4> 调用拦截器链各个拦截器的preHandle，进行前置处理，若返回false，处理结束
 				 */
 				if (!mappedHandler.applyPreHandle(processedRequest, response)) {
 					return;
 				}
 
-				// 通过请求执行器适配器（通常是我们的Controller）来调用请求执行器（如handlerMethod）处理请求
-				// 返回一个ModelAndView
-				//  Model表示模型，即包含数据在视图渲染中使用
-				//  View为定义到具体的JSP视图
 
 				// Actually invoke the handler.
+				// <Spring分析点42-5> 调用handler实际处理请求，获取ModelAndView对象，这里会调用HandlerAdapter#handle方法处理请求，其内部会调用handler来处理具体的请求
 				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 
+				// 判断异步请求不是已经开始了，开始了就返回了
 				if (asyncManager.isConcurrentHandlingStarted()) {
 					return;
 				}
-
+				// 如果mv对象中没有视图 & DispatcherServlet配置了默认的视图，则给mv安排一个默认的视图
 				applyDefaultViewName(processedRequest, mv);
-				// 拦截器链后置处理applyPostHandle
+				// <Spring分析点42-6> 拦截器链后置处理（调用拦截器的postHandle方法）
 				mappedHandler.applyPostHandle(processedRequest, response, mv);
 			}
 			catch (Exception ex) {
@@ -1164,16 +1168,20 @@ public class DispatcherServlet extends FrameworkServlet {
 				dispatchException = new NestedServletException("Handler dispatch failed", err);
 			}
 			// 视图解析
+			// <Spring分析点42-7> 处理分发结果，渲染视图(包含了正常处理和异常情况的处理)，将结果输出到客户端
 			processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);
 		}
 		catch (Exception ex) {
+			// <Spring分析点42-8> 调用拦截器的afterCompletion方法
 			triggerAfterCompletion(processedRequest, response, mappedHandler, ex);
 		}
 		catch (Throwable err) {
+			// <Spring分析点42-9> 调用拦截器的afterCompletion方法
 			triggerAfterCompletion(processedRequest, response, mappedHandler,
 					new NestedServletException("Handler processing failed", err));
 		}
 		finally {
+			// 对于异步处理的情况，调用异步处理的拦截器AsyncHandlerInterceptor#afterConcurrentHandlingStarted方法
 			if (asyncManager.isConcurrentHandlingStarted()) {
 				// Instead of postHandle and afterCompletion
 				if (mappedHandler != null) {
@@ -1182,6 +1190,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			}
 			else {
 				// Clean up any resources used by a multipart request.
+				// 对于multipart的请求，清理资源，比如文件上传的请求，在上传的过程中文件会被保存到临时文件中，这里就会对这些文件继续清理
 				if (multipartRequestParsed) {
 					cleanupMultipart(processedRequest);
 				}

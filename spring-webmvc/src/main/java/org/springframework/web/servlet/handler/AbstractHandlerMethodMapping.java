@@ -482,6 +482,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 	/**
 	 * Invoked when a matching mapping is found.
+	 * 在找到匹配的映射时调用
 	 * @param mapping the matching mapping
 	 * @param lookupPath mapping lookup path within the current servlet mapping
 	 * @param request the current request
