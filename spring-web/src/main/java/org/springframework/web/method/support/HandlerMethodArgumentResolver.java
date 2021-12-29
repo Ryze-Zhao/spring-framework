@@ -35,6 +35,8 @@ public interface HandlerMethodArgumentResolver {
 	/**
 	 * Whether the given {@linkplain MethodParameter method parameter} is
 	 * supported by this resolver.
+	 * 判断当前解析器是否能处理这个parameter这个参数，也就是说是否能够将请求中的数据转换为parameter指定的参数的值
+	 *
 	 * @param parameter the method parameter to check
 	 * @return {@code true} if this resolver supports the supplied parameter;
 	 * {@code false} otherwise
@@ -47,6 +49,9 @@ public interface HandlerMethodArgumentResolver {
 	 * request. A {@link WebDataBinderFactory} provides a way to create
 	 * a {@link WebDataBinder} instance when needed for data binding and
 	 * type conversion purposes.
+	 * 解析参数：从http请求中解析出控制器需要的参数的值
+	 *
+	 *
 	 * @param parameter the method parameter to resolve. This parameter must
 	 * have previously been passed to {@link #supportsParameter} which must
 	 * have returned {@code true}.

@@ -776,6 +776,8 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	 * if it is a simple type, or as a model attribute otherwise. A return value
 	 * not recognized by any HandlerMethodReturnValueHandler will be interpreted
 	 * as a model attribute.
+	 *
+	 *
 	 */
 	@Override
 	protected boolean supportsInternal(HandlerMethod handlerMethod) {

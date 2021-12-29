@@ -1213,6 +1213,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	/**
 	 * Handle the result of handler selection and handler invocation, which is
 	 * either a ModelAndView or an Exception to be resolved to a ModelAndView.
+	 * 处理处理程序选择和处理程序调用的结果，该结果可以是ModelAndView，也可以是要解析为ModelAndView的异常
 	 */
 	private void processDispatchResult(HttpServletRequest request, HttpServletResponse response,
 	                                   @Nullable HandlerExecutionChain mappedHandler, @Nullable ModelAndView mv,
@@ -1244,6 +1245,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			// 渲染视图
 			render(mv, request, response);
 			if (errorView) {
+				// 调用request.removeAttribute方法清理request中错误信息
 				WebUtils.clearErrorRequestAttributes(request);
 			}
 		}
@@ -1260,6 +1262,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		if (mappedHandler != null) {
 			// Exception (if any) is already handled..
+			// 调用拦截器的afterCompletion方法
 			mappedHandler.triggerAfterCompletion(request, response, null);
 		}
 	}
@@ -1285,11 +1288,14 @@ public class DispatcherServlet extends FrameworkServlet {
 	/**
 	 * Convert the request into a multipart request, and make multipart resolver available.
 	 * <p>If no multipart resolver is set, simply use the existing request.
+	 * 解析multipart类型的请求，上传文件用的就是multipart类型的请求方式
+	 *
 	 * @param request current HTTP request
 	 * @return the processed request (multipart wrapper if necessary)
 	 * @see MultipartResolver#resolveMultipart
 	 */
 	protected HttpServletRequest checkMultipart(HttpServletRequest request) throws MultipartException {
+		// 判断multipartResolver解析器是否存在 && 请求是否是multipart类型
 		if (this.multipartResolver != null && this.multipartResolver.isMultipart(request)) {
 			if (WebUtils.getNativeRequest(request, MultipartHttpServletRequest.class) != null) {
 				if (DispatcherType.REQUEST.equals(request.getDispatcherType())) {
@@ -1302,6 +1308,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			}
 			else {
 				try {
+					// 将请求转换为multipart类型的请求对象，通常为MultipartHttpServletRequest类型
 					return this.multipartResolver.resolveMultipart(request);
 				}
 				catch (MultipartException ex) {
@@ -1396,6 +1403,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 	/**
 	 * Return the HandlerAdapter for this handler object.
+	 * 根据处理器获取HandlerAdapter
 	 * @param handler the handler object to find an adapter for
 	 * @throws ServletException if no HandlerAdapter can be found for the handler. This is a fatal error.
 	 */
@@ -1428,6 +1436,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		// Success and error responses may use different content types
 		// 成功和错误响应可能使用不同的内容类型
+		// 调用处理器异常解析器解析异常，得到ModelAndView
 		request.removeAttribute(HandlerMapping.PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE);
 
 		// Check registered HandlerExceptionResolvers...
@@ -1460,7 +1469,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			} else if (logger.isDebugEnabled()) {
 				logger.debug("Using resolved error view: " + exMv);
 			}
-			// 设置错误请求的相关属性
+			// 设置错误请求的相关属性（暴露异常信息到request对象中（request.setAttribute））
 			WebUtils.exposeErrorRequestAttributes(request, ex, getServletName());
 			return exMv;
 		}
@@ -1511,7 +1520,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			if (mv.getStatus() != null) {
 				response.setStatus(mv.getStatus().value());
 			}
-			// 视图渲染
+			// 视图渲染（调用视图的render方法渲染视图，将结果输出到客户端）
 			view.render(mv.getModelInternal(), request, response);
 		}
 		catch (Exception ex) {

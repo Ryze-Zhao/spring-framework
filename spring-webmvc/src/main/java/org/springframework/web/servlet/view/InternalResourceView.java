@@ -147,11 +147,13 @@ public class InternalResourceView extends AbstractUrlBasedView {
 		exposeHelpers(request);
 
 		// Determine the path for the request dispatcher.
-		// 确定请求分配器的路径
+		// 确定请求分配器的路径（获取跳转的页面的路径）
 		String dispatcherPath = prepareForRendering(request, response);
 
 		// Obtain a RequestDispatcher for the target resource (typically a JSP).
 		/*
+		 * 调用request.getRequestDispatcher(path)得到RequestDispatcher对象
+		 *
 		 *  获取当前request的RequestDispatcher对象，该对象有两个方法：include()和forward()，
 		 *  用于对当前的request进行转发，其实也就是将当前的request转发到另一个url，这里的另一个
 		 *  url就是要解析的视图地址，也就是说进行视图解析的时候请求的对于文件的解析实际上相当于
@@ -167,6 +169,7 @@ public class InternalResourceView extends AbstractUrlBasedView {
 		}
 
 		// If already included or response already committed, perform include, else forward.
+		// 实现页面跳转
 		// 判断当前是否为include请求，如果是，则调用RequestDispatcher.include()方法进行文件引入
 		if (useInclude(request, response)) {
 			response.setContentType(getContentType());
