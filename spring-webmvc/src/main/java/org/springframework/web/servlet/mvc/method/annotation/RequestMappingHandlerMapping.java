@@ -187,9 +187,10 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	@Override
 	@SuppressWarnings("deprecation")
 	public void afterPropertiesSet() {
-
+		// 创建映射信息构造器配置，用于构造映射信息RequestMappingInfo
 		this.config = new RequestMappingInfo.BuilderConfiguration();
 		this.config.setTrailingSlashMatch(useTrailingSlashMatch());
+		// 设置内容协商管理器组件
 		this.config.setContentNegotiationManager(getContentNegotiationManager());
 
 		if (getPatternParser() != null) {
@@ -202,7 +203,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 			this.config.setRegisteredSuffixPatternMatch(useRegisteredSuffixPatternMatch());
 			this.config.setPathMatcher(getPathMatcher());
 		}
-
+		// 执行处理器方法的初始化逻辑
 		super.afterPropertiesSet();
 	}
 
