@@ -284,11 +284,12 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * @see #getMappingForMethod
 	 */
 	protected void detectHandlerMethods(Object handler) {
-		Class<?> handlerType = (handler instanceof String ?
-				obtainApplicationContext().getType((String) handler) : handler.getClass());
+		// 如果传入的handler是String类型，则表示是一个BeanName，从上下文获取
+		Class<?> handlerType = (handler instanceof String ? obtainApplicationContext().getType((String) handler) : handler.getClass());
 
 		if (handlerType != null) {
 			Class<?> userType = ClassUtils.getUserClass(handlerType);
+			// Method -> Method上对应的RequestMappingInfo
 			Map<Method, T> methods = MethodIntrospector.selectMethods(userType,
 					(MethodIntrospector.MetadataLookup<T>) method -> {
 						try {
@@ -309,6 +310,8 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 				/*
 				 * 循环遍历所有的方法,进行注册
 				 * handler为controller类实例, 每一个HandlerMethod中都维护着该实例, 因为在后面执行该方法时需要传入该实例
+				 *
+				 * 获取真实可执行的方法，因为上述查找逻辑在特殊情况下查找到的方法可能存在于代理上需要获取非代理方法作为可执行方法调用
 				 */
 				Method invocableMethod = AopUtils.selectInvocableMethod(method, userType);
 				registerHandlerMethod(handler, invocableMethod, mapping);
@@ -674,10 +677,15 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		}
 
 		public void register(T mapping, Object handler, Method method) {
+			// 获取写锁
 			this.readWriteLock.writeLock().lock();
 			try {
+				// 把类和方法封装为HandlerMethod
 				HandlerMethod handlerMethod = createHandlerMethod(handler, method);
+				// 保证方法映射唯一
+				// 如果一个相同的url对应多个handlerMethod则会抛出异常
 				validateMethodMapping(handlerMethod, mapping);
+
 
 				Set<String> directPaths = AbstractHandlerMethodMapping.this.getDirectPaths(mapping);
 				for (String path : directPaths) {
@@ -694,12 +702,14 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 					addMappingName(name, handlerMethod);
 				}
 
+				// 获取HandlerMethod对应的CORS配置
 				CorsConfiguration corsConfig = initCorsConfiguration(handler, method, mapping);
 				if (corsConfig != null) {
 					corsConfig.validateAllowCredentials();
 					this.corsLookup.put(handlerMethod, corsConfig);
 				}
 
+				// 注册跨域配置
 				this.registry.put(mapping,
 						new MappingRegistration<>(mapping, handlerMethod, directPaths, name, corsConfig != null));
 			}

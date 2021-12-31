@@ -140,11 +140,14 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 		 * initApplicationContext, 这里子类重写该方法并加了一些逻辑, 主要是为了将匹配该映射器的Handler对象加入到handlerMap集合中
 		 */
 		super.initApplicationContext();
+		// 核心方法注册相关urlMap
 		registerHandlers(this.urlMap);
 	}
 
 	/**
 	 * Register all handlers specified in the URL map for the corresponding paths.
+	 * 对应用系统设置的urlMap进行注册,注册的核心方法是调用其父类的registerHandler(),在注册的时候会对我们注册的url 进行简单处理
+	 *
 	 * @param urlMap a Map with URL paths as keys and handler beans or bean names as values
 	 * @throws BeansException if a handler couldn't be registered
 	 * @throws IllegalStateException if there is a conflicting handler registered
@@ -154,6 +157,7 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 			logger.trace("No patterns in " + formatMappingName());
 		}
 		else {
+			// 遍历urlMap 对url进行处理 处理逻辑是如果没有‘/’前缀，则添加前缀‘/’
 			urlMap.forEach((url, handler) -> {
 				// Prepend with slash if not already present.
 				if (!url.startsWith("/")) {
@@ -163,6 +167,7 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 				if (handler instanceof String) {
 					handler = ((String) handler).trim();
 				}
+				// 调用父类注册的核心方法最终将其存储在handlerMap集合
 				registerHandler(url, handler);
 			});
 			logMappings();

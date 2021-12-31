@@ -72,16 +72,17 @@ public abstract class AbstractDetectingUrlHandlerMapping extends AbstractUrlHand
 	 * @see #determineUrlsForHandler(String)
 	 */
 	protected void detectHandlers() throws BeansException {
+		// 获取spring容器的上线文环境
 		ApplicationContext applicationContext = obtainApplicationContext();
-		/*
-		 * 将SpringMVC容器中注册的Bean的name都找出来放进数组中
-		 */
+		// 将SpringMVC容器中注册的Bean的name都找出来放进数组中
 		String[] beanNames = (this.detectHandlersInAncestorContexts ?
 				BeanFactoryUtils.beanNamesForTypeIncludingAncestors(applicationContext, Object.class) :
 				applicationContext.getBeanNamesForType(Object.class));
 
 		// Take any bean name that we can determine URLs for.
+		// 遍历所有的beanName 根据beanName获取其逻辑匹配的urls 然后调用父类的registerHandler()方法
 		for (String beanName : beanNames) {
+			// 匹配到符合该映射器的bean的name（交由子类实现根据beanName获取url列表）
 			String[] urls = determineUrlsForHandler(beanName);
 			if (!ObjectUtils.isEmpty(urls)) {
 				// URL paths found: Let's consider it a handler.
