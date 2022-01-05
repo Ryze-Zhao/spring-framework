@@ -1127,6 +1127,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
 
 				// Process last-modified header, if supported by the handler.
+				// 处理 last-modified 请求头
 				String method = request.getMethod();
 				boolean isGet = HttpMethod.GET.matches(method);
 				if (isGet || HttpMethod.HEAD.matches(method)) {
@@ -1233,17 +1234,24 @@ public class DispatcherServlet extends FrameworkServlet {
 			// 如果是自定义异常, 则获取异常处理器, 进行解析
 			else {
 				Object handler = (mappedHandler != null ? mappedHandler.getHandler() : null);
-				// 异常视图解析
+				/*
+				 *	异常视图解析
+				 *      会执行所有的我们的自己配置（或者默认配置）了的HandlerExceptionResolver处理器
+				 *      但凡处理方法返回的不是null，有mv的返回。那后面的处理器就不会再进行处理了。具有短路的效果，一定要注意  是通过null来判断的
+				 *      处理完成后，得到error的视图mv，最后会设置一个viewName，然后返回出去
+				 */
+
 				mv = processHandlerException(request, response, handler, exception);
 				errorView = (mv != null);
 			}
 		}
 
 		// Did the handler return a view to render?
-		// 处理程序是否返回了要渲染的视图
+		// 处理程序是否返回了要渲染的视图（若视图不为null，开始执行render()方法渲染视图了）
 		if (mv != null && !mv.wasCleared()) {
 			// 渲染视图
 			render(mv, request, response);
+			// 如果有错误视图，这里清除掉所有的请求域里的所有的错误属性
 			if (errorView) {
 				// 调用request.removeAttribute方法清理request中错误信息
 				WebUtils.clearErrorRequestAttributes(request);
@@ -1255,6 +1263,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			}
 		}
 
+		// 处理异步=========我们发现，它不执行后面的AfterCompletion方法了，注意一下即可
 		if (WebAsyncUtils.getAsyncManager(request).isConcurrentHandlingStarted()) {
 			// Concurrent handling started during a forward
 			return;
@@ -1297,11 +1306,13 @@ public class DispatcherServlet extends FrameworkServlet {
 	protected HttpServletRequest checkMultipart(HttpServletRequest request) throws MultipartException {
 		// 判断multipartResolver解析器是否存在 && 请求是否是multipart类型
 		if (this.multipartResolver != null && this.multipartResolver.isMultipart(request)) {
+			// 如果该请求已经是MultipartHttpServletRequest 那就输出一个日志
 			if (WebUtils.getNativeRequest(request, MultipartHttpServletRequest.class) != null) {
 				if (DispatcherType.REQUEST.equals(request.getDispatcherType())) {
 					logger.trace("Request already resolved to MultipartHttpServletRequest, e.g. by MultipartFilter");
 				}
 			}
+			// 判断是否有MultipartException 一般没有
 			else if (hasMultipartException(request)) {
 				logger.debug("Multipart resolution previously failed for current request - " +
 						"skipping re-resolution for undisturbed error rendering");
@@ -1309,6 +1320,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			else {
 				try {
 					// 将请求转换为multipart类型的请求对象，通常为MultipartHttpServletRequest类型
+					// 不管是哪种multipartResolver的实现，内部都是new MultipartHttpServletRequest的实现类，所以不再是原来的request了
 					return this.multipartResolver.resolveMultipart(request);
 				}
 				catch (MultipartException ex) {
@@ -1488,21 +1500,26 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	protected void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// Determine locale for request and apply it to the response.
+		// 通过localeResolver把local解析出来，放到response里面去
 		Locale locale =
 				(this.localeResolver != null ? this.localeResolver.resolveLocale(request) : request.getLocale());
 		response.setLocale(locale);
 
 		View view;
 		String viewName = mv.getViewName();
+		// 如果已经有viewName了（绝大多数情况）
 		if (viewName != null) {
 			// We need to resolve the view name.
-			// 根据ViewName解析view实例
+			// 根据ViewName解析view实例（视图解析器  根据String类型的名字，解析出来一个视图（视图解析器有多个））
+			// 只要有一个不为null就返回，后面不再解析
 			view = resolveViewName(viewName, mv.getModelInternal(), locale, request);
 			if (view == null) {
 				throw new ServletException("Could not resolve view with name '" + mv.getViewName() +
 						"' in servlet with name '" + getServletName() + "'");
 			}
-		} else {
+		}
+		// 没有视图名称，但是必须有视图内容，否则抛出异常
+		else {
 			// No need to lookup: the ModelAndView object contains the actual View object.
 			// 无需查找：ModelAndView对象包含实际的View对象
 			view = mv.getView();
@@ -1517,6 +1534,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			logger.trace("Rendering view [" + view + "] ");
 		}
 		try {
+			// 设置响应码 status
 			if (mv.getStatus() != null) {
 				response.setStatus(mv.getStatus().value());
 			}
