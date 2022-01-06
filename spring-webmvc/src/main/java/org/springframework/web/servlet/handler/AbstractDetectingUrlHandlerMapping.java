@@ -33,6 +33,12 @@ import org.springframework.util.ObjectUtils;
  */
 public abstract class AbstractDetectingUrlHandlerMapping extends AbstractUrlHandlerMapping {
 
+
+	/**
+	 * .
+	 * 是否要去祖先容器里面检测所有的Handlers    默认是false表示只在自己的容器里面找
+	 * 若设置为true，相当于在父容器里的Controller也会被挖出来~~~~ 一般我并不建议这么去做
+	 */
 	private boolean detectHandlersInAncestorContexts = false;
 
 
@@ -50,8 +56,8 @@ public abstract class AbstractDetectingUrlHandlerMapping extends AbstractUrlHand
 
 
 	/**
-	 * Calls the {@link #detectHandlers()} method in addition to the
-	 * superclass's initialization.
+	 * Calls the {@link #detectHandlers()} method in addition to the superclass's initialization.
+	 * 检测的入口 detectHandlers()
 	 */
 	@Override
 	public void initApplicationContext() throws ApplicationContextException {
@@ -72,9 +78,10 @@ public abstract class AbstractDetectingUrlHandlerMapping extends AbstractUrlHand
 	 * @see #determineUrlsForHandler(String)
 	 */
 	protected void detectHandlers() throws BeansException {
-		// 获取spring容器的上线文环境
+		// 获取Spring容器的上下文环境（默认只会在当前容器里面去查找检测）
 		ApplicationContext applicationContext = obtainApplicationContext();
 		// 将SpringMVC容器中注册的Bean的name都找出来放进数组中
+		// 注意：这里使用的Object.class  说明是把本容器内所有类型的Bean定义都拿出来了
 		String[] beanNames = (this.detectHandlersInAncestorContexts ?
 				BeanFactoryUtils.beanNamesForTypeIncludingAncestors(applicationContext, Object.class) :
 				applicationContext.getBeanNamesForType(Object.class));
@@ -83,6 +90,7 @@ public abstract class AbstractDetectingUrlHandlerMapping extends AbstractUrlHand
 		// 遍历所有的beanName 根据beanName获取其逻辑匹配的urls 然后调用父类的registerHandler()方法
 		for (String beanName : beanNames) {
 			// 匹配到符合该映射器的bean的name（交由子类实现根据beanName获取url列表）
+			// 注意：此处还是类级别（Bean），相当于一个类就是一个Handler哦
 			String[] urls = determineUrlsForHandler(beanName);
 			if (!ObjectUtils.isEmpty(urls)) {
 				// URL paths found: Let's consider it a handler.

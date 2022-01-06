@@ -54,6 +54,8 @@ import org.springframework.web.util.pattern.PatternParseException;
  * {@code MappedInterceptor} and also check if interceptors directly registered
  * with it are of this type.
  *
+ * 它是个final类  所以不允许你直接使用继承的方式来扩展
+ *
  * @author Keith Donald
  * @author Rossen Stoyanchev
  * @author Brian Clozel
@@ -70,8 +72,17 @@ public final class MappedInterceptor implements HandlerInterceptor {
 	@Nullable
 	private final PatternAdapter[] excludePatterns;
 
+	/**
+	 * .
+	 * 注意：该类允许你自己指定路径的匹配规则。但是Spring里，不管哪个上层服务，默认使用的都是Ant风格的匹配
+	 * 并不是正则的匹配  所以效率上还是蛮高的
+	 */
 	private PathMatcher pathMatcher = defaultPathMatcher;
 
+	/**
+	 * .
+	 * 持有一个interceptor的引用，类似于目标类
+	 */
 	private final HandlerInterceptor interceptor;
 
 
@@ -99,6 +110,7 @@ public final class MappedInterceptor implements HandlerInterceptor {
 	 * Variant of
 	 * {@link #MappedInterceptor(String[], String[], HandlerInterceptor, PathPatternParser)}
 	 * with include patterns only.
+	 * 构造函数：发现它不仅仅兼容HandlerInterceptor,还可以把WebRequestInterceptor转换成此
 	 */
 	public MappedInterceptor(@Nullable String[] includePatterns, HandlerInterceptor interceptor) {
 		this(includePatterns, null, interceptor);
@@ -111,7 +123,7 @@ public final class MappedInterceptor implements HandlerInterceptor {
 	 */
 	public MappedInterceptor(@Nullable String[] includePatterns, @Nullable String[] excludePatterns,
 			HandlerInterceptor interceptor) {
-
+		// 此处使用WebRequestHandlerInterceptorAdapter这个适配器
 		this(includePatterns, excludePatterns, interceptor, null);
 	}
 
@@ -180,6 +192,9 @@ public final class MappedInterceptor implements HandlerInterceptor {
 	 * Check whether this interceptor is mapped to the request.
 	 * <p>The request mapping path is expected to have been resolved externally.
 	 * See also class-level Javadoc.
+	 * 原则：excludePatterns先执行，includePatterns后执行
+	 * 如果excludePatterns执行完都没有匹配的，并且includePatterns是空的，那就返回true
+	 * （这是个处理方式技巧~  对这种互斥的情况  这一步判断很关键~~~）
 	 * @param request the request to match to
 	 * @return {@code true} if the interceptor should be applied to the request
 	 */

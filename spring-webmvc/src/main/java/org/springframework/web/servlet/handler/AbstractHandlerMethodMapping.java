@@ -58,11 +58,14 @@ import org.springframework.web.util.pattern.PathPatternParser;
  * <p>For each registered handler method, a unique mapping is maintained with
  * subclasses defining the details of the mapping type {@code <T>}.
  *
+ * 实现了initializingBean接口，其实主要的注册操作则是通过afterPropertiesSet()接口方法来调用的
+ * 它是带有泛型T的。（包含HandlerMethod与传入请求匹配所需条件的handlerMethod的映射）
+ *
  * @author Arjen Poutsma
  * @author Rossen Stoyanchev
  * @author Juergen Hoeller
  * @author Sam Brannen
- * @since 3.1
+ * @since 3.1  Spring3.1之后才出现
  * @param <T> the mapping for a {@link HandlerMethod} containing the conditions
  * needed to match the handler method to an incoming request.
  */
@@ -77,12 +80,15 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * reasons, while still expecting the bean to be eligible for handler methods.
 	 * <p>Originally defined in {@link org.springframework.aop.scope.ScopedProxyUtils}
 	 * but duplicated here to avoid a hard dependency on the spring-aop module.
+	 *
+	 * SCOPED_TARGET的BeanName的前缀
 	 */
 	private static final String SCOPED_TARGET_NAME_PREFIX = "scopedTarget.";
 
 	private static final HandlerMethod PREFLIGHT_AMBIGUOUS_MATCH =
 			new HandlerMethod(new EmptyHandler(), ClassUtils.getMethod(EmptyHandler.class, "handle"));
 
+	// 跨域相关
 	private static final CorsConfiguration ALLOW_CORS_CONFIG = new CorsConfiguration();
 
 	static {
@@ -92,12 +98,20 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		ALLOW_CORS_CONFIG.setAllowCredentials(true);
 	}
 
-
+	// 默认不会去祖先容器里面找Handlers
 	private boolean detectHandlerMethodsInAncestorContexts = false;
 
+	// @since 4.1提供的新接口
+	// 为处HandlerMetho的映射分配名称的策略接口   只有一个方法getName()
+	// 唯一实现为：RequestMappingInfoHandlerMethodMappingNamingStrategy
+	// 策略为：@RequestMapping指定了name属性，那就以指定的为准  否则策略为：取出Controller所有的`大写字母` + # + method.getName()
+	// 如：AppoloController#match方法  最终的name为：AC#match
+	// 当然这个你也可以自己实现这个接口，然后set进来即可（只是一般没啥必要这么去干~~）
 	@Nullable
 	private HandlerMethodMappingNamingStrategy<T> namingStrategy;
 
+
+	// 内部类：负责注册
 	private final MappingRegistry mappingRegistry = new MappingRegistry();
 
 
@@ -143,6 +157,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 	/**
 	 * Return a (read-only) map with all mappings and HandlerMethod's.
+	 * 使用的是读写锁  比如此处使用的是读锁   获得所有的注册进去的Handler的Map
 	 */
 	public Map<T, HandlerMethod> getHandlerMethods() {
 		this.mappingRegistry.acquireReadLock();
@@ -158,6 +173,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 	/**
 	 * Return the handler methods for the given mapping name.
+	 * 根据mappingName来获取一个Handler
+	 *
+	 *
 	 * @param mappingName the mapping name
 	 * @return a list of matching HandlerMethod's or {@code null}; the returned
 	 * list will never be modified and is safe to iterate.
@@ -178,6 +196,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	/**
 	 * Register the given mapping.
 	 * <p>This method may be invoked at runtime after initialization has completed.
+	 *
+	 * 最终都是委托给mappingRegistry去做了注册的工作   此处日志级别为trace级别
+	 *
 	 * @param mapping the mapping for the handler method
 	 * @param handler the handler
 	 * @param method the method
@@ -206,7 +227,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 	/**
 	 * Detects handler methods at initialization.
-	 * 在初始化时检测handler方法
+	 * 初始化HandlerMethods的入口
 	 * @see #initHandlerMethods
 	 */
 	@Override
@@ -217,19 +238,24 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 	/**
 	 * Scan beans in the ApplicationContext, detect and register handler methods.
+	 *
+	 * 观察是如何实现加载HandlerMethod
 	 * @see #getCandidateBeanNames()
 	 * @see #processCandidateBean
 	 * @see #handlerMethodsInitialized
 	 */
 	protected void initHandlerMethods() {
 		// 遍历所有bean
+		// getCandidateBeanNames：Object.class相当于拿到当前容器（一般都是当前容器） 内所有的Bean定义信息
+		// 如果阁下容器隔离到到的话，这里一般只会拿到@Controller标注的web组件  以及其它相关web组件的  不会非常的多的~~~~
 		for (String beanName : getCandidateBeanNames()) {
 			// 排除scopedTarget.开头的Bean（排除Scoped目标类型Bean）
 			if (!beanName.startsWith(SCOPED_TARGET_NAME_PREFIX)) {
-				// 查找是handler的bean
+				// 查找是handler的bean（会在每个Bean里面找处理方法，HandlerMethod，然后注册进去）
 				processCandidateBean(beanName);
 			}
 		}
+		// 输出一句日志：debug日志或者trace日志
 		handlerMethodsInitialized(getHandlerMethods());
 	}
 
@@ -252,6 +278,13 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * <p>This implementation avoids bean creation through checking
 	 * {@link org.springframework.beans.factory.BeanFactory#getType}
 	 * and calling {@link #detectHandlerMethods} with the bean name.
+	 *
+	 * 确定指定的候选bean的类型，如果标识为Handler类型，则调用DetectHandlerMethods
+	 *   isHandler(beanType):判断这个type是否为Handler类型   它是个抽象方法，由子类去决定到底啥才叫Handler
+	 *   `RequestMappingHandlerMapping`的判断依据为：该类上标注了@Controller注解或者@Controller注解  就算作是一个Handler
+	 *    所以此处：@Controller起到了一个特殊的作用，不能等价于@Component的哟
+	 *
+	 *
 	 * @param beanName the name of the candidate bean
 	 * @since 5.1
 	 * @see #isHandler
@@ -280,6 +313,8 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 	/**
 	 * Look for handler methods in the specified handler bean.
+	 * 在指定的Handler的bean中查找处理程序方法Methods  找到就注册进去：mappingRegistry
+	 *
 	 * @param handler either a bean name or an actual handler instance
 	 * @see #getMappingForMethod
 	 */
@@ -290,6 +325,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		if (handlerType != null) {
 			Class<?> userType = ClassUtils.getUserClass(handlerType);
 			// Method -> Method上对应的RequestMappingInfo
+			// 又是非常熟悉的方法：MethodIntrospector.selectMethods
+			// 它在我们招@EventListener、@Scheduled等注解方法时已经遇到过多次
+			// 此处特别之处在于：getMappingForMethod属于一个抽象方法，由子类去决定它的寻找规则~~~~  什么才算作一个处理器方法
 			Map<Method, T> methods = MethodIntrospector.selectMethods(userType,
 					(MethodIntrospector.MetadataLookup<T>) method -> {
 						try {
@@ -306,6 +344,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			else if (mappingsLogger.isDebugEnabled()) {
 				mappingsLogger.debug(formatMappings(userType, methods));
 			}
+			// 把找到的Method  一个个遍历，注册进去
 			methods.forEach((method, mapping) -> {
 				/*
 				 * 循环遍历所有的方法,进行注册
@@ -613,19 +652,30 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * <p>Package-private for testing purposes.
 	 */
 	class MappingRegistry {
-
+		// mapping对应的其MappingRegistration对象
 		private final Map<T, MappingRegistration<T>> registry = new HashMap<>();
 
 		/**
 		 * .
 		 * 维护url与请求信息(RequestMappingInfo)的映射关系，后面会根据Url找RequestMappingInfo, 再根据RequestMappingInfo找HandlerMethod对请求进行处理
+		 *
+		 *
+		 * // 保存着URL与匹配条件（mapping）的对应关系  当然这里的URL是pattern式的，可以使用通配符
+		 * 	// 这里的Map不是普通的Map，而是MultiValueMap，它是个多值Map。其实它的value是一个list类型的值
+		 * 	// 至于为何是多值？有这么一种情况  URL都是/api/v1/hello  但是有的是get post delete等方法   所以有可能是会匹配到多个MappingInfo的
+		 *
 		 */
 		private final MultiValueMap<String, T> pathLookup = new LinkedMultiValueMap<>();
 
+
+		// 这个Map是Spring MVC4.1新增的（毕竟这个策略接口HandlerMethodMappingNamingStrategy在Spring4.1后才有,这里的name是它生成出来的）
+		// 保存着name和HandlerMethod的对应关系（一个name可以有多个HandlerMethod）
 		private final Map<String, List<HandlerMethod>> nameLookup = new ConcurrentHashMap<>();
 
 		private final Map<HandlerMethod, CorsConfiguration> corsLookup = new ConcurrentHashMap<>();
 
+
+		// 读写锁~~~ 读写分离  提高效率
 		private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
 		/**
@@ -676,14 +726,26 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			this.readWriteLock.readLock().unlock();
 		}
 
+		/**
+		 * 。
+		 * 注册Mapping和handler 以及Method    此处上写锁保证线程安全
+		 * @param mapping 1
+		 * @param handler 2
+		 * @param method 3
+		 * @return : void
+		 */
 		public void register(T mapping, Object handler, Method method) {
 			// 获取写锁
 			this.readWriteLock.writeLock().lock();
 			try {
 				// 把类和方法封装为HandlerMethod
+				// 注意：都是new HandlerMethod()了一个新的出来
 				HandlerMethod handlerMethod = createHandlerMethod(handler, method);
 				// 保证方法映射唯一
 				// 如果一个相同的url对应多个handlerMethod则会抛出异常
+
+				// 同样的：一个URL Mapping只能对应一个Handler
+				// 这里可能会出现常见的一个异常信息：Ambiguous mapping. Cannot map XXX
 				validateMethodMapping(handlerMethod, mapping);
 
 
