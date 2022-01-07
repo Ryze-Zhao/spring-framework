@@ -454,32 +454,36 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * Look up the best-matching handler method for the current request.
 	 * If multiple matches are found, the best match is selected.
 	 * @param lookupPath mapping lookup path within the current servlet mapping
-	 * @param request the current request
+	 * @param request0 the current request
 	 * @return the best-matching handler method, or {@code null} if no match
 	 * @see #handleMatch(Object, String, HttpServletRequest)
 	 * @see #handleNoMatch(Set, String, HttpServletRequest)
 	 */
 	@Nullable
 	protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletRequest request) throws Exception {
-		// 匹配结果列表
+		// 匹配结果列表（Match是一个private class，内部就两个属性：T mapping和HandlerMethod handlerMethod）
 		List<Match> matches = new ArrayList<>();
-		// 由映射处理器映射出对应的MappingInfo信息, 可能获取多个
+		// 由 映射处理器 映射出对应的MappingInfo信息, 可能获取多个
+		// 至于为何是多值？可能URL都是/api/v1/hello  但是请求方式不一样（get、post、delete），还有可能是headers、consumes等等不一样，所以有可能是会匹配到多个MappingInfo的
 		List<T> directPathMatches = this.mappingRegistry.getMappingsByDirectPath(lookupPath);
 		// 如果有匹配的，就添加进匹配列表中
 		if (directPathMatches != null) {
 			// 将HandlerMethod实例与Request进行包装, 添加到matches集合中
+			// 依赖于子类实现的抽象方法：getMatchingMapping()，根据URL、method、headers、consumes等等匹配到对应的MappingInfo，并加入到matches中
 			addMatchingMappings(directPathMatches, matches, request);
 		}
-		// 还没有匹配，就遍历所有的处理方法去找
+		// 还没有匹配，只能遍历所有的处理方法去找（至于为什么不直接没匹配上就404，我也不知道）
 		if (matches.isEmpty()) {
 			addMatchingMappings(this.mappingRegistry.getRegistrations().keySet(), matches, request);
 		}
-		// 匹配结果不为空
+		// 匹配结果不为空（也就是找到至少1个匹配）
 		if (!matches.isEmpty()) {
 			// 匹配结果比较器，直接使用匹配信息进行比较
 			Match bestMatch = matches.get(0);
 			// 对多个匹配结果进行排序
 			if (matches.size() > 1) {
+				// 依赖于子类实现的实现：getMappingComparator
+				// 比如：`RequestMappingInfoHandlerMapping`的实现为先比较Method，patterns、params
 				Comparator<Match> comparator = new MatchComparator(getMappingComparator(request));
 				// 对所有符合条件的处理器进行排序
 				matches.sort(comparator);
@@ -497,19 +501,22 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 				}
 				else {
 					Match secondBestMatch = matches.get(1);
-					// 第一个元素和第二个元素进行比较
+					// 第一个元素和第二个元素进行比较（若相等，那就异常）
 					if (comparator.compare(bestMatch, secondBestMatch) == 0) {
 						// 结果为0，至少有2个最佳匹配
 						Method m1 = bestMatch.getHandlerMethod().getMethod();
 						Method m2 = secondBestMatch.getHandlerMethod().getMethod();
 						String uri = request.getRequestURI();
 						// 多个最佳匹配，抛出异常
+						// 注意：这个是运行时的检查，在启动的时候是检查不出来的
 						throw new IllegalStateException(
 								"Ambiguous handler methods mapped for '" + uri + "': {" + m1 + ", " + m2 + "}");
 					}
 				}
 			}
+			// 把最最佳匹配的方法  放进request的属性里面
 			request.setAttribute(BEST_MATCHING_HANDLER_ATTRIBUTE, bestMatch.getHandlerMethod());
+			// 它也往request的属性，塞了值
 			handleMatch(bestMatch.mapping, lookupPath, request);
 			// 返回最佳匹配对应的处理器方法
 			return bestMatch.getHandlerMethod();
@@ -522,6 +529,8 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 	private void addMatchingMappings(Collection<T> mappings, List<Match> matches, HttpServletRequest request) {
 		for (T mapping : mappings) {
+			// 只有RequestMappingInfoHandlerMapping 实现了一句话：return info.getMatchingCondition(request);
+			// 因此需要好好研究 RequestMappingInfo#getMatchingCondition()
 			T match = getMatchingMapping(mapping, request);
 			if (match != null) {
 				/*

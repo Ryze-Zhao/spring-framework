@@ -625,16 +625,23 @@ public class DispatcherServlet extends FrameworkServlet {
 	private void initHandlerMappings(ApplicationContext context) {
 		this.handlerMappings = null;
 
+		//detectAllHandlerMappings该属性默认为true，表示会去容器内找所有的HandlerMapping类型的定义信息
+		// 若想改为false，请调用它的setDetectAllHandlerMappings() 自行设置值（绝大部分情况下没啥必要）
 		if (this.detectAllHandlerMappings) {
 			// Find all HandlerMappings in the ApplicationContext, including ancestor contexts.
+			// 这里注意：若你没有标注注解`@EnableWebMvc`，那么这里找的结果是空的
+			// 若你标注了此注解，这个注解就会默认向容器内注入两个HandlerMapping：RequestMappingHandlerMapping和BeanNameUrlHandlerMapping
 			Map<String, HandlerMapping> matchingBeans =
 					BeanFactoryUtils.beansOfTypeIncludingAncestors(context, HandlerMapping.class, true, false);
 			if (!matchingBeans.isEmpty()) {
 				this.handlerMappings = new ArrayList<>(matchingBeans.values());
 				// We keep HandlerMappings in sorted order.
+				// 多个的话 还需要进行一次排序
 				AnnotationAwareOrderComparator.sort(this.handlerMappings);
 			}
 		}
+		// 不全部查找，那就只找一个名字为`handlerMapping`的HandlerMapping 实现精准控制
+		// 绝大多数情况下  我们并不需要这么做
 		else {
 			try {
 				HandlerMapping hm = context.getBean(HANDLER_MAPPING_BEAN_NAME, HandlerMapping.class);
@@ -645,10 +652,12 @@ public class DispatcherServlet extends FrameworkServlet {
 			}
 		}
 
-		// Ensure we have at least one HandlerMapping, by registering
-		// a default HandlerMapping if no other mappings are found.
+		// Ensure we have at least one HandlerMapping, by registering a default HandlerMapping if no other mappings are found.
+		// 若一个都没找到自定义的，回滚到Spring的兜底策略，它会想容器注册两个：RequestMappingHandlerMapping和BeanNameUrlHandlerMapping
 		if (this.handlerMappings == null) {
 			this.handlerMappings = getDefaultStrategies(context, HandlerMapping.class);
+			// 输出trace日志：表示使用了兜底策略
+			// 兜底策略配置文件：DispatcherServlet.properties
 			if (logger.isTraceEnabled()) {
 				logger.trace("No HandlerMappings declared for servlet '" + getServletName() +
 						"': using default strategies from DispatcherServlet.properties");

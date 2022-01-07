@@ -61,7 +61,7 @@ import org.springframework.core.annotation.AliasFor;
  * @author Juergen Hoeller
  * @author Arjen Poutsma
  * @author Sam Brannen
- * @since 2.5
+ * @since 2.5 用于将Web请求映射到具有灵活方法签名的请求处理类中的方法的注释
  * @see GetMapping
  * @see PostMapping
  * @see PutMapping
@@ -71,6 +71,7 @@ import org.springframework.core.annotation.AliasFor;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+// @Mapping这个注解是@since 3.0  但它目前还只有这个地方使用到了
 @Mapping
 public @interface RequestMapping {
 
@@ -79,6 +80,8 @@ public @interface RequestMapping {
 	 * <p><b>Supported at the type level as well as at the method level!</b>
 	 * When used on both levels, a combined name is derived by concatenation
 	 * with "#" as separator.
+	 *
+	 * 给这个Mapping取一个名字。若不填写，就用HandlerMethodMappingNamingStrategy去按规则生成
 	 * @see org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder
 	 * @see org.springframework.web.servlet.handler.HandlerMethodMappingNamingStrategy
 	 */
@@ -94,6 +97,8 @@ public @interface RequestMapping {
 	 * this primary mapping, narrowing it for a specific handler method.
 	 * <p><strong>NOTE</strong>: A handler method that is not mapped to any path
 	 * explicitly is effectively mapped to an empty path.
+	 *
+	 * 路径  数组形式  可以写多个。  一般都是按照Ant风格进行书写
 	 */
 	@AliasFor("path")
 	String[] value() default {};
@@ -109,6 +114,9 @@ public @interface RequestMapping {
 	 * this primary mapping, narrowing it for a specific handler method.
 	 * <p><strong>NOTE</strong>: A handler method that is not mapped to any path
 	 * explicitly is effectively mapped to an empty path.
+	 *
+
+	 *
 	 * @since 4.2
 	 */
 	@AliasFor("value")
@@ -120,6 +128,11 @@ public @interface RequestMapping {
 	 * <p><b>Supported at the type level as well as at the method level!</b>
 	 * When used at the type level, all method-level mappings inherit this
 	 * HTTP method restriction.
+	 *
+	 * 请求方法：GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE，显然可以指定多个方法。如果不指定，表示适配所有方法类型
+	 * 同时还有类似的枚举类：org.springframework.http.HttpMethod
+	 *
+	 *
 	 */
 	RequestMethod[] method() default {};
 
@@ -135,6 +148,11 @@ public @interface RequestMapping {
 	 * <p><b>Supported at the type level as well as at the method level!</b>
 	 * When used at the type level, all method-level mappings inherit this
 	 * parameter restriction.
+	 *
+	 * 指定request中必须包含某些参数值时，才让该方法处理
+	 * 使用 params 元素，你可以让多个处理方法处理到同一个URL 的请求, 而这些请求的参数是不一样的
+	 * 如：@RequestMapping(value = "/fetch", params = {"personId=10"} 和 @RequestMapping(value = "/fetch", params = {"personId=20"}
+	 * 这两个方法都处理请求`/fetch`，但是参数不一样，进入的方法也不一样，支持!myParam和myParam!=myValue这种
 	 */
 	String[] params() default {};
 
@@ -175,6 +193,13 @@ public @interface RequestMapping {
 	 * <p><b>Supported at the type level as well as at the method level!</b>
 	 * If specified at both levels, the method level consumes condition overrides
 	 * the type level condition.
+	 *
+	 * 指定处理请求request的**提交内容类型**(Content-Type),例如application/json、text/html等
+	 * 相当于只有指定的这些Content-Type的才处理
+	 * @RequestMapping(value = "/cons", consumes = {"application/json", "application/XML"}
+	 * 不指定表示处理所有~~  取值参见枚举类：org.springframework.http.MediaType
+	 * 它可以使用!text/plain形如这样非的表达方式
+	 *
 	 * @see org.springframework.http.MediaType
 	 * @see javax.servlet.http.HttpServletRequest#getContentType()
 	 */
@@ -202,6 +227,12 @@ public @interface RequestMapping {
 	 * <p><b>Supported at the type level as well as at the method level!</b>
 	 * If specified at both levels, the method level produces condition overrides
 	 * the type level condition.
+	 *
+	 * 指定返回的内容类型，返回的内容类型必须是request请求头(Accept)中所包含的类型
+	 * 仅当request请求头中的(Accept)类型中包含该指定类型才返回；
+	 * 参见枚举类：org.springframework.http.MediaType
+	 * 它可以使用!text/plain形如这样非的表达方式
+	 *
 	 * @see org.springframework.http.MediaType
 	 */
 	String[] produces() default {};

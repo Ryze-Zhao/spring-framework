@@ -88,19 +88,20 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 	@Nullable
 	private final PathPatternsRequestCondition pathPatternsCondition;
 
+	//  这些匹配器都继承自AbstractRequestCondition，会进行各自的匹配工作
 	@Nullable
 	private final PatternsRequestCondition patternsCondition;
-
+	//  这些匹配器都继承自AbstractRequestCondition，会进行各自的匹配工作
 	private final RequestMethodsRequestCondition methodsCondition;
-
+	//  这些匹配器都继承自AbstractRequestCondition，会进行各自的匹配工作
 	private final ParamsRequestCondition paramsCondition;
-
+	//  这些匹配器都继承自AbstractRequestCondition，会进行各自的匹配工作
 	private final HeadersRequestCondition headersCondition;
-
+	//  这些匹配器都继承自AbstractRequestCondition，会进行各自的匹配工作
 	private final ConsumesRequestCondition consumesCondition;
-
+	//  这些匹配器都继承自AbstractRequestCondition，会进行各自的匹配工作
 	private final ProducesRequestCondition producesCondition;
-
+	//  这些匹配器都继承自AbstractRequestCondition，会进行各自的匹配工作
 	private final RequestConditionHolder customConditionHolder;
 
 	private final int hashCode;
@@ -323,6 +324,8 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 	 * Combine "this" request mapping info (i.e. the current instance) with
 	 * another request mapping info instance.
 	 * <p>Example: combine type- and method-level request mappings.
+	 * 因为类上和方法上都可能会有@RequestMapping注解，所以这里是把语意思合并  该方法来自顶层接口
+	 *
 	 * @return a new request mapping info instance; never {@code null}
 	 */
 	@Override
@@ -369,6 +372,8 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 	 * <p>For example the returned instance may contain the subset of URL
 	 * patterns that match to the current request, sorted with best matching
 	 * patterns on top.
+	 *
+	 * 合并后，就开始发挥作用了，该接口来自于顶层接口
 	 * @return a new instance in case of a match; or {@code null} otherwise
 	 */
 	@Override

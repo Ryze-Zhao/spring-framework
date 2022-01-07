@@ -68,10 +68,14 @@ import org.springframework.web.util.pattern.PathPatternParser;
  * ContentNegotiationManagerFactoryBean}). For further context, please read issue
  * <a href="https://github.com/spring-projects/spring-framework/issues/24179">#24719</a>.
  *
+ * 它也实现了MatchableHandlerMapping分支的接口,
+ * EmbeddedValueResolverAware接口：说明要支持解析Spring的表达式
+ *
+ *
  * @author Arjen Poutsma
  * @author Rossen Stoyanchev
  * @author Sam Brannen
- * @since 3.1
+ * @since 3.1 Spring3.1才提供的这种注解扫描的方式的支持
  */
 public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMapping
 		implements MatchableHandlerMapping, EmbeddedValueResolverAware {
@@ -146,8 +150,13 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * {@code Predicate}. The prefix for the first matching predicate is used.
 	 * <p>Consider using {@link org.springframework.web.method.HandlerTypePredicate
 	 * HandlerTypePredicate} to group controllers.
+	 *
+	 * 配置要应用于控制器方法的路径前缀
+	 *      前缀用于enrich每个@RequestMapping方法的映射，至于匹不匹配由Predicate来决定  有种前缀分类的效果
+	 *      推荐使用Spring5.1提供的类：org.springframework.web.method.HandlerTypePredicate
+	 *
 	 * @param prefixes a map with path prefixes as key
-	 * @since 5.1
+	 * @since 5.1 Spring5.1才出来的新特性
 	 */
 	public void setPathPrefixes(Map<String, Predicate<Class<?>>> prefixes) {
 		this.pathPrefixes = (!prefixes.isEmpty() ?
@@ -157,6 +166,8 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 
 	/**
 	 * The configured path prefixes as a read-only, possibly empty map.
+	 *
+	 * 注意pathPrefixes是只读的~~~因为上面Collections.unmodifiableMap了  有可能只是个空Map
 	 * @since 5.1
 	 */
 	public Map<String, Predicate<Class<?>>> getPathPrefixes() {
@@ -189,8 +200,9 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	public void afterPropertiesSet() {
 		// 创建映射信息构造器配置，用于构造映射信息RequestMappingInfo
 		this.config = new RequestMappingInfo.BuilderConfiguration();
+		// 是否添加"/"后缀，默认为true
 		this.config.setTrailingSlashMatch(useTrailingSlashMatch());
-		// 设置内容协商管理器组件
+		// 设置内容协商管理器组件（mediaType处理类：ContentNegotiationManager）
 		this.config.setContentNegotiationManager(getContentNegotiationManager());
 
 		if (getPatternParser() != null) {
@@ -199,8 +211,11 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 					"Suffix pattern matching not supported with PathPatternParser.");
 		}
 		else {
+			// 是否支持后缀补充，默认为true
 			this.config.setSuffixPatternMatch(useSuffixPatternMatch());
+			// 是否采用mediaType匹配模式，比如.json/.xml模式的匹配，默认为false
 			this.config.setRegisteredSuffixPatternMatch(useRegisteredSuffixPatternMatch());
+			//默认为AntPathMatcher，路径匹配校验器
 			this.config.setPathMatcher(getPathMatcher());
 		}
 		// 执行处理器方法的初始化逻辑
@@ -252,6 +267,10 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * {@inheritDoc}
 	 * <p>Expects a handler to have either a type-level @{@link Controller}
 	 * annotation or a type-level @{@link RequestMapping} annotation.
+	 *
+	 * 判断该类，是否是一个handler（此处就体现出@Controller注解的特殊性了，这也是为何我们的XXXController用@Bean申明是无效的原因）
+	 *
+	 *
 	 */
 	@Override
 	protected boolean isHandler(Class<?> beanType) {
@@ -262,6 +281,11 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	/**
 	 * Uses method and type-level @{@link RequestMapping} annotations to create
 	 * the RequestMappingInfo.
+	 * 父类：AbstractHandlerMethodMapping#detectHandlerMethods中回去该类里面找所有的指定的方法
+	 * 而什么叫指定的呢？就是靠这个来判定方法是否符合条件的
+	 *
+	 *
+	 *
 	 * @return the created RequestMappingInfo, or {@code null} if the method
 	 * does not have a {@code @RequestMapping} annotation.
 	 * @see #getCustomMethodCondition(Method)
@@ -270,14 +294,28 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	@Override
 	@Nullable
 	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
+		// 第一步：先拿到方法上的info
 		RequestMappingInfo info = createRequestMappingInfo(method);
 		if (info != null) {
+			// 方法上有。在第二步：拿到类上的info
 			RequestMappingInfo typeInfo = createRequestMappingInfo(handlerType);
 			if (typeInfo != null) {
+				// 倘若类上面也有，那就combine把两者结合
+				// combile的逻辑基如下：
+				// names：name1+#+name2
+				// path：路径拼接起来作为全路径(容错了方法里没有/的情况)
+				// method、params、headers：取并集
+				// consumes、produces：以方法的为准，没有指定再取类上的
+				// custom：谁有取谁的。若都有：那就看custom具体实现的.combine方法去决定把  简单的说就是交给调用者了~~~
+
 				info = typeInfo.combine(info);
 			}
+			// 在Spring5.1之后还要处理这个前缀匹配~~~
+			// 根据这个类，去找看有没有前缀  getPathPrefix()：entry.getValue().test(handlerType) = true算是hi匹配上了
+			// 备注：也支持${os.name}这样的语法拿值，可以把前缀也写在专门的配置文件里面~~~~
 			String prefix = getPathPrefix(handlerType);
 			if (prefix != null) {
+				// RequestMappingInfo.paths(prefix)  相当于统一在前面加上这个前缀
 				info = RequestMappingInfo.paths(prefix).options(this.config).build().combine(info);
 			}
 		}
@@ -302,14 +340,21 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * Delegates to {@link #createRequestMappingInfo(RequestMapping, RequestCondition)},
 	 * supplying the appropriate custom {@link RequestCondition} depending on whether
 	 * the supplied {@code annotatedElement} is a class or method.
+	 * 根据此方法/类，创建一个RequestMappingInfo
+	 *
 	 * @see #getCustomTypeCondition(Class)
 	 * @see #getCustomMethodCondition(Method)
 	 */
 	@Nullable
 	private RequestMappingInfo createRequestMappingInfo(AnnotatedElement element) {
+		// 注意：此处使用的是findMergedAnnotation  这也就是为什么虽然@RequestMapping它并不具有继承的特性，但是你子类仍然有继承的效果的原因~~~~
 		RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(element, RequestMapping.class);
+		// 请注意：这里进行了区分处理  如果是Class的话  如果是Method的话
+		// 这里返回的是一个condition 也就是看看要不要处理这个请求的条件
 		RequestCondition<?> condition = (element instanceof Class ?
 				getCustomTypeCondition((Class<?>) element) : getCustomMethodCondition((Method) element));
+		// 这个createRequestMappingInfo就是根据一个@RequestMapping以及一个condition创建一个
+		// 显然如果没有找到此注解，这里就返回null了，表面这个方法啥的就不是一个info
 		return (requestMapping != null ? createRequestMappingInfo(requestMapping, condition) : null);
 	}
 
@@ -321,6 +366,10 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * <p>Consider extending {@link AbstractRequestCondition} for custom
 	 * condition types and using {@link CompositeRequestCondition} to provide
 	 * multiple custom conditions.
+	 * 返回的null。protected方法留给子类复写，子类可以据此自己定义一套自己的规则来限制匹配
+	 * 它相当于在Spring MVC默认的规则的基础上，用户还可以自定义条件进行处理
+	 *
+	 *
 	 * @param handlerType the handler type for which to create the condition
 	 * @return the condition, or {@code null}
 	 */
@@ -337,6 +386,10 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * <p>Consider extending {@link AbstractRequestCondition} for custom
 	 * condition types and using {@link CompositeRequestCondition} to provide
 	 * multiple custom conditions.
+	 *
+	 * 返回的null。protected方法留给子类复写，子类可以据此自己定义一套自己的规则来限制匹配
+	 * 它相当于在Spring MVC默认的规则的基础上，用户还可以自定义条件进行处理
+	 *
 	 * @param method the handler method for which to create the condition
 	 * @return the condition, or {@code null}
 	 */
@@ -350,11 +403,16 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * {@link RequestMapping @RequestMapping} annotation, which is either
 	 * a directly declared annotation, a meta-annotation, or the synthesized
 	 * result of merging annotation attributes within an annotation hierarchy.
+	 * 根据@RequestMapping 创建一个RequestMappingInfo
+	 *
 	 */
 	protected RequestMappingInfo createRequestMappingInfo(
 			RequestMapping requestMapping, @Nullable RequestCondition<?> customCondition) {
 
 		RequestMappingInfo.Builder builder = RequestMappingInfo
+				// 强大的地方在此处：path里竟然还支持/api/v1/${os.name}/hello 这样形式动态的获取值
+				// 也就是说URL还可以从配置文件里面读取  Spring考虑很周到啊~~~
+				// @GetMapping("/${os.name}/hello") // 支持从配置文件里读取此值  Windows 10
 				.paths(resolveEmbeddedValuesInPatterns(requestMapping.path()))
 				.methods(requestMapping.method())
 				.params(requestMapping.params())
