@@ -36,8 +36,8 @@ public abstract class AbstractDetectingUrlHandlerMapping extends AbstractUrlHand
 
 	/**
 	 * .
-	 * 是否要去祖先容器里面检测所有的Handlers    默认是false表示只在自己的容器里面找
-	 * 若设置为true，相当于在父容器里的Controller也会被挖出来~~~~ 一般我并不建议这么去做
+	 * 是否到祖先容器里面检测所有的Handlers（默认是false表示只在自己的容器中找）
+	 * 若设置为true，相当于在父容器里的Controller也会被检测出来（一般不这么做）
 	 */
 	private boolean detectHandlersInAncestorContexts = false;
 
@@ -62,8 +62,8 @@ public abstract class AbstractDetectingUrlHandlerMapping extends AbstractUrlHand
 	@Override
 	public void initApplicationContext() throws ApplicationContextException {
 		/*
-		 * 其顶级父类AbstractHandlerMapping继承了WebApplicationObjectSupport,容器初始化时会自动调用模板方法
-		 * initApplicationContext, 这里子类重写该方法并加了一些逻辑, 主要是为了将匹配该映射器的Handler对象加入到handlerMap集合中
+		 * 其顶级父类 AbstractHandlerMapping 继承了 WebApplicationObjectSupport ，因此容器初始化时会自动调用此模板方法
+		 * initApplicationContext：这里子类重写该方法并加了一些逻辑, 主要是为了将匹配该映射器的Handler对象加入到handlerMap集合中
 		 */
 		super.initApplicationContext();
 		detectHandlers();
@@ -78,24 +78,24 @@ public abstract class AbstractDetectingUrlHandlerMapping extends AbstractUrlHand
 	 * @see #determineUrlsForHandler(String)
 	 */
 	protected void detectHandlers() throws BeansException {
-		// 获取Spring容器的上下文环境（默认只会在当前容器里面去查找检测）
+		// 获取Spring容器的上下文环境（默认只会在当前容器里面去查找检测，具体看this.detectHandlersInAncestorContexts）
 		ApplicationContext applicationContext = obtainApplicationContext();
-		// 将SpringMVC容器中注册的Bean的name都找出来放进数组中
+		// 将SpringMVC容器中注册的BeanName 都找出来
 		// 注意：这里使用的Object.class  说明是把本容器内所有类型的Bean定义都拿出来了
 		String[] beanNames = (this.detectHandlersInAncestorContexts ?
 				BeanFactoryUtils.beanNamesForTypeIncludingAncestors(applicationContext, Object.class) :
 				applicationContext.getBeanNamesForType(Object.class));
 
 		// Take any bean name that we can determine URLs for.
-		// 遍历所有的beanName 根据beanName获取其逻辑匹配的urls 然后调用父类的registerHandler()方法
+		// 遍历所有的beanName 根据beanName获取其逻辑匹配的urls 然后调用父类的 registerHandler()方法
 		for (String beanName : beanNames) {
-			// 匹配到符合该映射器的bean的name（交由子类实现根据beanName获取url列表）
-			// 注意：此处还是类级别（Bean），相当于一个类就是一个Handler哦
+			// 匹配到符合该映射器的bBeanName（交由子类实现根据beanName获取url列表）
+			// 注意：此处还是类级别（Bean），相当于一个类就是一个Handler
 			String[] urls = determineUrlsForHandler(beanName);
 			if (!ObjectUtils.isEmpty(urls)) {
 				// URL paths found: Let's consider it a handler.
 				/*
-				 * 调用父类(AbstractUrlHandlerMapping)的registerHandler方法将匹配的beanName和urls分别作为key和value装进handlerMap集合中
+				 * 调用父类 AbstractUrlHandlerMapping 的registerHandler方法将匹配的beanName和urls分别作为key和value装进handlerMap集合中
 				 */
 				registerHandler(urls, beanName);
 			}

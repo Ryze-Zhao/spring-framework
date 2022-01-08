@@ -72,19 +72,21 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 
 	/**
 	 * .
-	 * 是否使用斜线/匹配   如果为true  那么`/users`它也会匹配上`/users/`  默认是false的
+	 * 是否使用斜线/匹配（默认为false）
+	 *  如果为true，那么`/users`它也会匹配上`/users/`
 	 */
 	private boolean useTrailingSlashMatch = false;
 
 	/**
 	 * .
-	 * 设置是否延迟初始化handler。仅适用于单实例handler   默认是false表示立即实例化
+	 * 设置是否延迟初始化handler。仅适用于单实例handler
+	 * 默认为false表示立即实例化
 	 */
 	private boolean lazyInitHandlers = false;
 
 	/**
 	 * .
-	 * 这个Map就是缓存下，URL对应的Handler（注意这里只是handler，而不是chain）
+	 * handlerMap 用于缓存URL对应的Handler（注意这里只是handler，而不是HandlerExecutionChain）
 	 */
 	private final Map<String, Object> handlerMap = new LinkedHashMap<>();
 
@@ -163,20 +165,24 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 	@Override
 	@Nullable
 	protected Object getHandlerInternal(HttpServletRequest request) throws Exception {
-		// 获取请求路径的后半段，如`/api/v1/hello`  由此可见Spring MVC处理URL路径匹配
+		// 获取请求路径的后半段，如`/api/v1/hello`
+		// 由此可见Spring MVC处理URL路径匹配都是从工程名后开始匹配
 		String lookupPath = initLookupPath(request);
 		/*
-		 * 根据请求路径获取handler
+		 * 根据URL请求路径获取handler
+		 * 1、从 handlerMap 找，若找到了那就实例化它，并且给 HandlerExecutionChain 里加入一个拦截器：`PathExposingHandlerInterceptor`
+		 *  它是个private 的HandlerInterceptor，该拦截器的作用：request.setAttribute()请求域里面放置四个属性（key见HandlerMapping的常量们）
 		 *
+		 * 2、若从 handlerMap 找不到适合的handler，就使用PathMatcher去匹配URL，这里面光匹配其实是比较简单的
+		 *  但是这里匹配还解决了一个问题：那就是匹配上多个路径的问题
+		 *      因此：若匹配上多个路径了，就按照PathMatcher的排序规则排序，取值get(0)（最适合的那个，如果有多个就异常）
+		 *  最后给HandlerExecutionChain加入这个 HandlerInterceptor 即可
 		 *
+		 * 注意：若存在uriTemplateVariables，也就是路径里都存在多个最佳的匹配的情况  比如/book/{id}和/book/{name}这两种
+		 * 还有就是URI完全一样，但是一个是get方法，一个是post方法之类的，那就再加一个拦截器`UriTemplateVariablesHandlerInterceptor`
+		 * 它request.setAttribute()了一个属性：key为 xxx.uriTemplateVariables，这些Attribute后续都是有用的
 		 *
-		 * 	 1、先去handlerMap里找，若找到了那就实例化它，并且并且给chain里加入一个拦截器：`PathExposingHandlerInterceptor`  它是个private私有类的HandlerInterceptor
-		 该拦截器的作用：request.setAttribute()请求域里面放置四个属性 key见HandlerMapping的常量们~~~
-		 2、否则就使用PathMatcher去匹配URL，这里面光匹配其实是比较简单的。但是这里面还解决了一个问题：那就是匹配上多个路径的问题
-		 因此：若匹配上多个路径了，就按照PathMatcher的排序规则排序，取值get(0)~~~最后就是同上，加上那个HandlerInterceptor即可
-		 需要注意的是：若存在uriTemplateVariables，也就是路径里都存在多个最佳的匹配的情况  比如/book/{id}和/book/{name}这两种。
-		 还有就是URI完全一样，但是一个是get方法，一个是post方法之类的  那就再加一个拦截器`UriTemplateVariablesHandlerInterceptor`  它request.setAttribute()了一个属性：key为 xxx.uriTemplateVariables
-		 这些Attribute后续都是有用滴~~~~~~ 请注意：这里默认的两个拦截器每次都是new出来的和Handler可议说是绑定的，所以不会存在线程安全问题~~~~
+		 * 另外注意：这里默认的两个拦截器每次都是new出来的和Handler可以说是绑定的，所以不会存在线程安全问题（至于为什么每次都new，建议自行查阅）
 		 *
 		 */
 		Object handler;
@@ -187,7 +193,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 		else {
 			handler = lookupHandler(lookupPath, request);
 		}
-		// 若没找到
+		// 若从 handlerMap 找不到适合的handler
 		if (handler == null) {
 			// We need to care for the default handler directly, since we need to
 			// expose the PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE for it as well.
@@ -206,8 +212,8 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 					rawHandler = obtainApplicationContext().getBean(handlerName);
 				}
 				validateHandler(rawHandler, request);
-				// 就是注册上面说的默认的两个拦截器~~~~~~~  第四个参数为null，就只会注册一个拦截器~~~
-				// 然后把rawHandler转换成chain（这个时候chain里面可能已经有两个拦截器了，然后父类还会继续把用户自定义的拦截器放上去~~~~）
+				// 注册上面说的两个默认的拦截器，第四个参数为null，就只会注册一个拦截器，
+				// 然后把rawHandler转换成 HandlerExecutionChain（这个时候chain里面可能已经有两个拦截器了，然后父类还会继续把用户自定义的拦截器加进去）
 				handler = buildPathExposingHandler(rawHandler, lookupPath, lookupPath, null);
 			}
 		}
@@ -429,7 +435,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 
 	/**
 	 * Register the specified handler for the given URL paths.
-	 * 该抽象类提供的这个方法就特别重要了：向handlerMap里面put值的唯一入口
+	 * AbstractUrlHandlerMapping 提供的这个方法就特别重要了：向handlerMap里面put值的唯一入口
 	 *
 	 * @param urlPaths the URLs that the bean should be mapped to
 	 * @param beanName the name of the handler bean
@@ -457,7 +463,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 		Object resolvedHandler = handler;
 
 		// Eagerly resolve handler if referencing singleton via name.
-		// 如果是beanName，并且它是立马加载的
+		// 如果是beanName，并且它需要立即初始化的
 		if (!this.lazyInitHandlers && handler instanceof String) {
 			String handlerName = (String) handler;
 			ApplicationContext applicationContext = obtainApplicationContext();
@@ -467,10 +473,11 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 			}
 		}
 
-		// 先尝试从Map中去获取
+		// 先尝试从 handlerMap 中去获取
 		Object mappedHandler = this.handlerMap.get(urlPath);
 		if (mappedHandler != null) {
-			// 这个异常错误信息，相信我们在开发中经常碰到吧：简单就是说就是一个URL只能映射到一个Handler上（但是一个Handler是可以处理多个URL的，这个需要注意）
+			// 这个异常错误信息，我们在开发中有时会碰到吧
+			//  简单就是说就是一个URL只能映射到一个Handler上（但是一个Handler是可以处理多个URL的，这个需要注意）
 			if (mappedHandler != resolvedHandler) {
 				throw new IllegalStateException(
 						"Cannot map " + getHandlerDescription(handler) + " to URL path [" + urlPath +
@@ -478,24 +485,24 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 			}
 		}
 		else {
-			// 如果你的handler处理的路径是根路径，那太好了  你的这个处理器就很特殊啊
+			// 如果你的handler处理的路径是根路径，那就特殊处理哦
 			if (urlPath.equals("/")) {
 				if (logger.isTraceEnabled()) {
 					logger.trace("Root mapping to " + getHandlerDescription(handler));
 				}
 				setRootHandler(resolvedHandler);
 			}
-			// 这个路径相当于处理所有  优先级是最低的  所以当作默认的处理器来使用
+			// 这个路径相当于处理所有，优先级是最低的，所以当作默认的处理器来使用
 			else if (urlPath.equals("/*")) {
 				if (logger.isTraceEnabled()) {
 					logger.trace("Default mapping to " + getHandlerDescription(handler));
 				}
 				setDefaultHandler(resolvedHandler);
 			}
-			// 正常的路径了~~~
-			// 注意此处：好像是Spring5之后 把这句Mapped的日志级别   直接降低到trace级别了，简直太低了有木有~~~
-			// 在Spring 5之前，这里的日志级别包括上面的setRoot等是info（所以我们在控制台经常能看见大片的'Mapped URL path'日志~~~~）
-			// 所以：自Spring5之后不再会看controller这样的映射的日志了（除非你日志界别调低~~~）可能Spring认为这种日志多，且不认为是重要的信息吧~~~
+			// 正常的路径（我们平时写的就是这个）
+			// 注意：Spring5之后，把这句Mapped的日志级别，直接降低到trace级别了
+			// 在Spring 5之前，这里的日志级别包括上面的setRoot等是info级别，所以我们以前在控制台经常能看见大片的'Mapped URL path'日志
+			// 因此：自Spring5之后不再会看controller这样的映射的日志了（除非你日志级别专门调低）可能Spring认为这种日志多，且不认为是重要的信息吧
 			else {
 				this.handlerMap.put(urlPath, resolvedHandler);
 				if (getPatternParser() != null) {
