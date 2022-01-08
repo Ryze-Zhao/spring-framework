@@ -62,20 +62,29 @@ import org.springframework.web.util.pattern.PatternParseException;
  * @since 3.0
  */
 public final class MappedInterceptor implements HandlerInterceptor {
-
+	/**
+	 * .
+	 * Ant风格的匹配
+	 */
 	private static PathMatcher defaultPathMatcher = new AntPathMatcher();
 
-
+	/**
+	 * .
+	 * 允许为null
+	 */
 	@Nullable
 	private final PatternAdapter[] includePatterns;
 
+	/**
+	 * .
+	 * 允许为null
+	 */
 	@Nullable
 	private final PatternAdapter[] excludePatterns;
 
 	/**
 	 * .
-	 * 注意：该类允许你自己指定路径的匹配规则。但是Spring里，不管哪个上层服务，默认使用的都是Ant风格的匹配
-	 * 并不是正则的匹配  所以效率上还是蛮高的
+	 * 注意：该类允许你自己指定路径的匹配规则。但在Spring里，不管哪个上层服务，默认都是Ant风格的匹配，因为并不是正则的匹配，所以性能相对好点
 	 */
 	private PathMatcher pathMatcher = defaultPathMatcher;
 
@@ -110,7 +119,7 @@ public final class MappedInterceptor implements HandlerInterceptor {
 	 * Variant of
 	 * {@link #MappedInterceptor(String[], String[], HandlerInterceptor, PathPatternParser)}
 	 * with include patterns only.
-	 * 构造函数：发现它不仅仅兼容HandlerInterceptor,还可以把WebRequestInterceptor转换成此
+	 * 构造函数：它不仅仅兼容HandlerInterceptor,还可以把WebRequestInterceptor转换为MappedInterceptor
 	 */
 	public MappedInterceptor(@Nullable String[] includePatterns, HandlerInterceptor interceptor) {
 		this(includePatterns, null, interceptor);
@@ -121,8 +130,7 @@ public final class MappedInterceptor implements HandlerInterceptor {
 	 * {@link #MappedInterceptor(String[], String[], HandlerInterceptor, PathPatternParser)}
 	 * without a provided parser.
 	 */
-	public MappedInterceptor(@Nullable String[] includePatterns, @Nullable String[] excludePatterns,
-			HandlerInterceptor interceptor) {
+	public MappedInterceptor(@Nullable String[] includePatterns, @Nullable String[] excludePatterns,HandlerInterceptor interceptor) {
 		// 此处使用WebRequestHandlerInterceptorAdapter这个适配器
 		this(includePatterns, excludePatterns, interceptor, null);
 	}
@@ -131,6 +139,7 @@ public final class MappedInterceptor implements HandlerInterceptor {
 	 * Variant of
 	 * {@link #MappedInterceptor(String[], String[], HandlerInterceptor, PathPatternParser)}
 	 * with a {@link WebRequestInterceptor} as the target.
+	 * 构造函数：它不仅仅兼容HandlerInterceptor,还可以把WebRequestInterceptor转换为MappedInterceptor
 	 */
 	public MappedInterceptor(@Nullable String[] includePatterns, WebRequestInterceptor interceptor) {
 		this(includePatterns, null, interceptor);
@@ -140,10 +149,10 @@ public final class MappedInterceptor implements HandlerInterceptor {
 	 * Variant of
 	 * {@link #MappedInterceptor(String[], String[], HandlerInterceptor, PathPatternParser)}
 	 * with a {@link WebRequestInterceptor} as the target.
+	 * 构造函数：它不仅仅兼容HandlerInterceptor,还可以把WebRequestInterceptor转换为MappedInterceptor
 	 */
-	public MappedInterceptor(@Nullable String[] includePatterns, @Nullable String[] excludePatterns,
-			WebRequestInterceptor interceptor) {
-
+	public MappedInterceptor(@Nullable String[] includePatterns, @Nullable String[] excludePatterns,WebRequestInterceptor interceptor) {
+		// 此处使用WebRequestHandlerInterceptorAdapter这个适配器
 		this(includePatterns, excludePatterns, new WebRequestHandlerInterceptorAdapter(interceptor));
 	}
 
@@ -192,9 +201,6 @@ public final class MappedInterceptor implements HandlerInterceptor {
 	 * Check whether this interceptor is mapped to the request.
 	 * <p>The request mapping path is expected to have been resolved externally.
 	 * See also class-level Javadoc.
-	 * 原则：excludePatterns先执行，includePatterns后执行
-	 * 如果excludePatterns执行完都没有匹配的，并且includePatterns是空的，那就返回true
-	 * （这是个处理方式技巧~  对这种互斥的情况  这一步判断很关键~~~）
 	 * @param request the request to match to
 	 * @return {@code true} if the interceptor should be applied to the request
 	 */
@@ -224,6 +230,9 @@ public final class MappedInterceptor implements HandlerInterceptor {
 
 	/**
 	 * Determine a match for the given lookup path.
+	 *
+	 * 确定给定查找路径的匹配项
+	 *
 	 * @param lookupPath the current request path
 	 * @param pathMatcher a path matcher for path pattern matching
 	 * @return {@code true} if the interceptor applies to the given request path
@@ -231,6 +240,7 @@ public final class MappedInterceptor implements HandlerInterceptor {
 	 */
 	@Deprecated
 	public boolean matches(String lookupPath, PathMatcher pathMatcher) {
+		// 原则：excludePatterns先执行，includePatterns后执行
 		pathMatcher = (this.pathMatcher != defaultPathMatcher ? this.pathMatcher : pathMatcher);
 		if (!ObjectUtils.isEmpty(this.excludePatterns)) {
 			for (PatternAdapter adapter : this.excludePatterns) {
@@ -239,6 +249,8 @@ public final class MappedInterceptor implements HandlerInterceptor {
 				}
 			}
 		}
+
+		// 如果 excludePatterns 执行完都没有匹配的，并且includePatterns是空的，那就返回true
 		if (ObjectUtils.isEmpty(this.includePatterns)) {
 			return true;
 		}

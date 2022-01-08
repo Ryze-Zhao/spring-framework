@@ -67,6 +67,8 @@ import org.springframework.web.util.pattern.PathPatternParser;
  * {@link #PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE}. Support for this attribute
  * is up to concrete subclasses, typically based on request URL mappings.
  *
+ * 额外实现了BeanNameAware和Ordered排序接口
+ *
  * @author Juergen Hoeller
  * @author Rossen Stoyanchev
  * @since 07.04.2003
@@ -75,8 +77,7 @@ import org.springframework.web.util.pattern.PathPatternParser;
  * @see #setInterceptors
  * @see org.springframework.web.servlet.HandlerInterceptor
  */
-public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
-		implements HandlerMapping, Ordered, BeanNameAware {
+public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport implements HandlerMapping, Ordered, BeanNameAware {
 
 	/** Dedicated "hidden" logger for request mappings. */
 	protected final Log mappingsLogger =
