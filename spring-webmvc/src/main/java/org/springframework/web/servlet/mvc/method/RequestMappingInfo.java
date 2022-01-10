@@ -88,7 +88,7 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 	@Nullable
 	private final PathPatternsRequestCondition pathPatternsCondition;
 
-	//  这些匹配器都继承自AbstractRequestCondition，会进行各自的匹配工作
+	//  这些匹配器都继承自AbstractRequestCondition，顶级抽象接口为RequestCondition，会进行各自的匹配工作
 	@Nullable
 	private final PatternsRequestCondition patternsCondition;
 	//  这些匹配器都继承自AbstractRequestCondition，会进行各自的匹配工作
@@ -324,7 +324,8 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 	 * Combine "this" request mapping info (i.e. the current instance) with
 	 * another request mapping info instance.
 	 * <p>Example: combine type- and method-level request mappings.
-	 * 因为类上和方法上都可能会有@RequestMapping注解，所以这里是把语意思合并  该方法来自顶层接口
+	 *
+	 * 因为类上和方法上都可能会有@RequestMapping注解，所以这里会合并  该方法来自顶层接口
 	 *
 	 * @return a new request mapping info instance; never {@code null}
 	 */

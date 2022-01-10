@@ -167,7 +167,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	/**
 	 * The configured path prefixes as a read-only, possibly empty map.
 	 *
-	 * 注意pathPrefixes是只读的~~~因为上面Collections.unmodifiableMap了  有可能只是个空Map
+	 * 注意pathPrefixes是只读的，因为上面Collections.unmodifiableMap了，有可能只是个空Map
 	 * @since 5.1
 	 */
 	public Map<String, Predicate<Class<?>>> getPathPrefixes() {
@@ -285,7 +285,6 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * 而什么叫指定的呢？就是靠这个来判定方法是否符合条件的
 	 *
 	 *
-	 *
 	 * @return the created RequestMappingInfo, or {@code null} if the method
 	 * does not have a {@code @RequestMapping} annotation.
 	 * @see #getCustomMethodCondition(Method)
@@ -294,25 +293,24 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	@Override
 	@Nullable
 	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
-		// 第一步：先拿到方法上的info
+		// 第一步：先拿到方法上的RequestMappingInfo
 		RequestMappingInfo info = createRequestMappingInfo(method);
 		if (info != null) {
-			// 方法上有。在第二步：拿到类上的info
+			// 方法上有。在第二步：拿到类上的RequestMappingInfo
 			RequestMappingInfo typeInfo = createRequestMappingInfo(handlerType);
 			if (typeInfo != null) {
-				// 倘若类上面也有，那就combine把两者结合
-				// combile的逻辑基如下：
-				// names：name1+#+name2
-				// path：路径拼接起来作为全路径(容错了方法里没有/的情况)
-				// method、params、headers：取并集
-				// consumes、produces：以方法的为准，没有指定再取类上的
-				// custom：谁有取谁的。若都有：那就看custom具体实现的.combine方法去决定把  简单的说就是交给调用者了~~~
-
+				// 倘若类上面也有，那就调用combine把两者结合
+				// combine的逻辑基如下：
+				//  names：name1+#+name2
+				//  path：路径拼接起来作为全路径(容错了方法里没有/的情况)
+				//  method、params、headers：取并集
+				//  consumes、produces：以方法的为准，没有指定再取类上的
+				//  custom：谁有取谁的。若都有：那就看custom具体实现的.combine方法去决定把  简单的说就是交给调用者了~~~
 				info = typeInfo.combine(info);
 			}
-			// 在Spring5.1之后还要处理这个前缀匹配~~~
-			// 根据这个类，去找看有没有前缀  getPathPrefix()：entry.getValue().test(handlerType) = true算是hi匹配上了
-			// 备注：也支持${os.name}这样的语法拿值，可以把前缀也写在专门的配置文件里面~~~~
+			// 在Spring5.1之后还要处理这个前缀匹配
+			// 根据这个类，去找看有没有前缀  getPathPrefix()：entry.getValue().test(handlerType) = true算是匹配上了
+			// 备注：也支持${os.name}这样的语法拿值，可以把前缀也写在专门的配置文件里面
 			String prefix = getPathPrefix(handlerType);
 			if (prefix != null) {
 				// RequestMappingInfo.paths(prefix)  相当于统一在前面加上这个前缀

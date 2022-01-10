@@ -619,13 +619,18 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * <p>If no HandlerMapping beans are defined in the BeanFactory for this namespace,
 	 * we default to BeanNameUrlHandlerMapping.
 	 *
-	 * 初始化 HandlerMappings
-	 * 如果在BeanFactory中没有这个名称的bean，则默认处理器为 BeanNameUrlHandlerMapping（定义于DispatcherServlet.properties）
+	 * 初始化 HandlerMappings（DispatcherServlet是允许你有多个HandlerMapping）
+	 * 如果在BeanFactory中没有这个名称的bean，则默认处理器（定义于DispatcherServlet.properties）为
+	 *      org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping,
+	 * 	    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping,
+	 * 	    org.springframework.web.servlet.function.support.RouterFunctionMapping
+	 *
+	 *
 	 */
 	private void initHandlerMappings(ApplicationContext context) {
 		this.handlerMappings = null;
 
-		//detectAllHandlerMappings该属性默认为true，表示会去容器内找所有的HandlerMapping类型的定义信息
+		// detectAllHandlerMappings该属性默认为true，表示会去容器内找所有的HandlerMapping类型的定义信息
 		// 若想改为false，请调用它的setDetectAllHandlerMappings() 自行设置值（绝大部分情况下没啥必要）
 		if (this.detectAllHandlerMappings) {
 			// Find all HandlerMappings in the ApplicationContext, including ancestor contexts.
@@ -636,12 +641,11 @@ public class DispatcherServlet extends FrameworkServlet {
 			if (!matchingBeans.isEmpty()) {
 				this.handlerMappings = new ArrayList<>(matchingBeans.values());
 				// We keep HandlerMappings in sorted order.
-				// 多个的话 还需要进行一次排序
+				// 排序
 				AnnotationAwareOrderComparator.sort(this.handlerMappings);
 			}
 		}
-		// 不全部查找，那就只找一个名字为`handlerMapping`的HandlerMapping 实现精准控制
-		// 绝大多数情况下  我们并不需要这么做
+		// 不全部查找，那就只找一个名字为`handlerMapping`的HandlerMapping 实现精准控制（绝大多数情况下，并不需要这么做）
 		else {
 			try {
 				HandlerMapping hm = context.getBean(HANDLER_MAPPING_BEAN_NAME, HandlerMapping.class);
