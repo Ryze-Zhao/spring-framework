@@ -674,12 +674,10 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	 * @see #getAdaptedInterceptors()
 	 */
 	protected HandlerExecutionChain getHandlerExecutionChain(Object handler, HttpServletRequest request) {
-		// 因为handler本身也许就是个Chain，所以此处需要判断
+		// 因为handler可能就是HandlerExecutionChain，所以此处需要判断
 		HandlerExecutionChain chain = (handler instanceof HandlerExecutionChain ?
 				(HandlerExecutionChain) handler : new HandlerExecutionChain(handler));
 
-		// 此处就用到了urlPathHelper来解析request
-		// 如我的请求地址为：`http://localhost:8080/api/v1/hello`,那么lookupPath=/api/v1/hello
 		for (HandlerInterceptor interceptor : this.adaptedInterceptors) {
 			if (interceptor instanceof MappedInterceptor) {
 				// 这里其实就能体现出MappedInterceptor的些许优势了：也就是它只有路径匹配上了才会拦截，没有匹配上的就不会拦截了，处理起来就较为简单了

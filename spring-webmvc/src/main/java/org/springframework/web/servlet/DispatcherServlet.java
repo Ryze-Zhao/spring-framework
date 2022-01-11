@@ -522,15 +522,23 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * 子类若有需要，还可以复写此方法，去初始化自己的其余组件（比如要和它集成等等）
 	 */
 	protected void initStrategies(ApplicationContext context) {
+		// 初始化文件解析器，用于支持服务器的文件上传
 		initMultipartResolver(context);
+		// 初始化国际化解析器，用来提供国际化功能
 		initLocaleResolver(context);
+		// 初始化主题解析器，用来提供皮肤主题功能
 		initThemeResolver(context);
-		// 注意：下面是初始化多个的（带s）
+		// 初始化处理器映射器，注意：下面是初始化多个的（带s）
 		initHandlerMappings(context);
+		// 初始化处理器适配器，为不同的处理器提供上下文运行环境
 		initHandlerAdapters(context);
+		// 处理器异常解析器，用来解析处理器产生的异常
 		initHandlerExceptionResolvers(context);
+		// 初始化视图逻辑名称转换器，根据逻辑视图的名称找到具体的视图。当处理器没有返回逻辑视图名时，将请求的URL自动映射为逻辑视图名
 		initRequestToViewNameTranslator(context);
+		// 初始化视图解析器，当控制器返回后，通过试图解析器会把逻辑视图名进行解析，从而定位实际视图
 		initViewResolvers(context);
+		// 初始化FlashMap管理器接口，负责重定向时，保存参数到临时存储中
 		initFlashMapManager(context);
 	}
 
@@ -635,7 +643,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		if (this.detectAllHandlerMappings) {
 			// Find all HandlerMappings in the ApplicationContext, including ancestor contexts.
 			// 这里注意：若你没有标注注解`@EnableWebMvc`，那么这里找的结果是空的
-			// 若你标注了此注解，这个注解就会默认向容器内注入两个HandlerMapping：RequestMappingHandlerMapping和BeanNameUrlHandlerMapping
+			// 若你标注了此注解，这个注解就会默认向容器内注入HandlerMapping：RequestMappingHandlerMapping、BeanNameUrlHandlerMapping和RouterFunctionMapping
 			Map<String, HandlerMapping> matchingBeans =
 					BeanFactoryUtils.beansOfTypeIncludingAncestors(context, HandlerMapping.class, true, false);
 			if (!matchingBeans.isEmpty()) {
@@ -648,6 +656,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		// 不全部查找，那就只找一个名字为`handlerMapping`的HandlerMapping 实现精准控制（绝大多数情况下，并不需要这么做）
 		else {
 			try {
+				// 根据名称获取指定的bean：handlerMapping
 				HandlerMapping hm = context.getBean(HANDLER_MAPPING_BEAN_NAME, HandlerMapping.class);
 				this.handlerMappings = Collections.singletonList(hm);
 			}
@@ -657,8 +666,9 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 
 		// Ensure we have at least one HandlerMapping, by registering a default HandlerMapping if no other mappings are found.
-		// 若一个都没找到自定义的，回滚到Spring的兜底策略，它会想容器注册两个：RequestMappingHandlerMapping和BeanNameUrlHandlerMapping
+		// 若一个都没找到自定义的，回滚到Spring的兜底策略，它会默认向容器内注入HandlerMapping：RequestMappingHandlerMapping、BeanNameUrlHandlerMapping和RouterFunctionMapping
 		if (this.handlerMappings == null) {
+			// 获取默认的处理器映射，从【DispatcherServlet.properties】文件中读取默认配置
 			this.handlerMappings = getDefaultStrategies(context, HandlerMapping.class);
 			// 输出trace日志：表示使用了兜底策略
 			// 兜底策略配置文件：DispatcherServlet.properties

@@ -58,6 +58,11 @@ import org.springframework.core.annotation.AliasFor;
  * {@code @RequestMapping} and {@code @SessionAttributes} - on
  * the controller <i>interface</i> rather than on the implementation class.
  *
+ *
+ *  用于将Web请求映射到具有灵活方法签名的请求处理类中的方法的注释
+ *
+ *
+ *
  * @author Juergen Hoeller
  * @author Arjen Poutsma
  * @author Sam Brannen
@@ -82,6 +87,7 @@ public @interface RequestMapping {
 	 * with "#" as separator.
 	 *
 	 * 给这个Mapping取一个名字。若不填写，就用HandlerMethodMappingNamingStrategy去按规则生成
+	 *
 	 * @see org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder
 	 * @see org.springframework.web.servlet.handler.HandlerMethodMappingNamingStrategy
 	 */
