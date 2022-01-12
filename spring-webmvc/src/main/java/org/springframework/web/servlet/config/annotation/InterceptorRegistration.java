@@ -141,6 +141,7 @@ public class InterceptorRegistration {
 	/**
 	 * Build the underlying interceptor. If URL patterns are provided, the returned
 	 * type is {@link MappedInterceptor}; otherwise {@link HandlerInterceptor}.
+	 * 构建底层拦截器。如果提供了URL模式，则返回的类型为MappeInterceptor；否则，拦截程序
 	 */
 	protected Object getInterceptor() {
 

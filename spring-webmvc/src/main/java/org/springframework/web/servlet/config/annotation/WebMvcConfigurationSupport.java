@@ -300,6 +300,7 @@ public class WebMvcConfigurationSupport implements ApplicationContextAware, Serv
 	/**
 	 * Return a {@link RequestMappingHandlerMapping} ordered at 0 for mapping
 	 * requests to annotated controllers.
+	 * 返回在0处排序的RequestMappingHandlerMapping，用于将请求映射到带注释的控制器
 	 */
 	@Bean
 	@SuppressWarnings("deprecation")
@@ -355,6 +356,7 @@ public class WebMvcConfigurationSupport implements ApplicationContextAware, Serv
 	 * Provide access to the shared handler interceptors used to configure
 	 * {@link HandlerMapping} instances with.
 	 * <p>This method cannot be overridden; use {@link #addInterceptors} instead.
+	 * 提供对用于配置HandlerMapping实例的共享处理程序拦截器的访问。 此方法不能被重写；改用addInterceptors
 	 */
 	protected final Object[] getInterceptors(
 			FormattingConversionService mvcConversionService,
@@ -362,9 +364,12 @@ public class WebMvcConfigurationSupport implements ApplicationContextAware, Serv
 
 		if (this.interceptors == null) {
 			InterceptorRegistry registry = new InterceptorRegistry();
+			// 添加通过实现WebMvcConfigurer接口的`addInterceptors`方法，所自定义的拦截器
 			addInterceptors(registry);
+			// 添加默认的是拦截器
 			registry.addInterceptor(new ConversionServiceExposingInterceptor(mvcConversionService));
 			registry.addInterceptor(new ResourceUrlProviderExposingInterceptor(mvcResourceUrlProvider));
+			// 因为拦截器只是一个接口，还需要有包含路径includePatterns和排除路径excludePatterns等路径信息，所以将他们封装成了MappedInterceptor
 			this.interceptors = registry.getInterceptors();
 		}
 		return this.interceptors.toArray();

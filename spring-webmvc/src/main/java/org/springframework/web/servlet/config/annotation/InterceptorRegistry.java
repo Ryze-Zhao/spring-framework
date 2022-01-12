@@ -66,6 +66,7 @@ public class InterceptorRegistry {
 
 	/**
 	 * Return all registered interceptors.
+	 * 返回所有注册的拦截器
 	 */
 	protected List<Object> getInterceptors() {
 		return this.registrations.stream()
