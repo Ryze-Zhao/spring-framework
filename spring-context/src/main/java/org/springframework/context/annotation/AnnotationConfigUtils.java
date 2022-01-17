@@ -176,11 +176,11 @@ public abstract class AnnotationConfigUtils {
 		 */
 
 
-		// 给Spring容器添加Spring内部的特殊Bean对象
+		// 创建BeanDefinitionHolder集合：给Spring容器添加Spring内部的特殊Bean对象
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
 
 		// 往 BeanDefinitionMap 注册一个 ConfigurationClassPostProcessor
-		// 判断注册器中是否含有指定的 BeanDefinition ,并注册到到注册器中, 然后将 beanName和BeanDefinition 封装到BeanDefinitionHolder
+		// 设置ConfigurationClassPostProcessor后置处理器：判断注册器中是否含有指定的 BeanDefinition ,并注册到到注册器中, 然后将 beanName和BeanDefinition 封装到BeanDefinitionHolder
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			// ConfigurationClassPostProcessor 的实现了 BeanDefinitionRegistryPostProcessor 接口
 			// 而 BeanDefinitionRegistryPostProcessor接口 继承 BeanFactoryPostProcessor接口
@@ -191,7 +191,7 @@ public abstract class AnnotationConfigUtils {
 			beanDefs.add(registerPostProcessor(registry, def, CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
 
-		// 往 BeanDefinitionMap 注册一个 AutowiredAnnotationBeanPostProcessor
+		// 自动装配注解处理器：往 BeanDefinitionMap 注册一个 AutowiredAnnotationBeanPostProcessor
 		if (!registry.containsBeanDefinition(AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			// AutowiredAnnotationBeanPostProcessor 实现了 MergedBeanDefinitionPostProcessor接口
 			// 而 MergedBeanDefinitionPostProcessor接口 继承 BeanPostProcessor接口
@@ -227,7 +227,7 @@ public abstract class AnnotationConfigUtils {
 			beanDefs.add(registerPostProcessor(registry, def, PERSISTENCE_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
 
-		// 往 BeanDefinitionMap 注册一个 EventListenerMethodProcessor
+		// 事件监听方法处理器：往 BeanDefinitionMap 注册一个 EventListenerMethodProcessor
 		if (!registry.containsBeanDefinition(EVENT_LISTENER_PROCESSOR_BEAN_NAME)) {
 			// EventListenerMethodProcessor 的实现了 BeanFactoryPostProcessor接口、ApplicationContextAware接口
 			RootBeanDefinition def = new RootBeanDefinition(EventListenerMethodProcessor.class);
@@ -235,7 +235,7 @@ public abstract class AnnotationConfigUtils {
 			beanDefs.add(registerPostProcessor(registry, def, EVENT_LISTENER_PROCESSOR_BEAN_NAME));
 		}
 
-		// 往 BeanDefinitionMap 注册一个 DefaultEventListenerFactory
+		// 默认事件监听器工厂：往 BeanDefinitionMap 注册一个 DefaultEventListenerFactory
 		if (!registry.containsBeanDefinition(EVENT_LISTENER_FACTORY_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(DefaultEventListenerFactory.class);
 			def.setSource(source);

@@ -50,10 +50,24 @@ public class AnnotatedBeanDefinitionReader {
 
 	private final BeanDefinitionRegistry registry;
 
+	/**
+	 * .
+	 * 名字生成器
+	 *  可以自定义怎么生成，默认是简单类名首字母小写
+	 */
 	private BeanNameGenerator beanNameGenerator = AnnotationBeanNameGenerator.INSTANCE;
 
+	/**
+	 * .
+	 * 范围注解解析器
+	 *  解析出范围，是单例，还是原型
+	 */
 	private ScopeMetadataResolver scopeMetadataResolver = new AnnotationScopeMetadataResolver();
 
+	/**
+	 * .
+	 * 条件评估器
+	 */
 	private ConditionEvaluator conditionEvaluator;
 
 
@@ -327,6 +341,8 @@ public class AnnotatedBeanDefinitionReader {
 	/**
 	 * Get the Environment from the given registry if possible, otherwise return a new
 	 * StandardEnvironment.
+	 *
+	 * 如果可能，从给定BeanDefinitionRegistry获取环境，否则返回新的StandardEnvironment
 	 */
 	private static Environment getOrCreateEnvironment(BeanDefinitionRegistry registry) {
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");

@@ -28,12 +28,23 @@ import org.springframework.util.ObjectUtils;
  * @since 2.5
  */
 public class BeanMetadataAttribute implements BeanMetadataElement {
-
+	/**
+	 * .
+	 * 属性名字
+	 */
 	private final String name;
 
+	/**
+	 * .
+	 * 属性值
+	 */
 	@Nullable
 	private final Object value;
 
+	/**
+	 * .
+	 * Bean的来源
+	 */
 	@Nullable
 	private Object source;
 

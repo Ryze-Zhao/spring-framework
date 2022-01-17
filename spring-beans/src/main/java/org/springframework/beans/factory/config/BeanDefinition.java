@@ -42,6 +42,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Scope identifier for the standard singleton scope: {@value}.<p>Note that extended bean factories might support further scopes.
+	 * 单例字符串singleton
 	 * 标准单例作用域的作用域标识符：{@value}。<p>请注意，扩展 `BeanFactory` 可能支持更多的作用域。
 	 *
 	 * @see #setScope
@@ -51,6 +52,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Scope identifier for the standard prototype scope: {@value}.<p>Note that extended bean factories might support further scopes.
+	 * 原型字符串prototype
 	 * 标准原型作用域的作用域标识符：{@value}。<p>请注意，扩展 `BeanFactory` 可能支持更多的作用域。
 	 *
 	 * @see #setScope
@@ -110,6 +112,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Specify the bean class name of this bean definition.<p>The class name can be modified during bean factory post-processing,typically replacing the original class name with a parsed variant of it.
+	 * 设置bean类名字,这个可能会在后置处理器中修改，比如用了GCLIB代理配置类的时候就会改
 	 * 指定此BeanDefinition的bean类名。<p>可以在  `BeanFactoryPostProcessor` 过程中修改类名，通常用解析后的变体替换原始类名。
 	 *
 	 * @see #setParentName
@@ -136,6 +139,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Override the target scope of this bean, specifying a new scope name.
+	 * 设置范围，是单例，还是原型
 	 * 重写这个bean的目标作用域，指定一个新的作用域名称。
 	 *
 	 * @see #SCOPE_SINGLETON
@@ -152,19 +156,24 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Set whether this bean should be lazily initialized.<p>If {@code false}, the bean will get instantiated on startup by bean factories that perform eager initialization of singletons.
-	 * 设置此bean是否应该延迟初始化。<p>如果{@code false}，则bean将在启动时由执行单例急切初始化的 `BeanFactory` 实例化。
+	 *
+	 * 设置是否是懒加载
+	 * <p>如果{@code false}，则bean将在启动时由执行单例急切初始化的 `BeanFactory` 实例化。
 	 */
 	void setLazyInit(boolean lazyInit);
 
 	/**
 	 * Return whether this bean should be lazily initialized, i.e. not eagerly instantiated on startup. Only applicable to a singleton bean.
+	 *
 	 * 返回是否应该延迟初始化这个bean，即在启动时不需要立即实例化。只适用于单例bean。
 	 */
 	boolean isLazyInit();
 
 	/**
 	 * Set the names of the beans that this bean depends on being initialized.The bean factory will guarantee that these beans get initialized first.
-	 * 设置此bean依赖于初始化的bean的名称。 `BeanFactory` 将保证这些bean首先得到初始化。
+	 * 设置需要先加载的依赖类名字数组
+	 *
+	 * `BeanFactory` 将保证这些bean首先得到初始化。
 	 */
 	void setDependsOn(@Nullable String... dependsOn);
 
@@ -181,6 +190,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * It does not affect explicit references by name, which will get resolved even
 	 * if the specified bean is not marked as an autowire candidate. As a consequence,
 	 * autowiring by name will nevertheless inject a bean if the name matches.
+	 * 设置是否适合给其他类做自动装配
+	 *
 	 * 设置这个bean是否可以autowired到其他bean中。 <p>请注意，此标志设计为仅影响基于类型的autowiring。
 	 * 它不影响显式引用的名称，这将得到解决，甚至如果指定的bean没有标记为autowire候选。因此，如果名称匹配，按名称自动连线将注入bean。
 	 */
@@ -188,13 +199,17 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Return whether this bean is a candidate for getting autowired into some other bean.
+	 *
+	 *
 	 * 返回这个bean是否是autowired到其他bean的候选者。
 	 */
 	boolean isAutowireCandidate();
 
 	/**
 	 * Set whether this bean is a primary autowire candidate.<p>If this value is {@code true} for exactly one bean among multiple matching candidates, it will serve as a tie-breaker.
-	 * 设置这个bean是否是主要的autowire候选者。<p>如果这个值对于多个匹配候选者中的一个bean来说是{@code true}，它将充当一个断开连接的工具。
+	 * 设置这个bean是否是主要的autowire候选者
+	 *
+	 * <p>如果这个值对于多个匹配候选者中的一个bean来说是{@code true}，它将充当一个断开连接的工具。
 	 */
 	void setPrimary(boolean primary);
 
@@ -206,6 +221,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Specify the factory bean to use, if any.This the name of the bean to call the specified factory method on.
+	 * 设置FactoryBean的名字
+	 *
 	 * 指定要使用的FactoryBean（如果有）。这是要调用指定工厂方法的bean的名称。
 	 *
 	 * @see #setFactoryMethodName
@@ -239,6 +256,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Return the constructor argument values for this bean.<p>The returned instance can be modified during bean factory post-processing.
+	 * 获取构造函数的参数
 	 * 返回此bean的构造函数参数值。<p>返回的实例可以在  `BeanFactoryPostProcessor` 期间修改。
 	 *
 	 * @return the ConstructorArgumentValues object (never {@code null})
@@ -275,7 +293,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Set the name of the initializer method.
-	 * 设置初始值设定项方法的名称。
+	 * 设置初始化方法 对应@PostConstruct
 	 * @since 5.1
 	 */
 	void setInitMethodName(@Nullable String initMethodName);
@@ -290,7 +308,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Set the name of the destroy method.
-	 * 设置销毁方法的名称。
+	 * 设置销毁时候的方法 对应@PreDestroy
 	 * @since 5.1
 	 */
 	void setDestroyMethodName(@Nullable String destroyMethodName);
