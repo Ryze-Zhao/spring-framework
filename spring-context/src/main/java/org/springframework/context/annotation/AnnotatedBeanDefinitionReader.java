@@ -283,13 +283,13 @@ public class AnnotatedBeanDefinitionReader {
 			return;
 		}
 
-		// 设置 InstanceSupplier 属性
+		// 设置 InstanceSupplier 属性（设置bean创建的回调）
 		abd.setInstanceSupplier(supplier);
-		// 解析 AnnotatedBeanDefinition 的作用域，若@Scope("prototype")，则Bean为原型类型；若@Scope("singleton")，则Bean为单例类型(默认）
+		// 解析作用域元数据：解析 AnnotatedBeanDefinition 的作用域，若@Scope("prototype")，则Bean为原型类型；若@Scope("singleton")，则Bean为单例类型(默认）
 		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
-		// 为 AnnotatedBeanDefinition 设置作用域
+		// 设置作用域：为 AnnotatedBeanDefinition 设置作用域
 		abd.setScope(scopeMetadata.getScopeName());
-		// 为 AnnotatedBeanDefinition 生成Bean名称
+		// 获取bean名字：为 AnnotatedBeanDefinition 生成Bean名称
 		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
 
 
@@ -318,7 +318,7 @@ public class AnnotatedBeanDefinitionReader {
 			}
 		}
 
-		// 自定义bean注册，通常用在applicationContext创建后，手动向容器中使用lambda表达式的方式注册bean
+		// 对bean做自定义操作注册：通常用在applicationContext创建后，手动向容器中使用lambda表达式的方式注册bean
 		// 比如：applicationContext.registerBean(UserService.class, () -> new UserService());
 		if (customizers != null) {
 			for (BeanDefinitionCustomizer customizer : customizers) {

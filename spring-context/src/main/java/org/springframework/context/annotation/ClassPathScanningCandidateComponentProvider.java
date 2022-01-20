@@ -200,7 +200,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 * {@link Controller @Controller} stereotype annotations.
 	 * <p>Also supports Java EE 6's {@link javax.annotation.ManagedBean} and
 	 * JSR-330's {@link javax.inject.Named} annotations, if available.
-	 *
+	 * 注册默认过滤器
 	 */
 	@SuppressWarnings("unchecked")
 	protected void registerDefaultFilters() {

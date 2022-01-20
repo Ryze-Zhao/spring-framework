@@ -426,25 +426,30 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				}
 				// 如果有未解析的类，则将其添加到candidates中，这样candidates不为空，就会进入到下一次的while的循环中
 				for (String candidateName : newCandidateNames) {
+					// 处理新的
 					if (!oldCandidateNames.contains(candidateName)) {
 						BeanDefinition bd = registry.getBeanDefinition(candidateName);
 						// 新注册的bean如果也是@Configuration配置类,则添加到数据，等待解析
 						if (ConfigurationClassUtils.checkConfigurationClassCandidate(bd, this.metadataReaderFactory) &&
 								!alreadyParsedClasses.contains(bd.getBeanClassName())) {
+							// 符合配置类要求就添加到candidates
 							candidates.add(new BeanDefinitionHolder(bd, candidateName));
 						}
 					}
 				}
+				// 更新候选名字
 				candidateNames = newCandidateNames;
 			}
 		}
 		while (!candidates.isEmpty());
 
 		// Register the ImportRegistry as a bean in order to support ImportAware @Configuration classes
+		// 把importStack注册为单例，为了支持ImportAware接口扩展，说明已经处理Import注解过了
 		if (sbr != null && !sbr.containsSingleton(IMPORT_REGISTRY_BEAN_NAME)) {
 			sbr.registerSingleton(IMPORT_REGISTRY_BEAN_NAME, parser.getImportRegistry());
 		}
 
+		// 有些bean定义的元数据是通过URL加载字节码文件解析来的，为了避免每次都去IO操作，会有元数据的缓存，现在处理完了就要把缓存清除了
 		if (this.metadataReaderFactory instanceof CachingMetadataReaderFactory) {
 			// Clear cache in externally provided MetadataReaderFactory; this is a no-op
 			// for a shared cache since it'll be cleared by the ApplicationContext.

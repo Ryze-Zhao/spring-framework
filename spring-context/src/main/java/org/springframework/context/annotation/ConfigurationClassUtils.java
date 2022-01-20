@@ -64,8 +64,17 @@ abstract class ConfigurationClassUtils {
 
 	private static final Log logger = LogFactory.getLog(ConfigurationClassUtils.class);
 
+	/**
+	 * .
+	 * 配置候选类型的集合
+	 */
 	private static final Set<String> candidateIndicators = new HashSet<>(8);
 
+
+	/**
+	 * .
+	 * 添加配置类型的集合Component ComponentScan Import ImportResource
+	 */
 	static {
 		candidateIndicators.add(Component.class.getName());
 		candidateIndicators.add(ComponentScan.class.getName());
@@ -83,13 +92,14 @@ abstract class ConfigurationClassUtils {
 	 * @return whether the candidate qualifies as (any kind of) configuration class
 	 */
 	public static boolean checkConfigurationClassCandidate(BeanDefinition beanDef, MetadataReaderFactory metadataReaderFactory) {
-		// 获取类名
+		// 获取Bean全限定名
 		String className = beanDef.getBeanClassName();
 		if (className == null || beanDef.getFactoryMethodName() != null) {
 			return false;
 		}
 
 		AnnotationMetadata metadata;
+		//是注解类型，元数据类名跟bean类名一样
 		if (beanDef instanceof AnnotatedBeanDefinition &&
 				className.equals(((AnnotatedBeanDefinition) beanDef).getMetadata().getClassName())) {
 			// Can reuse the pre-parsed metadata from the given BeanDefinition...
@@ -98,6 +108,7 @@ abstract class ConfigurationClassUtils {
 		else if (beanDef instanceof AbstractBeanDefinition && ((AbstractBeanDefinition) beanDef).hasBeanClass()) {
 			// Check already loaded Class if present...
 			// since we possibly can't even load the class file for this Class.
+			// 存在BeanClass就取出来
 			Class<?> beanClass = ((AbstractBeanDefinition) beanDef).getBeanClass();
 			if (BeanFactoryPostProcessor.class.isAssignableFrom(beanClass) ||
 					BeanPostProcessor.class.isAssignableFrom(beanClass) ||
@@ -105,6 +116,7 @@ abstract class ConfigurationClassUtils {
 					EventListenerFactory.class.isAssignableFrom(beanClass)) {
 				return false;
 			}
+			// 取出元数据
 			metadata = AnnotationMetadata.introspect(beanClass);
 		}
 		else {
@@ -120,12 +132,14 @@ abstract class ConfigurationClassUtils {
 				return false;
 			}
 		}
-
+		// 获取Configuration注解的属性
 		Map<String, Object> config = metadata.getAnnotationAttributes(Configuration.class.getName());
+		// 如果proxyBeanMethods=true，可能会用动态代理
 		if (config != null && !Boolean.FALSE.equals(config.get("proxyBeanMethods"))) {
 			// 含有@Configuration注解，并且proxyBeanMethods属性设置为true（默认不写为true哈），那么对应的BeanDefinition的configurationClass属性值设置为full
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_FULL);
 		}
+		// 设置属性为lite
 		else if (config != null || isConfigurationCandidate(metadata)) {
 			// 含有@Bean、@Component(及派生的注解)、@ComponentScan、@Import、@ImportResource注解，configurationClass属性值设置为lite
 			// 也可能是含有@Configuration注解，并且proxyBeanMethods属性设置为false
@@ -137,6 +151,7 @@ abstract class ConfigurationClassUtils {
 
 		// It's a full or lite configuration candidate... Let's determine the order value, if any.
 		Integer order = getOrder(metadata);
+		// 如果有排序，设置序号属性
 		if (order != null) {
 			beanDef.setAttribute(ORDER_ATTRIBUTE, order);
 		}
@@ -153,12 +168,13 @@ abstract class ConfigurationClassUtils {
 	 */
 	public static boolean isConfigurationCandidate(AnnotationMetadata metadata) {
 		// Do not consider an interface or an annotation...
-		// 不要考虑接口
+		// 非接口
 		if (metadata.isInterface()) {
 			return false;
 		}
 
 		// Any of the typical annotations found?
+		// 存在 Component ComponentScan Import ImportResource任意一个注解
 		// candidateIndicators 是一个静态常量，在初始化时，包含了四个元素,分别为@Component,@ComponentScan,@Import,@ImportResource这四个注解
 		// 只要这个类上添加了这四种注解中的一个，就便是这个类是一个配置类，这个类对应的BeanDefinition中的configurationClass属性值为lite
 		for (String indicator : candidateIndicators) {

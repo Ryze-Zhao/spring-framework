@@ -122,6 +122,10 @@ public class StandardMethodMetadata implements MethodMetadata {
 		return Modifier.isFinal(this.introspectedMethod.getModifiers());
 	}
 
+	/**
+	 * .
+	 * 可以覆盖的条件，非静态且非final且不是私有的
+	 */
 	@Override
 	public boolean isOverridable() {
 		return !isStatic() && !isFinal() && !isPrivate();

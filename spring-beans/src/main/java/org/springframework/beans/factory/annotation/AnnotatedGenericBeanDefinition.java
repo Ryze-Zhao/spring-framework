@@ -43,14 +43,23 @@ import org.springframework.util.Assert;
 @SuppressWarnings("serial")
 public class AnnotatedGenericBeanDefinition extends GenericBeanDefinition implements AnnotatedBeanDefinition {
 
+	/**
+	 * .
+	 * 注解元数据
+	 */
 	private final AnnotationMetadata metadata;
 
+	/**
+	 * .
+	 * 工厂方法源数据
+	 */
 	@Nullable
 	private MethodMetadata factoryMethodMetadata;
 
 
 	/**
 	 * Create a new AnnotatedGenericBeanDefinition for the given bean class.
+	 * 通过beanClass来获取元数据
 	 * @param beanClass the loaded bean class
 	 */
 	public AnnotatedGenericBeanDefinition(Class<?> beanClass) {
@@ -65,6 +74,7 @@ public class AnnotatedGenericBeanDefinition extends GenericBeanDefinition implem
 	 * {@link org.springframework.context.annotation.ScannedGenericBeanDefinition
 	 * ScannedGenericBeanDefinition}, however the semantics of the latter indicate that a
 	 * bean was discovered specifically via component-scanning as opposed to other means.
+	 * 通过注解元数据来获取beanClass
 	 * @param metadata the annotation metadata for the bean class in question
 	 * @since 3.1.1
 	 */
@@ -82,6 +92,7 @@ public class AnnotatedGenericBeanDefinition extends GenericBeanDefinition implem
 	/**
 	 * Create a new AnnotatedGenericBeanDefinition for the given annotation metadata,
 	 * based on an annotated class and a factory method on that class.
+	 * 通过注解元数据和方法元数据创建
 	 * @param metadata the annotation metadata for the bean class in question
 	 * @param factoryMethodMetadata metadata for the selected factory method
 	 * @since 4.1.1

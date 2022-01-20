@@ -200,16 +200,28 @@ class ConfigurationClassParser {
 		this.deferredImportSelectorHandler.process();
 	}
 
+	/**
+	 * .
+	 * 根据className和beanName解析配置文件，需要去URL加载字节码，所以有读取元数据
+	 */
 	protected final void parse(@Nullable String className, String beanName) throws IOException {
 		Assert.notNull(className, "No bean class name for configuration class bean definition");
 		MetadataReader reader = this.metadataReaderFactory.getMetadataReader(className);
 		processConfigurationClass(new ConfigurationClass(reader, beanName), DEFAULT_EXCLUSION_FILTER);
 	}
 
+	/**
+	 * .
+	 * 根据Class和beanName解析配置文件，有Class对象
+	 */
 	protected final void parse(Class<?> clazz, String beanName) throws IOException {
 		processConfigurationClass(new ConfigurationClass(clazz, beanName), DEFAULT_EXCLUSION_FILTER);
 	}
 
+	/**
+	 * .
+	 * 根据注解元数据和beanName解析配置文件，有注解元数据
+	 */
 	protected final void parse(AnnotationMetadata metadata, String beanName) throws IOException {
 		processConfigurationClass(new ConfigurationClass(metadata, beanName), DEFAULT_EXCLUSION_FILTER);
 	}
@@ -232,6 +244,7 @@ class ConfigurationClassParser {
 	protected void processConfigurationClass(ConfigurationClass configClass, Predicate<String> filter) throws IOException {
 		// 通过AnnotationMetadata 接口判断是否需要跳过（具体看里面实现吧）
 		if (this.conditionEvaluator.shouldSkip(configClass.getMetadata(), ConfigurationPhase.PARSE_CONFIGURATION)) {
+			// 有条件注解 且 不满足的返回
 			return;
 		}
 
@@ -239,15 +252,19 @@ class ConfigurationClassParser {
 		// 判断同一个配置类是否重复加载过，如果重复加载过，则合并，否则从集合中移除旧的配置类，后续逻辑将处理新的配置类
 		ConfigurationClass existingClass = this.configurationClasses.get(configClass);
 		if (existingClass != null) {
+			// 如果新的（configClass）是Import的
 			if (configClass.isImported()) {
+				// 如果旧的（existingClass）也是Import的
 				if (existingClass.isImported()) {
+					// 那就新旧一起合并了
 					existingClass.mergeImportedBy(configClass);
 				}
 				// Otherwise ignore new imported config class; existing non-imported class overrides it.
+				// 如果旧的不是Import的，那就忽略新的
 				return;
 			}
 			else {
-				// 旧换新
+				// 如果新的（configClass）不是通过import注解进来的，那就用新的换掉旧的（可以理解为旧的删除）
 				// Explicit bean definition found, probably replacing an import.
 				// Let's remove the old one and go with the new one.
 				this.configurationClasses.remove(configClass);
@@ -256,15 +273,17 @@ class ConfigurationClassParser {
 		}
 
 		// Recursively process the configuration class and its superclass hierarchy.
-		// 处理配置类，由于配置类可能存在父类(若父类的全类名是以java开头的，则除外)，
-		// 所以需要将configClass变成sourceClass去解析，然后返回sourceClass的父类。
+		//
+		// 获取configClass源类，并封装原始的类和元数据为SourceClass
+		//
+		// 处理配置类：由于配置类可能存在父类(若父类的全类名是以java开头的，则除外)，所以需要将configClass变成sourceClass去解析，然后返回sourceClass的父类。
 		// 如果此时父类为空，则不会进行while循环去解析，如果父类不为空，则会循环的去解析父类（递归）
 		//
 		// SourceClass的意义：简单的包装类，目的是为了以统一的方式去处理带有注解的类，不管这些类是如何加载的
 		SourceClass sourceClass = asSourceClass(configClass, filter);
 		// 递归解析
 		do {
-			//【真正解析配置类】
+			//【真正解析配置类】：处理配置类，如果有父类 且不是java开头的类，继续处理，直到没有sourceClass
 			sourceClass = doProcessConfigurationClass(configClass, sourceClass, filter);
 		}
 		while (sourceClass != null);
@@ -407,6 +426,7 @@ class ConfigurationClassParser {
 
 	/**
 	 * Register member (nested) classes that happen to be configuration classes themselves.
+	 * 注册恰好是配置类本身的成员（嵌套）类。
 	 */
 	private void processMemberClasses(ConfigurationClass configClass, SourceClass sourceClass,
 			Predicate<String> filter) throws IOException {

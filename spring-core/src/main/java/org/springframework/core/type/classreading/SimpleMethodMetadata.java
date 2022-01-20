@@ -86,6 +86,10 @@ final class SimpleMethodMetadata implements MethodMetadata {
 		return (this.access & Opcodes.ACC_FINAL) != 0;
 	}
 
+	/**
+	 * .
+	 * 可以覆盖的条件，非静态且非final且不是私有的
+	 */
 	@Override
 	public boolean isOverridable() {
 		return !isStatic() && !isFinal() && !isPrivate();

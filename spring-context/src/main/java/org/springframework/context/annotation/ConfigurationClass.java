@@ -209,13 +209,21 @@ final class ConfigurationClass {
 		return this.importedResources;
 	}
 
+
+	/**
+	 * .
+	 * 进行验证，如果是proxyBeanMethods=true，默认用GCLIB做代理，是继承的，所以不可以是final类
+	 */
 	void validate(ProblemReporter problemReporter) {
 		// A configuration class may not be final (CGLIB limitation) unless it declares proxyBeanMethods=false
 		Map<String, Object> attributes = this.metadata.getAnnotationAttributes(Configuration.class.getName());
+		// 要GCLIB代理
 		if (attributes != null && (Boolean) attributes.get("proxyBeanMethods")) {
+			// 配置类不可以是final的
 			if (this.metadata.isFinal()) {
 				problemReporter.error(new FinalConfigurationProblem());
 			}
+			// 验证方法可覆盖
 			for (BeanMethod beanMethod : this.beanMethods) {
 				beanMethod.validate(problemReporter);
 			}
