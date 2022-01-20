@@ -468,6 +468,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		Map<String, AbstractBeanDefinition> configBeanDefs = new LinkedHashMap<>();
 		for (String beanName : beanFactory.getBeanDefinitionNames()) {
 			BeanDefinition beanDef = beanFactory.getBeanDefinition(beanName);
+			// 获取配置属性
 			Object configClassAttr = beanDef.getAttribute(ConfigurationClassUtils.CONFIGURATION_CLASS_ATTRIBUTE);
 			AnnotationMetadata annotationMetadata = null;
 			MethodMetadata methodMetadata = null;
@@ -487,6 +488,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 								annotationMetadata != null && !ConfigurationClassUtils.hasBeanMethods(annotationMetadata));
 					if (!liteConfigurationCandidateWithoutBeanMethods) {
 						try {
+							// bean注解的方法设置类加载器
 							abd.resolveBeanClass(this.beanClassLoader);
 						}
 						catch (Throwable ex) {
@@ -496,11 +498,13 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 					}
 				}
 			}
+			// 这里就是前面的full 跟 lite的用处了，full可以做增强
 			if (ConfigurationClassUtils.CONFIGURATION_CLASS_FULL.equals(configClassAttr)) {
 				if (!(beanDef instanceof AbstractBeanDefinition)) {
 					throw new BeanDefinitionStoreException("Cannot enhance @Configuration bean definition '" +
 							beanName + "' since it is not stored in an AbstractBeanDefinition subclass");
 				}
+				// 已经存在单例了，就不能增强了
 				else if (logger.isInfoEnabled() && beanFactory.containsSingleton(beanName)) {
 					logger.info("Cannot enhance @Configuration bean definition '" + beanName +
 							"' since its singleton instance has been created too early. The typical cause " +
@@ -510,6 +514,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				configBeanDefs.put(beanName, (AbstractBeanDefinition) beanDef);
 			}
 		}
+		// 没有要增强的配置bean直接返回
 		if (configBeanDefs.isEmpty() || NativeDetector.inNativeImage()) {
 			// nothing to enhance -> return immediately
 			enhanceConfigClasses.end();
@@ -520,16 +525,20 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		for (Map.Entry<String, AbstractBeanDefinition> entry : configBeanDefs.entrySet()) {
 			AbstractBeanDefinition beanDef = entry.getValue();
 			// If a @Configuration class gets proxied, always proxy the target class
+			// 设置代理目标类属性
 			beanDef.setAttribute(AutoProxyUtils.PRESERVE_TARGET_CLASS_ATTRIBUTE, Boolean.TRUE);
 			// Set enhanced subclass of the user-specified bean class
+			// 获取代理的目标类
 			Class<?> configClass = beanDef.getBeanClass();
 			// 调用ConfigurationClassEnhancer.enhance()方法创建增强类
 			Class<?> enhancedClass = enhancer.enhance(configClass, this.beanClassLoader);
+			// 进行代理
 			if (configClass != enhancedClass) {
 				if (logger.isTraceEnabled()) {
 					logger.trace(String.format("Replacing bean definition '%s' existing class '%s' with " +
 							"enhanced class '%s'", entry.getKey(), configClass.getName(), enhancedClass.getName()));
 				}
+				// 设置为CGLIB动态代理后的类
 				beanDef.setBeanClass(enhancedClass);
 			}
 		}

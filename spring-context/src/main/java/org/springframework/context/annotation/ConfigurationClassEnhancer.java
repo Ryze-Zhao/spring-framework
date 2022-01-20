@@ -95,6 +95,7 @@ class ConfigurationClassEnhancer {
 	 * @return the enhanced subclass
 	 */
 	public Class<?> enhance(Class<?> configClass, @Nullable ClassLoader classLoader) {
+		// 如果已经是EnhancedConfiguration，已经被代理过了
 		if (EnhancedConfiguration.class.isAssignableFrom(configClass)) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(String.format("Ignoring request to enhance %s as it has " +
@@ -106,7 +107,7 @@ class ConfigurationClassEnhancer {
 			}
 			return configClass;
 		}
-		// 核心代码为 newEnHancer()
+		// 进行动态代理：核心代码为 newEnHancer()
 		Class<?> enhancedClass = createClass(newEnhancer(configClass, classLoader));
 		if (logger.isTraceEnabled()) {
 			logger.trace(String.format("Successfully enhanced %s; enhanced class name is: %s",
@@ -121,11 +122,13 @@ class ConfigurationClassEnhancer {
 	private Enhancer newEnhancer(Class<?> configSuperClass, @Nullable ClassLoader classLoader) {
 		// CGLIB的动态代理基于继承
 		Enhancer enhancer = new Enhancer();
+		// 设置父类
 		enhancer.setSuperclass(configSuperClass);
 		// 为新创建的代理对象设置一个父接口
 		enhancer.setInterfaces(new Class<?>[] {EnhancedConfiguration.class});
 		enhancer.setUseFactory(false);
 		enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
+		// 生成策略
 		enhancer.setStrategy(new BeanFactoryAwareGeneratorStrategy(classLoader));
 		// 添加了两个MethodInterceptor。(BeanMethodInterceptor和BeanFactoryAwareMethodInterceptor)
 		// 通过这两个类的名称，可以猜出，前者是对加了@Bean注解的方法进行增强，后者是为代理对象的beanFactory属性进行增强
@@ -133,6 +136,7 @@ class ConfigurationClassEnhancer {
 		// 类似于SpringMVC中的拦截器，每次执行请求时，都会对经过拦截器。
 		// 同样，加了MethodInterceptor，那么在每次代理对象的方法时，都会先经过MethodInterceptor中的方法
 		enhancer.setCallbackFilter(CALLBACK_FILTER);
+		// 过滤器类型
 		enhancer.setCallbackTypes(CALLBACK_FILTER.getCallbackTypes());
 		return enhancer;
 	}
@@ -145,6 +149,7 @@ class ConfigurationClassEnhancer {
 		Class<?> subclass = enhancer.createClass();
 		// Registering callbacks statically (as opposed to thread-local)
 		// is critical for usage in an OSGi environment (SPR-5932)...
+		//注册回调
 		Enhancer.registerStaticCallbacks(subclass, CALLBACKS);
 		return subclass;
 	}
