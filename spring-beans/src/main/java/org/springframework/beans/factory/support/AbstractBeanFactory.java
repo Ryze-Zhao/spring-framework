@@ -321,7 +321,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 			// Check if bean definition exists in this factory.
 			/*
-			 * <Spring分析点20-4> 如果容器中没有找到，则从父类容器中加载（检查该beanName信息是否存在于工厂中）
+			 * <Spring分析点20-4> 如果容器中没有找到BeanDefinition，则从父类容器中加载（检查该beanName信息是否存在于工厂中）
 			 *
 			 * !containsBeanDefinition(beanName):如果beanDefinitionMap中也就是当前加载的XML配置文件所生成的在类中不包括beanName,则尝试从parentBeanFactory中检测
 			 * 注意:
@@ -1935,6 +1935,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				if (!this.alreadyCreated.contains(beanName)) {
 					// Let the bean definition get re-merged now that we're actually creating
 					// the bean... just in case some of its metadata changed in the meantime.
+					// 需要重新获取合并 BeanDefinition，以免元数据被同时修改
 					// 从 mergedBeanDefinitions 中删除 beanName，并在下次访问时重新创建它。
 					clearMergedBeanDefinition(beanName);
 					// 添加到已创建 bean 集合中
@@ -2035,6 +2036,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 
 		/*
+		 * 创建FactoryBean中的Bean
 		 * 注意：
 		 *  如果我们创建的bean就是我们所需要的bean,那么以上两步就可以满足业务要求
 		 *  如果需要使用FactoryBean的getObject()方法获取bean对象的话,需要下面的业务逻辑
@@ -2046,6 +2048,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			mbd.isFactoryBean = true;
 		}
 		else {
+			// 从FactoryBean的缓存中获取
 			object = getCachedObjectForFactoryBean(beanName);
 		}
 		// 若 object 依然为空，则可以确认，beanInstance 一定是 FactoryBean 。从而，使用 FactoryBean 获得 Bean 对象

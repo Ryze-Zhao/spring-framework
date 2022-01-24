@@ -274,6 +274,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 			Object singletonObject = this.singletonObjects.get(beanName);
 			//  为空，开始加载过程
 			if (singletonObject == null) {
+				// 若单例在销毁中，报异常
 				if (this.singletonsCurrentlyInDestruction) {
 					throw new BeanCreationNotAllowedException(beanName,
 							"Singleton bean creation not allowed while singletons of this factory are in destruction " +
@@ -282,8 +283,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				if (logger.isDebugEnabled()) {
 					logger.debug("Creating shared instance of singleton bean '" + beanName + "'");
 				}
-				// <Spring分析点24-2> 加载前置处理
+				// <Spring分析点24-2> 加载前置处理：做个正在创建的标记
 				beforeSingletonCreation(beanName);
+				// 是否创建单例成功
 				boolean newSingleton = false;
 				boolean recordSuppressedExceptions = (this.suppressedExceptions == null);
 				if (recordSuppressedExceptions) {
@@ -293,6 +295,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					// <Spring分析点24-3> 初始化 bean
 					// 这个过程其实是调用 createBean() 方法
 					singletonObject = singletonFactory.getObject();
+					// 只要获取了就是新单例
 					newSingleton = true;
 				}
 				catch (IllegalStateException ex) {
@@ -318,7 +321,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					// <Spring分析点24-4> 后置处理
 					afterSingletonCreation(beanName);
 				}
-				// <Spring分析点24-5> 加入缓存中
+				// <Spring分析点24-5> 如果是新的单例，就加入到单例缓存集合
 				if (newSingleton) {
 					addSingleton(beanName, singletonObject);
 				}
@@ -416,6 +419,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 */
 	protected void beforeSingletonCreation(String beanName) {
 		if (!this.inCreationCheckExclusions.contains(beanName) && !this.singletonsCurrentlyInCreation.add(beanName)) {
+			// 没有在排除范围里内且添加不成功，就抛出循环引用异常了
 			throw new BeanCurrentlyInCreationException(beanName);
 		}
 	}

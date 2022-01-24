@@ -1257,7 +1257,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Make sure bean class is actually resolved at this point.
 		// 解析 bean ，将 bean 类名解析为 class 引用。
 		Class<?> beanClass = resolveBeanClass(mbd, beanName);
-
+		// 检查是public修饰的
 		if (beanClass != null && !Modifier.isPublic(beanClass.getModifiers()) && !mbd.isNonPublicAccessAllowed()) {
 			throw new BeanCreationException(mbd.getResourceDescription(), beanName,
 					"Bean class isn't public, and non-public access not allowed: " + beanClass.getName());
@@ -1269,15 +1269,19 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			return obtainFromSupplier(instanceSupplier, beanName);
 		}
 
-		// <Spring分析点32-2> 使用 FactoryBean 的 factory-method 来创建，支持静态工厂和实例工厂（如果工厂方法不为空,则使用工厂方法初始化策略）
+		// <Spring分析点32-2> 有工厂方法名的，通过工厂方法获取
+		// 使用 FactoryBean 的 factory-method 来创建，支持静态工厂和实例工厂（如果工厂方法不为空,则使用工厂方法初始化策略）
 		if (mbd.getFactoryMethodName() != null) {
 			return instantiateUsingFactoryMethod(beanName, mbd, args);
 		}
 
 		// Shortcut when re-creating the same bean...
-		// <Spring分析点32-3> 重新创建同一bean时的快捷方式。。。
+		// <Spring分析点32-3> 重新创建同一bean时
+		// 标记下，防止重复创建同一个bean
 		boolean resolved = false;
+		//是否需要自动装配，构造器有参数
 		boolean autowireNecessary = false;
+		// 无参
 		if (args == null) {
 			// constructorArgumentLock 构造函数的常用锁
 			synchronized (mbd.constructorArgumentLock) {
@@ -1292,7 +1296,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 		// 如果已经解析过,则使用解析好的构造函数方法不需要再次锁定，直接注入即可
 		if (resolved) {
-			// <Spring分析点32-3.1> autowire 自动注入，调用构造函数自动注入
+			// <Spring分析点32-3.1> autowire 自动注入，调用有参构造函数自动注入
 			if (autowireNecessary) {
 				return autowireConstructor(beanName, mbd, null, null);
 			}
@@ -1314,7 +1318,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Preferred constructors for default construction?
-		// <Spring分析点32-4.1> 选择构造方法，创建 Bean 。
+		// <Spring分析点32-4.1> 找出最适合的构造方法，创建 Bean
 		ctors = mbd.getPreferredConstructors();
 		if (ctors != null) {
 			return autowireConstructor(beanName, mbd, ctors, null);
@@ -1350,6 +1354,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				this.currentlyCreatedBean.set(outerBean);
 			}
 			else {
+				// 为空删除
 				this.currentlyCreatedBean.remove();
 			}
 		}
@@ -1375,7 +1380,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	@Override
 	protected Object getObjectForBeanInstance(
 			Object beanInstance, String name, String beanName, @Nullable RootBeanDefinition mbd) {
-
+		// 如果有正在创建的bean要建立依赖关系
 		String currentlyCreatedBean = this.currentlyCreatedBean.get();
 		if (currentlyCreatedBean != null) {
 			registerDependentBean(beanName, currentlyCreatedBean);

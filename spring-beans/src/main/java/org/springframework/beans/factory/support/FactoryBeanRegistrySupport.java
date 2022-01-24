@@ -119,7 +119,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 					else {
 						// <Spring分析点22-1.3> 需要后续处理
 						if (shouldPostProcess) {
-							// 若该 Bean 处于创建中，则返回非处理对象，而不是存储它
+							// 直接返回：若该 Bean 处于创建中，则返回非处理对象，而不是存储它
 							if (isSingletonCurrentlyInCreation(beanName)) {
 								// Temporarily return non-post-processed object, not storing it yet..
 								return object;
