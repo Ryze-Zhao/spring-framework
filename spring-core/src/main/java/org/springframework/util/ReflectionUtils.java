@@ -380,6 +380,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * Get all declared methods on the leaf class and all superclasses.
 	 * Leaf class methods are included first.
+	 * 用反射获取方法：如果允许非`Public`的方法，就获取所有申明的方法，包括父类的，否则就是`Public`的方法，包括父类的，默认是允许的，我们直接看允许的就可以，原理一样的
 	 * @param leafClass the class to introspect
 	 * @throws IllegalStateException if introspection fails
 	 */

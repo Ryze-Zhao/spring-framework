@@ -522,15 +522,18 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// 如果获取的class 属性不为null，则克隆该 BeanDefinition
 		// 主要是因为该动态解析的 class 无法保存到到共享的 BeanDefinition
 		Class<?> resolvedClass = resolveBeanClass(mbd, beanName);
+		// 能解析出来，没有BeanClass只有BeanClassName
 		if (resolvedClass != null && !mbd.hasBeanClass() && mbd.getBeanClassName() != null) {
+			// 重新创建RootBeanDefinition
 			mbdToUse = new RootBeanDefinition(mbd);
+			// 设置解析的类型
 			mbdToUse.setBeanClass(resolvedClass);
 		}
 
 		// Prepare method overrides.
 		// 准备方法重写 override。
 		try {
-			// <Spring分析点26-2> 验证和准备覆盖方法
+			// <Spring分析点26-2> 验证和准备覆盖方法，处理look-up方法
 			mbdToUse.prepareMethodOverrides();
 		}
 		catch (BeanDefinitionValidationException ex) {
@@ -594,16 +597,16 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Instantiate the bean.
 		// BeanWrapper 是对 Bean 的包装，其接口中所定义的功能很简单包括设置获取被包装的对象，获取被包装 bean 的属性描述器
 		BeanWrapper instanceWrapper = null;
-		// <Spring分析点27-1> 单例模型，则从未完成的 FactoryBean 缓存中删除
+		// <Spring分析点27-1> 如果单例模型，则从未完成的 FactoryBean 缓存中删除，并获取到BeanWrapper
 		if (mbd.isSingleton()) {
 			instanceWrapper = this.factoryBeanInstanceCache.remove(beanName);
 		}
-		// <Spring分析点27-2> 使用Bean对应的实例化策略来创建新的实例：工厂方法、构造函数自动注入、简单初始化
+		// <Spring分析点27-2> 如果上面没获取到BeanWrapper，就使用Bean对应的实例化策略来创建新的实例：工厂方法、构造函数自动注入、简单初始化
 		// 实例化bean,将 BeanDefinition 转换为 BeanWrapper
 		if (instanceWrapper == null) {
 			instanceWrapper = createBeanInstance(beanName, mbd, args);
 		}
-		// 包装的实例对象(获取已实例化完成的bean,但依赖处理和属性注入还未进行)
+		// 获取原始Bean：即包装的实例对象(获取已实例化完成的bean,但依赖处理和属性注入还未进行)
 		Object bean = instanceWrapper.getWrappedInstance();
 		// 包装的实例对象的类型
 		Class<?> beanType = instanceWrapper.getWrappedClass();
