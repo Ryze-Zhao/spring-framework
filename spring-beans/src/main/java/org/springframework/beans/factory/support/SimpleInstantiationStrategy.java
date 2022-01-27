@@ -68,7 +68,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 	@Override
 	public Object instantiate(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner) {
 		// Don't override the class with CGLIB if no overrides.
-		// 没有覆盖，直接使用反射实例化即可
+		// 没有覆盖，直接使用反射实例化即可（无lookup重载的方法）
 		if (!bd.hasMethodOverrides()) {
 			Constructor<?> constructorToUse;
 			synchronized (bd.constructorArgumentLock) {
@@ -104,7 +104,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 		}
 		else {
 			// Must generate CGLIB subclass.
-			// 生成 CGLIB 创建的子类对象
+			// 生成 CGLIB 创建的子类对象（有lookup重载的话要用CGLIB动态代理了）
 			return instantiateWithMethodInjection(bd, beanName, owner);
 		}
 	}

@@ -342,7 +342,14 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 		return postProcessProperties(pvs, bean, beanName);
 	}
 
-
+	/**
+	 * .
+	 * 解析Resource注解
+	 * @param beanName
+	 * @param clazz
+	 * @param pvs
+	 * @return
+	 */
 	private InjectionMetadata findResourceMetadata(String beanName, Class<?> clazz, @Nullable PropertyValues pvs) {
 		// Fall back to class name as cache key, for backwards compatibility with custom callers.
 		String cacheKey = (StringUtils.hasLength(beanName) ? beanName : clazz.getName());
@@ -355,6 +362,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 					if (metadata != null) {
 						metadata.clear(pvs);
 					}
+					//创建Resource注解注入元数据
 					metadata = buildResourceMetadata(clazz);
 					this.injectionMetadataCache.put(cacheKey, metadata);
 				}
@@ -373,7 +381,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 
 		do {
 			final List<InjectionMetadata.InjectedElement> currElements = new ArrayList<>();
-
+			// 查询是否有webService，ejb，Resource的属性注解，但是不支持静态属性
 			ReflectionUtils.doWithLocalFields(targetClass, field -> {
 				if (webServiceRefClass != null && field.isAnnotationPresent(webServiceRefClass)) {
 					if (Modifier.isStatic(field.getModifiers())) {
@@ -396,7 +404,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 					}
 				}
 			});
-
+			// 处理方法，桥接方法可以理解为解决老版本的类型转换问题，这里你就理解成就是普通方法
 			ReflectionUtils.doWithLocalMethods(targetClass, method -> {
 				Method bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
 				if (!BridgeMethodResolver.isVisibilityBridgeMethodPair(method, bridgedMethod)) {
@@ -405,9 +413,11 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 				if (method.equals(ClassUtils.getMostSpecificMethod(method, clazz))) {
 					if (webServiceRefClass != null && bridgedMethod.isAnnotationPresent(webServiceRefClass)) {
 						if (Modifier.isStatic(method.getModifiers())) {
+							// 静态,抛异常
 							throw new IllegalStateException("@WebServiceRef annotation is not supported on static methods");
 						}
 						if (method.getParameterCount() != 1) {
+							// 需要一个参数，否则抛异常
 							throw new IllegalStateException("@WebServiceRef annotation requires a single-arg method: " + method);
 						}
 						PropertyDescriptor pd = BeanUtils.findPropertyForMethod(bridgedMethod, clazz);
@@ -415,9 +425,11 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 					}
 					else if (ejbClass != null && bridgedMethod.isAnnotationPresent(ejbClass)) {
 						if (Modifier.isStatic(method.getModifiers())) {
+							// 静态,抛异常
 							throw new IllegalStateException("@EJB annotation is not supported on static methods");
 						}
 						if (method.getParameterCount() != 1) {
+							// 需要一个参数，否则抛异常
 							throw new IllegalStateException("@EJB annotation requires a single-arg method: " + method);
 						}
 						PropertyDescriptor pd = BeanUtils.findPropertyForMethod(bridgedMethod, clazz);
@@ -425,10 +437,12 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 					}
 					else if (bridgedMethod.isAnnotationPresent(Resource.class)) {
 						if (Modifier.isStatic(method.getModifiers())) {
+							// 静态,抛异常
 							throw new IllegalStateException("@Resource annotation is not supported on static methods");
 						}
 						Class<?>[] paramTypes = method.getParameterTypes();
 						if (paramTypes.length != 1) {
+							// 需要一个参数，否则抛异常
 							throw new IllegalStateException("@Resource annotation requires a single-arg method: " + method);
 						}
 						if (!this.ignoredResourceTypes.contains(paramTypes[0].getName())) {
