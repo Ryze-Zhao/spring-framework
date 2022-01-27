@@ -565,6 +565,13 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			return pvs;
 		}
 
+		/**
+		 * .
+		 * 如果是ImportAware类型的，就会设置bean的注解信息
+		 * @param bean the new bean instance
+		 * @param beanName the name of the bean
+		 * @return
+		 */
 		@Override
 		public Object postProcessBeforeInitialization(Object bean, String beanName) {
 			if (bean instanceof ImportAware) {

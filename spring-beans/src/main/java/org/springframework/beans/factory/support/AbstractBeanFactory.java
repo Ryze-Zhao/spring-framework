@@ -2095,6 +2095,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @see org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor
 	 */
 	protected boolean requiresDestruction(Object bean, RootBeanDefinition mbd) {
+		// 检查是否是有销毁的方法注册的，有方法名都是可以的，或者有DestructionAwareBeanPostProcessor处理器来判断的
 		return (bean.getClass() != NullBean.class && (DisposableBeanAdapter.hasDestroyMethod(bean, mbd) ||
 				(hasDestructionAwareBeanPostProcessors() && DisposableBeanAdapter.hasApplicableProcessors(
 						bean, getBeanPostProcessorCache().destructionAware))));
@@ -2114,7 +2115,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 */
 	protected void registerDisposableBeanIfNecessary(String beanName, Object bean, RootBeanDefinition mbd) {
 		AccessControlContext acc = (System.getSecurityManager() != null ? getAccessControlContext() : null);
+		// 有销毁接口的
 		if (!mbd.isPrototype() && requiresDestruction(bean, mbd)) {
+			// 单例的情况，注册销毁回调
 			if (mbd.isSingleton()) {
 				// Register a DisposableBean implementation that performs all destruction
 				// work for the given bean: DestructionAwareBeanPostProcessors,
@@ -2122,6 +2125,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				registerDisposableBean(beanName, new DisposableBeanAdapter(
 						bean, beanName, mbd, getBeanPostProcessorCache().destructionAware, acc));
 			}
+			// 自定义的，注册到Scope
 			else {
 				// A bean with a custom scope...
 				Scope scope = this.scopes.get(mbd.getScope());

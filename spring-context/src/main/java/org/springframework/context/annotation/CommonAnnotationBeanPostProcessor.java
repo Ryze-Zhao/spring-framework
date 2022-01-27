@@ -545,14 +545,18 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 	 */
 	protected Object autowireResource(BeanFactory factory, LookupElement element, @Nullable String requestingBeanName)
 			throws NoSuchBeanDefinitionException {
-
+		// 自动装配的对象
 		Object resource;
+		// 自动装配的名字
 		Set<String> autowiredBeanNames;
+		// 依赖的属性名
 		String name = element.name;
 
 		if (factory instanceof AutowireCapableBeanFactory) {
 			AutowireCapableBeanFactory beanFactory = (AutowireCapableBeanFactory) factory;
+			// 创建依赖描述
 			DependencyDescriptor descriptor = element.getDependencyDescriptor();
+			// 不包含依赖对象，或者依赖对象的bean定义，只能通过解析类型去处理
 			if (this.fallbackToDefaultTypeMatch && element.isDefaultName && !factory.containsBean(name)) {
 				autowiredBeanNames = new LinkedHashSet<>();
 				resource = beanFactory.resolveDependency(descriptor, requestingBeanName, autowiredBeanNames, null);
@@ -560,8 +564,10 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 					throw new NoSuchBeanDefinitionException(element.getLookupType(), "No resolvable resource object");
 				}
 			}
+			// 获取依赖对象，里面就是getBean
 			else {
 				resource = beanFactory.resolveBeanByName(name, descriptor);
+				// 装配好的bean名字
 				autowiredBeanNames = Collections.singleton(name);
 			}
 		}
@@ -574,6 +580,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 			ConfigurableBeanFactory beanFactory = (ConfigurableBeanFactory) factory;
 			for (String autowiredBeanName : autowiredBeanNames) {
 				if (requestingBeanName != null && beanFactory.containsBean(autowiredBeanName)) {
+					// 注册依赖关系
 					beanFactory.registerDependentBean(autowiredBeanName, requestingBeanName);
 				}
 			}

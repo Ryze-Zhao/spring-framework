@@ -720,7 +720,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Register bean as disposable.
-		// <Spring分析点27-8> 注册DisposableBean
+		// <Spring分析点27-8> 注册DisposableBean（销毁回调）
 		try {
 			registerDisposableBeanIfNecessary(beanName, bean, mbd);
 		}
@@ -1534,11 +1534,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				}
 			}
 		}
-		// bean 的属性值
-		PropertyValues pvs = (mbd.hasPropertyValues() ? mbd.getPropertyValues() : null);
-
-		int resolvedAutowireMode = mbd.getResolvedAutowireMode();
 		// <Spring分析点28-2> 自动注入
+		// 获取Bean 属性值
+		PropertyValues pvs = (mbd.hasPropertyValues() ? mbd.getPropertyValues() : null);
+		// 获取自动装配模式,默认是AUTOWIRE_NO
+		int resolvedAutowireMode = mbd.getResolvedAutowireMode();
+		// 自动注入
 		if (resolvedAutowireMode == AUTOWIRE_BY_NAME || resolvedAutowireMode == AUTOWIRE_BY_TYPE) {
 			// 将 PropertyValues 封装成 MutablePropertyValues 对象
 			// MutablePropertyValues 允许对属性进行简单的操作，并提供构造函数以支持Map的深度复制和构造。
@@ -1555,16 +1556,20 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 			pvs = newPvs;
 		}
+
+
+
+		// <Spring分析点28-3> BeanPostProcessor 处理
 		// 是否已经注册了 InstantiationAwareBeanPostProcessors（后处理器是否已经初始化）
 		boolean hasInstAwareBpps = hasInstantiationAwareBeanPostProcessors();
 		// 是否需要进行【依赖检查】
 		boolean needsDepCheck = (mbd.getDependencyCheck() != AbstractBeanDefinition.DEPENDENCY_CHECK_NONE);
 
-
-		// <Spring分析点28-3> BeanPostProcessor 处理
+		//
 		PropertyDescriptor[] filteredPds = null;
 		if (hasInstAwareBpps) {
 			if (pvs == null) {
+				// 创建PropertyValues
 				pvs = mbd.getPropertyValues();
 			}
 			// 遍历 BeanPostProcessor 数组
@@ -1585,6 +1590,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				pvs = pvsToUse;
 			}
 		}
+
 		// <Spring分析点28-4> 依赖检查
 		if (needsDepCheck) {
 			if (filteredPds == null) {
@@ -2003,7 +2009,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					beanName, "Invocation of init method failed", ex);
 		}
 
-		// <Spring分析点30-2> 应用 BeanPostProcessors (在bean初始化之后调用)
+		// <Spring分析点30-4> 应用 BeanPostProcessors (在bean初始化之后调用)
 		if (mbd == null || !mbd.isSynthetic()) {
 			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
 		}
@@ -2045,7 +2051,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 */
 	protected void invokeInitMethods(String beanName, Object bean, @Nullable RootBeanDefinition mbd)
 			throws Throwable {
-		// 首先会检查是否是 InitializingBean ，如果是的话需要调用 afterPropertiesSet()
+		// 首先会检查是否是实现 InitializingBean 接口，如果是的话需要调用 afterPropertiesSet()
 		boolean isInitializingBean = (bean instanceof InitializingBean);
 		if (isInitializingBean && (mbd == null || !mbd.isExternallyManagedInitMethod("afterPropertiesSet"))) {
 			if (logger.isTraceEnabled()) {
@@ -2069,7 +2075,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				((InitializingBean) bean).afterPropertiesSet();
 			}
 		}
-
+		// 初始化方法，比如xml配置的
 		if (mbd != null && bean.getClass() != NullBean.class) {
 			String initMethodName = mbd.getInitMethodName();
 			if (StringUtils.hasLength(initMethodName) &&
@@ -2086,6 +2092,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * Called by invokeInitMethods.
 	 * <p>Can be overridden in subclasses for custom resolution of init
 	 * methods with arguments.
+	 * 获取bean的自定义初始化方法，如果自身或者父类是接口类型的话，就反射出接口方法来，最后调用
 	 * @see #invokeInitMethods
 	 */
 	protected void invokeCustomInitMethod(String beanName, Object bean, RootBeanDefinition mbd)

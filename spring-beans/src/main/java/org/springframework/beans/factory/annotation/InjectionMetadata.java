@@ -218,10 +218,11 @@ public class InjectionMetadata {
 
 		/**
 		 * Either this or {@link #getResourceToInject} needs to be overridden.
+		 * 进行属性或者方法注入，但是方法注入前会判断是否已经有设置值了，有设置就不会注入，直接返回了
 		 */
 		protected void inject(Object target, @Nullable String requestingBeanName, @Nullable PropertyValues pvs)
 				throws Throwable {
-
+			// 属性注入
 			if (this.isField) {
 				Field field = (Field) this.member;
 				ReflectionUtils.makeAccessible(field);
@@ -232,6 +233,7 @@ public class InjectionMetadata {
 					return;
 				}
 				try {
+					// 方法注入
 					Method method = (Method) this.member;
 					ReflectionUtils.makeAccessible(method);
 					method.invoke(target, getResourceToInject(target, requestingBeanName));
@@ -264,10 +266,12 @@ public class InjectionMetadata {
 				if (this.pd != null) {
 					if (pvs.contains(this.pd.getName())) {
 						// Explicit value provided as part of the bean definition.
+						// 给定了值了就忽略，直接返回
 						this.skip = true;
 						return true;
 					}
 					else if (pvs instanceof MutablePropertyValues) {
+						// 如果是可变的话，就注册到处理过的属性集合里
 						((MutablePropertyValues) pvs).registerProcessedProperty(this.pd.getName());
 					}
 				}
