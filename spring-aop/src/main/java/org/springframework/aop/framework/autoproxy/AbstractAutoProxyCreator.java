@@ -258,6 +258,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		// 返回null，则表示不是AOP的目标对象，不需要创建代理对象
 		if (!StringUtils.hasLength(beanName) || !this.targetSourcedBeans.contains(beanName)) {
 			// 如果被解析过直接返回
+			// 查缓存，是否有处理过了，不管是不是需要通知增强的，只要处理过了就会放里面
 			if (this.advisedBeans.containsKey(cacheKey)) {
 				return null;
 			}
@@ -267,6 +268,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			 * 而事务相关组件在这里是不会解析的，为什么？原因：事务已经在事务拦截器通过@Bean注入到IoC容器了，而其他Aop的需要寻找)
 			 */
 			if (isInfrastructureClass(beanClass) || shouldSkip(beanClass, beanName)) {
+				// 要跳过的直接设置FALSE
 				this.advisedBeans.put(cacheKey, Boolean.FALSE);
 				return null;
 			}
