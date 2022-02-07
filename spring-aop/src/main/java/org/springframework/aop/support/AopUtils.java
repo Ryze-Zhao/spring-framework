@@ -223,7 +223,7 @@ public abstract class AopUtils {
 	 */
 	public static boolean canApply(Pointcut pc, Class<?> targetClass, boolean hasIntroductions) {
 		Assert.notNull(pc, "Pointcut must not be null");
-		// 通过Pointcut的条件判断此类是否匹配
+		// 通过Pointcut的条件判断此targetClass是否匹配
 		if (!pc.getClassFilter().matches(targetClass)) {
 			return false;
 		}
@@ -253,7 +253,7 @@ public abstract class AopUtils {
 		}
 		// 获取对应类的所有接口（获取到targetClass所实现的接口的class对象，然后加入到集合中）
 		classes.addAll(ClassUtils.getAllInterfacesForClassAsSet(targetClass));
-		// 对类进行遍历（循环所有的class对象）
+		// 对类进行遍历（循环所有的class对象）、查看方法是否是切点表达式匹配的
 		for (Class<?> clazz : classes) {
 			// 反射获取类中所有的方法（通过class获取到所有的方法）
 			Method[] methods = ReflectionUtils.getAllDeclaredMethods(clazz);
@@ -302,7 +302,7 @@ public abstract class AopUtils {
 		else if (advisor instanceof PointcutAdvisor) {
 			// 转为PointcutAdvisor类型
 			PointcutAdvisor pca = (PointcutAdvisor) advisor;
-			// 找到真正能用的增强器
+			// 找到真正能用的增强器（是否匹配切点表达式信息）
 			return canApply(pca.getPointcut(), targetClass, hasIntroductions);
 		}
 		else {
