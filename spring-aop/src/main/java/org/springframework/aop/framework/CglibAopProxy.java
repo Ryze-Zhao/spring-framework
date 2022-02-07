@@ -172,10 +172,10 @@ class CglibAopProxy implements AopProxy, Serializable {
 			Assert.state(rootClass != null, "Target class must be available for creating a CGLIB proxy");
 			// 设置目标类为代理父类(CGLIB基于继承实现代理)
 			Class<?> proxySuperClass = rootClass;
-			// 如果目标类也是CGLIB代理类,则设目标类的父类为代理父类
+			// 类名是否包含CGLIB分隔符：如果目标类也是CGLIB代理类,则设目标类的父类为代理父类
 			if (rootClass.getName().contains(ClassUtils.CGLIB_CLASS_SEPARATOR)) {
 				proxySuperClass = rootClass.getSuperclass();
-				// 获取目标类的所有接口
+				// 获得原始父类的接口
 				Class<?>[] additionalInterfaces = rootClass.getInterfaces();
 				for (Class<?> additionalInterface : additionalInterfaces) {
 					this.advised.addInterface(additionalInterface);
@@ -183,7 +183,7 @@ class CglibAopProxy implements AopProxy, Serializable {
 			}
 
 			// Validate the class, writing log messages as necessary.
-			// 验证类，根据需要编写日志消息
+			// 验证修饰符和方法修饰符：验证类，根据需要编写日志消息
 			validateClassIfNecessary(proxySuperClass, classLoader);
 
 			// Configure CGLIB Enhancer...

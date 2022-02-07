@@ -220,7 +220,7 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 			// 实现：通过该方法所在类对应的Advisors，获取该方法适合的所有Advices列表，即方法拦截器列表
 			// 这里的实现为懒加载，即当方法第一次调用的时候才创建该方法拦截器列表，然后使用一个ConcurrentHashMap缓存起来，之后的方法调用直接使用
 
-			// 其中advised就是该方法的所在bean对应的ProxyFactory对象引用，通过ProxyFactory来创建AopProxy，即当前类对象实例。
+			// <Spring分析点43-1> 其中advised就是该方法的所在bean对应的ProxyFactory对象引用，通过ProxyFactory来创建AopProxy，即当前类对象实例。
 			List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
 
 			// Check whether we have any advice. If we don't, we can fallback on direct
@@ -236,7 +236,7 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 			}
 			else {
 				// We need to create a method invocation...
-				// 如果当前方法包括方法拦截器，即在执行时需要其他额外的增强功能，则创建ReflectiveMethodInvocation
+				// <Spring分析点43-2> 如果当前方法包括方法拦截器，即在执行时需要其他额外的增强功能，则创建ReflectiveMethodInvocation
 				// 将拦截器封装在ReflectiveMethodInvocation，以便于使用其proceed进行链接表用拦截器（该实例中维护这代理方法和拦截器链相关信息）
 				MethodInvocation invocation =new ReflectiveMethodInvocation(proxy, target, method, args, targetClass, chain);
 				// Proceed to the joinpoint through the interceptor chain.
