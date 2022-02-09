@@ -427,7 +427,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 				definition, transaction, true, newSynchronization, debugEnabled, suspendedResources);
 		// doBegin用于开始事务（新开一个连接）
 		doBegin(transaction, definition);
-		// 准备事务同步
+		// 准备事务同步（进行线程私有绑定）
 		prepareSynchronization(status, definition);
 		// 返回事务状态对象
 		return status;
@@ -466,7 +466,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 						definition.getName() + "]");
 			}
 			// 将原事务挂起，此时新建事务，不与原事务有关系。
-			// 会将transaction 中的holder 设置为 null ，然后解绑
+			// 会将 transaction 中的 ConnectionHolder 设置为 null ，然后解绑并返回挂起的 资源持有器ResourcesHolder
 			SuspendedResourcesHolder suspendedResources = suspend(transaction);
 			try {
 				// 注意这个函数。
@@ -481,8 +481,9 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			}
 		}
 
-		// 如果此时的传播特性是 PROPAGATION_NESTED，不会挂起事务
+		// 嵌套事务：如果此时的传播特性是 PROPAGATION_NESTED，不会挂起事务
 		if (definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_NESTED) {
+			// 不允许就报异常
 			if (!isNestedTransactionAllowed()) {
 				throw new NestedTransactionNotSupportedException(
 						"Transaction manager does not allow nested transactions by default - " +
@@ -564,12 +565,9 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 	protected DefaultTransactionStatus newTransactionStatus(
 			TransactionDefinition definition, @Nullable Object transaction, boolean newTransaction,
 			boolean newSynchronization, boolean debug, @Nullable Object suspendedResources) {
-
-		boolean actualNewSynchronization = newSynchronization &&
-				!TransactionSynchronizationManager.isSynchronizationActive();
-		return new DefaultTransactionStatus(
-				transaction, newTransaction, actualNewSynchronization,
-				definition.isReadOnly(), debug, suspendedResources);
+		//是否要新同步，只有要新同步且当前无同步激活事务
+		boolean actualNewSynchronization = newSynchronization && !TransactionSynchronizationManager.isSynchronizationActive();
+		return new DefaultTransactionStatus(transaction, newTransaction, actualNewSynchronization,definition.isReadOnly(), debug, suspendedResources);
 	}
 
 	/**
@@ -628,12 +626,18 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 					suspendedResources = doSuspend(transaction);
 				}
 				// 这里将名称、隔离级别等信息从线程变量中取出并设置对应属性为null到线程变量
+
+				// 当前事务名字
 				String name = TransactionSynchronizationManager.getCurrentTransactionName();
+				// 取消绑定
 				TransactionSynchronizationManager.setCurrentTransactionName(null);
+				// 当前事务可读性
 				boolean readOnly = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
 				TransactionSynchronizationManager.setCurrentTransactionReadOnly(false);
+				// 当前事务隔离级别
 				Integer isolationLevel = TransactionSynchronizationManager.getCurrentTransactionIsolationLevel();
 				TransactionSynchronizationManager.setCurrentTransactionIsolationLevel(null);
+				// 当前事务激活状态
 				boolean wasActive = TransactionSynchronizationManager.isActualTransactionActive();
 				TransactionSynchronizationManager.setActualTransactionActive(false);
 				// 将事务各个属性与挂起的holder一并封装进SuspendedResourcesHolder对象中
@@ -1392,12 +1396,17 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		private SuspendedResourcesHolder(
 				@Nullable Object suspendedResources, List<TransactionSynchronization> suspendedSynchronizations,
 				@Nullable String name, boolean readOnly, @Nullable Integer isolationLevel, boolean wasActive) {
-
+			// 连接持有器ConnectionHolder
 			this.suspendedResources = suspendedResources;
+			// 同步状态
 			this.suspendedSynchronizations = suspendedSynchronizations;
+			// 方法名
 			this.name = name;
+			// 是否只读
 			this.readOnly = readOnly;
+			// 隔离级别，默认mysql是可重复度，oracle是提交读
 			this.isolationLevel = isolationLevel;
+			// 事务是否激活
 			this.wasActive = wasActive;
 		}
 	}

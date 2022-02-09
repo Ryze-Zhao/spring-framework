@@ -160,6 +160,7 @@ public abstract class AbstractDriverBasedDataSource extends AbstractDataSource {
 	/**
 	 * This implementation delegates to {@code getConnectionFromDriver},
 	 * using the default username and password of this DataSource.
+	 * 获取一个连接：其实就是设置用户名和密码，最终是调用`JDBC`来获取连接
 	 * @see #getConnectionFromDriver(String, String)
 	 * @see #setUsername
 	 * @see #setPassword
@@ -201,7 +202,7 @@ public abstract class AbstractDriverBasedDataSource extends AbstractDataSource {
 		if (password != null) {
 			mergedProps.setProperty("password", password);
 		}
-
+		// 获取连接
 		Connection con = getConnectionFromDriver(mergedProps);
 		if (this.catalog != null) {
 			con.setCatalog(this.catalog);

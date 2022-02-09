@@ -337,9 +337,11 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			final InvocationCallback invocation) throws Throwable {
 
 		// If the transaction attribute is null, the method is non-transactional.
+		// 获取事务注解属性
 		TransactionAttributeSource tas = getTransactionAttributeSource();
 		// 获取事务属性配置属性：通过TransactionAttributeSource.getTransactionAttribute解析@Trasaction注解得到事务属性配置属性
 		final TransactionAttribute txAttr = (tas != null ? tas.getTransactionAttribute(method, targetClass) : null);
+		// 获取事务管理器
 		// 获取beanFactory中的transactionManager属性
 		// 如果事先没有指定任何的TransactionManager，就会从容器中按照类型获取一个PlatformTransactionManager
 		final TransactionManager tm = determineTransactionManager(txAttr);
@@ -380,7 +382,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 
 		// 将事务管理器tx转换为 PlatformTransactionManager
 		PlatformTransactionManager ptm = asPlatformTransactionManager(tm);
-		// 构造方法唯一标识(类.方法，如：service.UserServiceImpl#save)
+		// 构造方法唯一标识(类名.方法名，如：service.UserServiceImpl#save)
 		final String joinpointIdentification = methodIdentification(method, targetClass, txAttr);
 
 		// 处理声明式事务
@@ -418,7 +420,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 					retVal = VavrDelegate.evaluateTryFailure(retVal, txAttr, status);
 				}
 			}
-			// 如果正常，利用事务管理器提交事务
+			// 如果正常，利用事务管理器提交事务（成功后提交，会进行资源储量，连接释放，恢复挂起事务等操作）
 			commitTransactionAfterReturning(txInfo);
 			// 返回执行结果
 			return retVal;
@@ -639,7 +641,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 	protected TransactionInfo prepareTransactionInfo(@Nullable PlatformTransactionManager tm,
 			@Nullable TransactionAttribute txAttr, String joinpointIdentification,
 			@Nullable TransactionStatus status) {
-
+		// 创建事务信息
 		TransactionInfo txInfo = new TransactionInfo(tm, txAttr, joinpointIdentification);
 		if (txAttr != null) {
 			// We need a transaction for this method...
@@ -647,6 +649,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 				logger.trace("Getting transaction for [" + txInfo.getJoinpointIdentification() + "]");
 			}
 			// The transaction manager will flag an error if an incompatible tx already exists.
+			// 设置新事务状态
 			txInfo.newTransactionStatus(status);
 		}
 		else {
@@ -661,6 +664,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 		// We always bind the TransactionInfo to the thread, even if we didn't create
 		// a new transaction here. This guarantees that the TransactionInfo stack
 		// will be managed correctly even if no transaction was created by this aspect.
+		// 事务信息绑定到当前线程
 		txInfo.bindToThread();
 		return txInfo;
 	}
