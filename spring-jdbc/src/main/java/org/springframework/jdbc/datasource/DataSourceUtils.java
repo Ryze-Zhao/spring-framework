@@ -392,13 +392,16 @@ public abstract class DataSourceUtils {
 			return;
 		}
 		if (dataSource != null) {
+			// 获取连接持有器，如果前面解除绑定非就拿不到了
 			ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
+			// 如果连接持有器能拿到的话
 			if (conHolder != null && connectionEquals(conHolder, con)) {
 				// It's the transactional Connection: Don't close it.
 				conHolder.released();
 				return;
 			}
 		}
+		// 关闭连接
 		doCloseConnection(con, dataSource);
 	}
 

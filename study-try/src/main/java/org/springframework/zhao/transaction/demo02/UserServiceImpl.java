@@ -38,6 +38,7 @@ public class UserServiceImpl implements UserService {
 	public void save() {
 		jdbcTemplate.update("insert into user (name) VALUE (?)", "java");
 		jdbcTemplate.update("insert into user (name) VALUE (?)", "spring");
+		System.out.println(10/0);
 		jdbcTemplate.update("insert into user (name) VALUE (?)", "myBatis");
 	}
 

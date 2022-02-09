@@ -801,6 +801,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 					if (status.isDebug()) {
 						logger.debug("Releasing transaction savepoint");
 					}
+					// 是否有全局回滚标记
 					unexpectedRollback = status.isGlobalRollbackOnly();
 					// 不提交，仅仅是释放savePoint
 					status.releaseHeldSavepoint();
@@ -810,6 +811,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 					if (status.isDebug()) {
 						logger.debug("Initiating transaction commit");
 					}
+					// 是否有全局回滚标记
 					unexpectedRollback = status.isGlobalRollbackOnly();
 					// 执行提交操作
 					doCommit(status);
@@ -820,6 +822,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 
 				// Throw UnexpectedRollbackException if we have a global rollback-only
 				// marker but still didn't get a corresponding exception from commit.
+				// 有全局回滚标记就报异常
 				if (unexpectedRollback) {
 					throw new UnexpectedRollbackException(
 							"Transaction silently rolled back because it has been marked as rollback-only");
@@ -854,11 +857,11 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			// Trigger afterCommit callbacks, with an exception thrown there
 			// propagated to callers but the transaction still considered as committed.
 			try {
-				// 事务commit之后，执行一些回调（给开发提供的扩展点）
+				// 事务提交之后回调（给开发提供的扩展点）
 				triggerAfterCommit(status);
 			}
 			finally {
-				// 事务完成之后，执行一些回调（给开发提供的扩展点）
+				// 提交后清除线程私同步状态：事务完成之后，执行一些回调（给开发提供的扩展点）
 				triggerAfterCompletion(status, TransactionSynchronization.STATUS_COMMITTED);
 			}
 
@@ -866,6 +869,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		finally {
 			// 事务执行完毕之后，执行一些清理操作
 			// 清空记录的资源并将挂起的资源恢复
+			// 根据条件，完成后数据清除,和线程的私有资源解绑，重置连接自动提交，隔离级别，是否只读，释放连接，恢复挂起事务等
 			cleanupAfterCompletion(status);
 		}
 	}
@@ -899,11 +903,13 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 	 */
 	private void processRollback(DefaultTransactionStatus status, boolean unexpected) {
 		try {
+			// 意外的回滚
 			boolean unexpectedRollback = unexpected;
 
 			try {
+				// 回滚完成前回调
 				triggerBeforeCompletion(status);
-				// 如果status 有 savePoint ， 说明此事务 是 PROPAGATION_NESTED 且为子事务，只能回滚到savePoint
+				// 如果status 有 保存点savePoint ， 说明此事务 是 PROPAGATION_NESTED 且为子事务，只能回滚到savePoint
 				if (status.hasSavepoint()) {
 					if (status.isDebug()) {
 						logger.debug("Rolling back transaction to savepoint");
@@ -911,7 +917,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 					// 回滚到保存点
 					status.rollbackToHeldSavepoint();
 				}
-				// 如果此时的status显示的是新的事务，才进行回滚
+				// 如果此时的status显示是新事务，才进行回滚
 				else if (status.isNewTransaction()) {
 					if (status.isDebug()) {
 						logger.debug("Initiating transaction rollback");
@@ -964,7 +970,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 				triggerAfterCompletion(status, TransactionSynchronization.STATUS_UNKNOWN);
 				throw ex;
 			}
-
+			// 回滚完成后回调
 			triggerAfterCompletion(status, TransactionSynchronization.STATUS_ROLLED_BACK);
 
 			// Raise UnexpectedRollbackException if we had a global rollback-only marker
@@ -976,6 +982,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		finally {
 			// 清空记录的资源并将挂起的资源恢复
 			// 子事务结束了，之前挂起的事务就要恢复了
+			// 根据事务状态信息，完成后数据清除,和线程的私有资源解绑，重置连接自动提交，隔离级别，是否只读，释放连接，恢复挂起事务等
 			cleanupAfterCompletion(status);
 		}
 	}
@@ -1092,12 +1099,12 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		status.setCompleted();
 		// 是否是新的事务同步
 		if (status.isNewSynchronization()) {
-			// 将TransactionSynchronizationManager中的那些ThreadLoca中的数据都清除，会调用ThreadLocal的remove()方法清除数据
+			// 线程同步状态清除:将TransactionSynchronizationManager中的那些ThreadLocal中的数据都清除，会调用ThreadLocal的remove()方法清除数据
 			TransactionSynchronizationManager.clear();
 		}
 		// 是否是新事务
 		if (status.isNewTransaction()) {
-			// 执行清理操作
+			// 执行清理操作,线程的私有资源解绑，重置连接自动提交，隔离级别，是否只读，释放连接等
 			doCleanupAfterCompletion(status.getTransaction());
 		}
 		// 是否有被挂起的事务
