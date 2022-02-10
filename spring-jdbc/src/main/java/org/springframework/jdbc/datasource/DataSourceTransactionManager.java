@@ -269,7 +269,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 		Connection con = null;
 
 		try {
-			// 当前事务没有连接资源 || 事务同步中
+			// <Spring分析点44-1> 当前事务没有连接资源 || 事务同步中
 			// txObject.hasConnectionHolder()用来判断txObject.connectionHolder!=null，现在肯定是null，所以txObject.hasConnectionHolder()返回false
 			if (!txObject.hasConnectionHolder() || txObject.getConnectionHolder().isSynchronizedWithTransaction()) {
 				// 创建新连接：调用transactionManager.datasource.getConnection()获取一个数据库连接
@@ -295,7 +295,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 			// Switch to manual commit if necessary. This is very expensive in some JDBC drivers,
 			// so we don't want to do it unnecessarily (for example if we've explicitly
 			// configured the connection pool to set it already).
-			// 判断连接是否是自动提交的，如果是自动提交的将其置为手动提交
+			// Spring分析点44-2> 判断连接是否是自动提交的，如果是自动提交的将其置为手动提交
 			if (con.getAutoCommit()) {
 				// 在txObject中存储一下连接自动提交老的值，用于在事务执行完毕之后，还原一下Connection的autoCommit的值
 				txObject.setMustRestoreAutoCommit(true);
@@ -307,7 +307,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 			}
 			// 事务连接的准备（是否需要设置只读命令）
 			prepareTransactionalConnection(con, definition);
-			// 标记激活事务：设置connection 持有者的事务开启状态
+			// Spring分析点44-3> 标记激活事务：设置connection 持有者的事务开启状态
 			txObject.getConnectionHolder().setTransactionActive(true);
 
 			// 根据事务定义信息获取事务超时时间
@@ -318,7 +318,8 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 			}
 
 			// Bind the connection holder to the thread.
-			// txObject中的ConnectionHolder是否是一个新的，确实是新的，所以这个地方返回true
+			// Spring分析点44-4> txObject中的ConnectionHolder是否是一个新的连接，确实是新的，所以这个地方返回true
+			// 如果是新的连接资源的话，就需要让线程私有变量来绑定，因为新创建的事务的连接持有器就是从线程私有变量里取的，这样解决多线程的安全问题
 			if (txObject.isNewConnectionHolder()) {
 				// 将当前获取到的连接绑定到当前线程，绑定解绑围绕一个线程变量，这个变量就在TransactionSynchronizationManager中
 				// 将datasource->ConnectionHolder丢到resource ThreadLocal的map中

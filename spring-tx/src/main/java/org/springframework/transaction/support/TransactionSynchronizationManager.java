@@ -264,9 +264,11 @@ public abstract class TransactionSynchronizationManager {
 	 * @throws IllegalStateException if synchronization is already active
 	 */
 	public static void initSynchronization() throws IllegalStateException {
+		// 已经同步激活了就报错
 		if (isSynchronizationActive()) {
 			throw new IllegalStateException("Cannot activate transaction synchronization - already active");
 		}
+		// 激活同步
 		synchronizations.set(new LinkedHashSet<>());
 	}
 
