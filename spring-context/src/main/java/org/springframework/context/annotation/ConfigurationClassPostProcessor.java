@@ -412,7 +412,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			// 清空已处理的配置类
 			candidates.clear();
 
-			// 再次获取容器中bean定义数量  如果大于 之前获取的bean定义数量，则说明有新的bean注册到容器中，需要再次解析
+			// 再次获取容器中BeanDefinition数量  如果大于 之前获取的BeanDefinition数量，则说明有新的bean注册到容器中，需要再次解析
 			// 这里判断registry.getBeanDefinitionCount() > candidateNames.length的目的是为了知道reader.loadBeanDefinitions(configClasses)这一步有没有向BeanDefinitionMap中添加新的BeanDefinition
 			// 实际上就是看配置类(假如ZhaoConfig类会向BeanDefinitionMap中添加bean)，如果有，registry.getBeanDefinitionCount()就会大于candidateNames.length
 			// 这样就需要再次遍历新加入的BeanDefinition，并判断这些bean是否已经被解析过了，如果未解析，需要重新进行解析
@@ -449,7 +449,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			sbr.registerSingleton(IMPORT_REGISTRY_BEAN_NAME, parser.getImportRegistry());
 		}
 
-		// 有些bean定义的元数据是通过URL加载字节码文件解析来的，为了避免每次都去IO操作，会有元数据的缓存，现在处理完了就要把缓存清除了
+		// 有些BeanDefinition的元数据是通过URL加载字节码文件解析来的，为了避免每次都去IO操作，会有元数据的缓存，现在处理完了就要把缓存清除了
 		if (this.metadataReaderFactory instanceof CachingMetadataReaderFactory) {
 			// Clear cache in externally provided MetadataReaderFactory; this is a no-op
 			// for a shared cache since it'll be cleared by the ApplicationContext.

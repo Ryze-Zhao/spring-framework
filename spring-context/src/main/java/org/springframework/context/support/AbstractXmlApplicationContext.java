@@ -73,7 +73,7 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 
 	/**
 	 * Loads the bean definitions via an XmlBeanDefinitionReader.
-	 * 通过XmlBeanDefinitionReader加载bean定义
+	 * 通过XmlBeanDefinitionReader加载BeanDefinition
 	 * @see org.springframework.beans.factory.xml.XmlBeanDefinitionReader
 	 * @see #initBeanDefinitionReader
 	 * @see #loadBeanDefinitions

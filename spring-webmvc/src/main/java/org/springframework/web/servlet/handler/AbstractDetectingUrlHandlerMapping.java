@@ -81,7 +81,7 @@ public abstract class AbstractDetectingUrlHandlerMapping extends AbstractUrlHand
 		// 获取Spring容器的上下文环境（默认只会在当前容器里面去查找检测，具体看this.detectHandlersInAncestorContexts）
 		ApplicationContext applicationContext = obtainApplicationContext();
 		// 将SpringMVC容器中注册的BeanName 都找出来
-		// 注意：这里使用的Object.class  说明是把本容器内所有类型的Bean定义都拿出来了
+		// 注意：这里使用的Object.class  说明是把本容器内所有类型的BeanDefinition都拿出来了
 		String[] beanNames = (this.detectHandlersInAncestorContexts ?
 				BeanFactoryUtils.beanNamesForTypeIncludingAncestors(applicationContext, Object.class) :
 				applicationContext.getBeanNamesForType(Object.class));

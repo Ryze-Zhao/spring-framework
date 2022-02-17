@@ -225,7 +225,7 @@ class ConfigurationClassBeanDefinitionReader {
 		}
 
 		// Has this effectively been overridden before (e.g. via XML)?
-		// 是否存在同名bean定义就不处理了，比如处理器扩展的，XML定义的
+		// 是否存在同名BeanDefinition就不处理了，比如处理器扩展的，XML定义的
 		if (isOverriddenByExistingDefinition(beanMethod, beanName)) {
 			if (beanName.equals(beanMethod.getConfigurationClass().getBeanName())) {
 				throw new BeanDefinitionStoreException(beanMethod.getConfigurationClass().getResource().getDescription(),

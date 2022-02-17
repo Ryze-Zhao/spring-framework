@@ -556,7 +556,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 			AutowireCapableBeanFactory beanFactory = (AutowireCapableBeanFactory) factory;
 			// 创建依赖描述
 			DependencyDescriptor descriptor = element.getDependencyDescriptor();
-			// 不包含依赖对象，或者依赖对象的bean定义，只能通过解析类型去处理
+			// 不包含依赖对象，或者依赖对象的BeanDefinition，只能通过解析类型去处理
 			if (this.fallbackToDefaultTypeMatch && element.isDefaultName && !factory.containsBean(name)) {
 				autowiredBeanNames = new LinkedHashSet<>();
 				resource = beanFactory.resolveDependency(descriptor, requestingBeanName, autowiredBeanNames, null);

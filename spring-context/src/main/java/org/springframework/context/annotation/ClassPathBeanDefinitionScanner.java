@@ -274,13 +274,13 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 * returning the registered bean definitions.
 	 * <p>This method does <i>not</i> register an annotation config processor
 	 * but rather leaves this up to the caller.
-	 * 在指定的基本包内执行扫描，返回已注册的bean定义。 此方法不注册注释配置处理器，而是将其留给调用方
+	 * 在指定的基本包内执行扫描，返回已注册的BeanDefinition。 此方法不注册注释配置处理器，而是将其留给调用方
 	 * @param basePackages the packages to check for annotated classes  用于检查注释类的包
 	 * @return set of beans registered if any for tooling registration purposes (never {@code null})    为工具注册目的注册的bean集（如果有）（从不为null）
 	 */
 	protected Set<BeanDefinitionHolder> doScan(String... basePackages) {
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
-		// 创建一个集合，存放扫描到Bean定义的封装类（存储扫描到的BeanDefinition信息）
+		// 创建一个集合，存放扫描到BeanDefinition的封装类（存储扫描到的BeanDefinition信息）
 		Set<BeanDefinitionHolder> beanDefinitions = new LinkedHashSet<>();
 		// 遍历扫描所有给定的包，进行解析，注册
 		for (String basePackage : basePackages) {
@@ -302,7 +302,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 				// 如果扫描到的Bean是Spring的注解Bean，则处理其通用的Spring注解
 				// 通用注解解析到candidate结构中，主要是处理Lazy, primary DependsOn, Role ,Description这五个注解
 				if (candidate instanceof AnnotatedBeanDefinition) {
-					// 处理注解Bean中通用的注解，在分析注解Bean定义类读取器时已经分析过
+					// 处理注解Bean中通用的注解，在分析注解BeanDefinition类读取器时已经分析过
 					/*
 					 * 检查并且处理常用的注解
 					 * 这里的处理主要是指把常用注解的值设置到AnnotatedBeanDefinition当中

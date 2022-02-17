@@ -333,7 +333,7 @@ class ConfigurationClassParser {
 
 					// 同样，这里会调用ConfigurationClassUtils.checkConfigurationClassCandidate()方法来判断类是否是一个配置类
 					if (ConfigurationClassUtils.checkConfigurationClassCandidate(bdCand, this.metadataReaderFactory)) {
-						// 如果扫描出的bean定义是配置类（含有@COnfiguration）,则继续调用parse方法，内部再次调用processConfigurationClass(),递归解析
+						// 如果扫描出的BeanDefinition是配置类（含有@COnfiguration）,则继续调用parse方法，内部再次调用processConfigurationClass(),递归解析
 						parse(bdCand.getBeanClassName(), holder.getBeanName());
 					}
 				}

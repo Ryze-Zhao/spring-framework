@@ -275,7 +275,7 @@ public class AnnotatedBeanDefinitionReader {
 			@Nullable Class<? extends Annotation>[] qualifiers, @Nullable Supplier<T> supplier,
 			@Nullable BeanDefinitionCustomizer[] customizers) {
 
-		// 根据指定的注解Bean定义类 AnnotatedGenericBeanDefinition，创建Spring容器中对注解Bean的封装的数据结构
+		// 根据指定的注解BeanDefinition类 AnnotatedGenericBeanDefinition，创建Spring容器中对注解Bean的封装的数据结构
 		// 通过传入的Bean类的Class对象 实例化一个AnnotatedGenericBeanDefinition对象，里面会初始化一个 AnnotationMetadata（包括Bean类的全部注解）
 		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(beanClass);
 		// 通过AnnotationMetadata 接口判断是否需要跳过（具体看里面实现吧）
@@ -332,8 +332,8 @@ public class AnnotatedBeanDefinitionReader {
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
 		// 向IoC容器注册 BeanDefinitionHolder
 		// BeanDefinitionReaderUtils.registerBeanDefinition 内部通过
-		// DefaultListableBeanFactory.registerBeanDefinition(String beanName, BeanDefinition beanDefinition)按名称将bean定义信息注册到容器中，
-		// 实际上 DefaultListableBeanFactory 内部维护一个Map<String, BeanDefinition>类型变量beanDefinitionMap，用于保存注bean定义信息（beanName 和 BeanDefinition映射）
+		// DefaultListableBeanFactory.registerBeanDefinition(String beanName, BeanDefinition beanDefinition)按名称将BeanDefinition信息注册到容器中，
+		// 实际上 DefaultListableBeanFactory 内部维护一个Map<String, BeanDefinition>类型变量beanDefinitionMap，用于保存注BeanDefinition信息（beanName 和 BeanDefinition映射）
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
 	}
 

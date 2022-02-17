@@ -255,7 +255,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 */
 	protected void initHandlerMethods() {
 		// 遍历所有bean
-		// getCandidateBeanNames：Object.class相当于拿到当前容器（一般都是当前容器） 内所有的Bean定义信息
+		// getCandidateBeanNames：Object.class相当于拿到当前容器（一般都是当前容器） 内所有的BeanDefinition信息
 		// 如果阁下容器隔离到到的话，这里一般只会拿到@Controller标注的web组件  以及其它相关web组件的  不会非常的多的~~~~
 		for (String beanName : getCandidateBeanNames()) {
 			// 排除scopedTarget.开头的Bean（排除Scoped目标类型Bean）

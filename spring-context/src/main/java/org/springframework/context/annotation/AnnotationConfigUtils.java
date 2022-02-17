@@ -257,7 +257,7 @@ public abstract class AnnotationConfigUtils {
 	 */
 	private static BeanDefinitionHolder registerPostProcessor(BeanDefinitionRegistry registry, RootBeanDefinition definition, String beanName) {
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		//这里主要的代码，将bean定义注册到bean工厂当中
+		//这里主要的代码，将BeanDefinition注册到bean工厂当中
 		registry.registerBeanDefinition(beanName, definition);
 		return new BeanDefinitionHolder(definition, beanName);
 	}

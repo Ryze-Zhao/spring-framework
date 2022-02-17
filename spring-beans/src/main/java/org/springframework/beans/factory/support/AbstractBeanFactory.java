@@ -1241,7 +1241,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			return (beanInstance instanceof FactoryBean);
 		}
 		// No singleton instance found -> check bean definition.
-		// 没有单例，看是否有bean定义，没有就看父类bean工厂
+		// 没有单例，看是否有BeanDefinition，没有就看父类bean工厂
 		if (!containsBeanDefinition(beanName) && getParentBeanFactory() instanceof ConfigurableBeanFactory) {
 			// No bean definition found in this factory -> delegate to parent.
 			return ((ConfigurableBeanFactory) getParentBeanFactory()).isFactoryBean(name);
@@ -1487,14 +1487,14 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	/**
 	 * Return a RootBeanDefinition for the given bean, by merging with the
 	 * parent if the given bean's definition is a child bean definition.
-	 * 如果给定bean的定义是子bean定义，则通过与父bean合并，返回给定bean的RootBeanDefinition。
+	 * 如果给定bean的定义是子BeanDefinition，则通过与父bean合并，返回给定bean的RootBeanDefinition。
 	 *
-	 * @param beanName the name of the bean definition      bean定义的名称
-	 * @param bd the original bean definition (Root/ChildBeanDefinition)    原始bean定义（根/子bean定义）
+	 * @param beanName the name of the bean definition      BeanDefinition的名称
+	 * @param bd the original bean definition (Root/ChildBeanDefinition)    原始BeanDefinition（根/子BeanDefinition）
 	 * @param containingBd the containing bean definition in case of inner bean,
-	 * or {@code null} in case of a top-level bean 内部bean的包含bean定义，顶级bean的包含bean定义为null
-	 * @return a (potentially merged) RootBeanDefinition for the given bean 给定bean的（可能合并的）RootBean定义
-	 * @throws BeanDefinitionStoreException in case of an invalid bean definition   如果bean定义无效
+	 * or {@code null} in case of a top-level bean 内部bean的包含BeanDefinition，顶级bean的包含BeanDefinition为null
+	 * @return a (potentially merged) RootBeanDefinition for the given bean 给定bean的（可能合并的）RootBeanDefinition
+	 * @throws BeanDefinitionStoreException in case of an invalid bean definition   如果BeanDefinition无效
 	 */
 	protected RootBeanDefinition getMergedBeanDefinition(
 			String beanName, BeanDefinition bd, @Nullable BeanDefinition containingBd)
