@@ -106,11 +106,13 @@ public final class ModelFactory {
 	 */
 	public void initModel(NativeWebRequest request, ModelAndViewContainer container, HandlerMethod handlerMethod)
 			throws Exception {
-
+		// 获取session属性
 		Map<String, ?> sessionAttributes = this.sessionAttributesHandler.retrieveAttributes(request);
+		// 合并到模型里，内部有个ModelMap
 		container.mergeAttributes(sessionAttributes);
+		// 调用模型方法
 		invokeModelAttributeMethods(request, container);
-
+		// 获取方法ModelAttribute注解属性参数，放入模型里
 		for (String name : findSessionAttributeArguments(handlerMethod)) {
 			if (!container.containsAttribute(name)) {
 				Object value = this.sessionAttributesHandler.retrieveAttribute(request, name);
@@ -130,17 +132,22 @@ public final class ModelFactory {
 			throws Exception {
 
 		while (!this.modelMethods.isEmpty()) {
+			// 获取模型容器的处理方法
 			InvocableHandlerMethod modelMethod = getNextModelMethod(container).getHandlerMethod();
 			ModelAttribute ann = modelMethod.getMethodAnnotation(ModelAttribute.class);
+			// 应该有ModelAttribute注解的，不然就报错
 			Assert.state(ann != null, "No ModelAttribute annotation");
+			// 模型容器内有包含ModelAttribute注解的属性
 			if (container.containsAttribute(ann.name())) {
+				// 不进行绑定
 				if (!ann.binding()) {
 					container.setBindingDisabled(ann.name());
 				}
 				continue;
 			}
-
+			// 调用模型方法
 			Object returnValue = modelMethod.invokeForRequest(request, container);
+			// 返回值不为空的话，就作为属性添加到模型容器里
 			if (modelMethod.isVoid()) {
 				if (StringUtils.hasText(ann.value())) {
 					if (logger.isDebugEnabled()) {
@@ -162,12 +169,15 @@ public final class ModelFactory {
 	}
 
 	private ModelMethod getNextModelMethod(ModelAndViewContainer container) {
+		// 先处理无依赖的，再处理有依赖的，这个时候依赖值属性还没有赋值
 		for (ModelMethod modelMethod : this.modelMethods) {
+			// 属性依赖检查，看是否有属性值
 			if (modelMethod.checkDependencies(container)) {
 				this.modelMethods.remove(modelMethod);
 				return modelMethod;
 			}
 		}
+		// 没有就拿第一个
 		ModelMethod modelMethod = this.modelMethods.get(0);
 		this.modelMethods.remove(modelMethod);
 		return modelMethod;
@@ -178,11 +188,14 @@ public final class ModelFactory {
 	 */
 	private List<String> findSessionAttributeArguments(HandlerMethod handlerMethod) {
 		List<String> result = new ArrayList<>();
+		//
 		for (MethodParameter parameter : handlerMethod.getMethodParameters()) {
+			// 找出ModelAttribute注解参数
 			if (parameter.hasParameterAnnotation(ModelAttribute.class)) {
 				String name = getNameForParameter(parameter);
 				Class<?> paramType = parameter.getParameterType();
 				if (this.sessionAttributesHandler.isHandlerSessionAttribute(name, paramType)) {
+					// 获取参数名对应类上的SessionAttributes注解属性的名字
 					result.add(name);
 				}
 			}

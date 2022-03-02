@@ -84,9 +84,11 @@ public class HandlerMethodReturnValueHandlerComposite implements HandlerMethodRe
 		// 根据返回值判断是否是异步请求
 		boolean isAsyncValue = isAsyncReturnValue(value, returnType);
 		for (HandlerMethodReturnValueHandler handler : this.returnValueHandlers) {
+			// 异步的
 			if (isAsyncValue && !(handler instanceof AsyncHandlerMethodReturnValueHandler)) {
 				continue;
 			}
+			// 匹配返回值类型
 			if (handler.supportsReturnType(returnType)) {
 				return handler;
 			}

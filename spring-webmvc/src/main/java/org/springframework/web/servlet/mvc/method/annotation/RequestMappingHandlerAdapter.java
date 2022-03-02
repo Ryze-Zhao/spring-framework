@@ -132,6 +132,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 
 	/**
 	 * MethodFilter that matches {@link ModelAttribute @ModelAttribute} methods.
+	 * 条件就是方法上有 RequestMapping 或 ModelAttribute 注解
 	 */
 	public static final MethodFilter MODEL_ATTRIBUTE_METHODS = method ->
 			(!AnnotatedElementUtils.hasAnnotation(method, RequestMapping.class) &&
@@ -859,28 +860,35 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		// 将Request和Response进行封装
 		ServletWebRequest webRequest = new ServletWebRequest(request, response);
 		try {
+			// 数据绑定工厂
 			WebDataBinderFactory binderFactory = getDataBinderFactory(handlerMethod);
+			// 模型工厂
 			ModelFactory modelFactory = getModelFactory(handlerMethod, binderFactory);
 
 			/*
+			 * 进行handlerMethod封装
 			 * 创建InvocableHandlerMethod实例,以及各个组件的配置;
 			 * 后面通过调用invokeAndHandle()方法执行处理器
 			 */
 			ServletInvocableHandlerMethod invocableMethod = createInvocableHandlerMethod(handlerMethod);
 			if (this.argumentResolvers != null) {
+				// 设置参数解析器
 				invocableMethod.setHandlerMethodArgumentResolvers(this.argumentResolvers);
 			}
 			if (this.returnValueHandlers != null) {
+				// 设置返回类型解析器
 				invocableMethod.setHandlerMethodReturnValueHandlers(this.returnValueHandlers);
 			}
+			// 绑定工厂
 			invocableMethod.setDataBinderFactory(binderFactory);
+			// 参数名探测器
 			invocableMethod.setParameterNameDiscoverer(this.parameterNameDiscoverer);
 
-			/*
-			 * 创建视图容器, 用于封装视图, 数据模型, 处理状态等信息
-			 */
+			// 创建ModelAndView容器：创建视图容器, 用于封装视图, 数据模型, 处理状态等信息
 			ModelAndViewContainer mavContainer = new ModelAndViewContainer();
+			// 获取前面重定向来的属性
 			mavContainer.addAllAttributes(RequestContextUtils.getInputFlashMap(request));
+			// 初始化模型
 			modelFactory.initModel(webRequest, mavContainer, invocableMethod);
 			mavContainer.setIgnoreDefaultModelOnRedirect(this.ignoreDefaultModelOnRedirect);
 
@@ -935,13 +943,16 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	private ModelFactory getModelFactory(HandlerMethod handlerMethod, WebDataBinderFactory binderFactory) {
 		SessionAttributesHandler sessionAttrHandler = getSessionAttributesHandler(handlerMethod);
 		Class<?> handlerType = handlerMethod.getBeanType();
+		// 缓存里取
 		Set<Method> methods = this.modelAttributeCache.get(handlerType);
+		// 查找同时有RequestMapping和ModelAttribute注解的方法
 		if (methods == null) {
 			methods = MethodIntrospector.selectMethods(handlerType, MODEL_ATTRIBUTE_METHODS);
 			this.modelAttributeCache.put(handlerType, methods);
 		}
 		List<InvocableHandlerMethod> attrMethods = new ArrayList<>();
 		// Global methods first
+		// 处理全局的，排在最前面
 		this.modelAttributeAdviceCache.forEach((controllerAdviceBean, methodSet) -> {
 			if (controllerAdviceBean.isApplicableToBeanType(handlerType)) {
 				Object bean = controllerAdviceBean.resolveBean();
@@ -968,14 +979,20 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	}
 
 	private WebDataBinderFactory getDataBinderFactory(HandlerMethod handlerMethod) throws Exception {
+		// 方法的处理器类型
 		Class<?> handlerType = handlerMethod.getBeanType();
+		// 缓存里获取
 		Set<Method> methods = this.initBinderCache.get(handlerType);
+		// 找出处理器类中有InitBinder注解的方法
 		if (methods == null) {
 			methods = MethodIntrospector.selectMethods(handlerType, INIT_BINDER_METHODS);
+			// 放入缓存
 			this.initBinderCache.put(handlerType, methods);
 		}
+		// 处理器绑定的方法
 		List<InvocableHandlerMethod> initBinderMethods = new ArrayList<>();
 		// Global methods first
+		// 全局的优先处理，也就是初始化的时候放进容器的@ControllerAdvice注解的类排在最前面
 		this.initBinderAdviceCache.forEach((controllerAdviceBean, methodSet) -> {
 			if (controllerAdviceBean.isApplicableToBeanType(handlerType)) {
 				Object bean = controllerAdviceBean.resolveBean();
@@ -984,19 +1001,24 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 				}
 			}
 		});
+		// 处理器的方法
 		for (Method method : methods) {
 			Object bean = handlerMethod.getBean();
+			// 封装成InvocableHandlerMethod放入集合
 			initBinderMethods.add(createInitBinderMethod(bean, method));
 		}
+		// 封装成工厂返回
 		return createDataBinderFactory(initBinderMethods);
 	}
 
 	private InvocableHandlerMethod createInitBinderMethod(Object bean, Method method) {
 		InvocableHandlerMethod binderMethod = new InvocableHandlerMethod(bean, method);
+		// 设置参数解析器
 		if (this.initBinderArgumentResolvers != null) {
 			binderMethod.setHandlerMethodArgumentResolvers(this.initBinderArgumentResolvers);
 		}
 		binderMethod.setDataBinderFactory(new DefaultDataBinderFactory(this.webBindingInitializer));
+		// 设置属性探测器
 		binderMethod.setParameterNameDiscoverer(this.parameterNameDiscoverer);
 		return binderMethod;
 	}

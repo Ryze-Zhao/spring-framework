@@ -104,9 +104,11 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 			throw new IllegalArgumentException(
 					"Specified name must not resolve to null: [" + namedValueInfo.name + "]");
 		}
-
+		// 解析名字
 		Object arg = resolveName(resolvedName.toString(), nestedParameter, webRequest);
+		// 值为空的话
 		if (arg == null) {
+			// 有默认值
 			if (namedValueInfo.defaultValue != null) {
 				arg = resolveEmbeddedValuesAndExpressions(namedValueInfo.defaultValue);
 			}
@@ -118,10 +120,11 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 		else if ("".equals(arg) && namedValueInfo.defaultValue != null) {
 			arg = resolveEmbeddedValuesAndExpressions(namedValueInfo.defaultValue);
 		}
-
+		// 数据绑定操作
 		if (binderFactory != null) {
 			WebDataBinder binder = binderFactory.createBinder(webRequest, null, namedValueInfo.name);
 			try {
+				// 类型转换
 				arg = binder.convertIfNecessary(arg, parameter.getParameterType(), parameter);
 			}
 			catch (ConversionNotSupportedException ex) {

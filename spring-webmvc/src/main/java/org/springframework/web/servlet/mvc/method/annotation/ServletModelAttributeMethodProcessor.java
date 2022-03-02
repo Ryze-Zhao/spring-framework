@@ -74,6 +74,7 @@ public class ServletModelAttributeMethodProcessor extends ModelAttributeMethodPr
 			WebDataBinderFactory binderFactory, NativeWebRequest request) throws Exception {
 
 		String value = getRequestValueForAttribute(attributeName, request);
+		// 存在的话就从请求参数中创建属性
 		if (value != null) {
 			Object attribute = createAttributeFromRequestValue(
 					value, attributeName, parameter, binderFactory, request);
@@ -81,7 +82,7 @@ public class ServletModelAttributeMethodProcessor extends ModelAttributeMethodPr
 				return attribute;
 			}
 		}
-
+		// 创建属性
 		return super.createAttribute(attributeName, parameter, binderFactory, request);
 	}
 
@@ -152,9 +153,11 @@ public class ServletModelAttributeMethodProcessor extends ModelAttributeMethodPr
 	 */
 	@Override
 	protected void bindRequestParameters(WebDataBinder binder, NativeWebRequest request) {
+		// 获取底层ServletRequest
 		ServletRequest servletRequest = request.getNativeRequest(ServletRequest.class);
 		Assert.state(servletRequest != null, "No ServletRequest");
 		ServletRequestDataBinder servletBinder = (ServletRequestDataBinder) binder;
+		// 绑定
 		servletBinder.bind(servletRequest);
 	}
 

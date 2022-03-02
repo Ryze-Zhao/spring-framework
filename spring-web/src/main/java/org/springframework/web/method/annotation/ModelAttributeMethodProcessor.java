@@ -129,6 +129,7 @@ public class ModelAttributeMethodProcessor implements HandlerMethodArgumentResol
 		Assert.state(mavContainer != null, "ModelAttributeMethodProcessor requires ModelAndViewContainer");
 		Assert.state(binderFactory != null, "ModelAttributeMethodProcessor requires WebDataBinderFactory");
 
+		// 获取参数名字，没有的话就按类型首字母小写
 		String name = ModelFactory.getNameForParameter(parameter);
 		ModelAttribute ann = parameter.getParameterAnnotation(ModelAttribute.class);
 		if (ann != null) {
@@ -138,12 +139,14 @@ public class ModelAttributeMethodProcessor implements HandlerMethodArgumentResol
 		Object attribute = null;
 		BindingResult bindingResult = null;
 
+		// 存在就取出来
 		if (mavContainer.containsAttribute(name)) {
 			attribute = mavContainer.getModel().get(name);
 		}
 		else {
 			// Create attribute instance
 			try {
+				// 不存在就创建
 				attribute = createAttribute(name, parameter, binderFactory, webRequest);
 			}
 			catch (BindException ex) {
@@ -158,16 +161,19 @@ public class ModelAttributeMethodProcessor implements HandlerMethodArgumentResol
 				else {
 					attribute = ex.getTarget();
 				}
+				// 有异常要记录
 				bindingResult = ex.getBindingResult();
 			}
 		}
-
+		// 没有异常
 		if (bindingResult == null) {
 			// Bean property binding and validation;
 			// skipped in case of binding failure on construction.
 			WebDataBinder binder = binderFactory.createBinder(webRequest, attribute, name);
+			// attribute不为空
 			if (binder.getTarget() != null) {
 				if (!mavContainer.isBindingDisabled(name)) {
+					// 绑定请求参数
 					bindRequestParameters(binder, webRequest);
 				}
 				validateIfApplicable(binder, parameter);
@@ -185,6 +191,7 @@ public class ModelAttributeMethodProcessor implements HandlerMethodArgumentResol
 		// Add resolved attribute and BindingResult at the end of the model
 		Map<String, Object> bindingResultModel = bindingResult.getModel();
 		mavContainer.removeAttributes(bindingResultModel);
+		// 添加绑定结果
 		mavContainer.addAllAttributes(bindingResultModel);
 
 		return attribute;

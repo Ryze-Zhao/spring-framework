@@ -52,7 +52,7 @@ public class DefaultDataBinderFactory implements WebDataBinderFactory {
 	@SuppressWarnings("deprecation")
 	public final WebDataBinder createBinder(
 			NativeWebRequest webRequest, @Nullable Object target, String objectName) throws Exception {
-
+		// 创建数据绑定
 		WebDataBinder dataBinder = createBinderInstance(target, objectName, webRequest);
 		if (this.initializer != null) {
 			this.initializer.initBinder(dataBinder, webRequest);
