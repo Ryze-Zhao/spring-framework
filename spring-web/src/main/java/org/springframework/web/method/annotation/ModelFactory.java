@@ -213,12 +213,15 @@ public final class ModelFactory {
 	public void updateModel(NativeWebRequest request, ModelAndViewContainer container) throws Exception {
 		ModelMap defaultModel = container.getDefaultModel();
 		if (container.getSessionStatus().isComplete()){
+			// 如果完成了就清除该清除的session属性
 			this.sessionAttributesHandler.cleanupAttributes(request);
 		}
 		else {
+			// 设置session属性
 			this.sessionAttributesHandler.storeAttributes(request, defaultModel);
 		}
 		if (!container.isRequestHandled() && container.getModel() == defaultModel) {
+			// 更新绑定结果，如果没绑定好，会有错误信息
 			updateBindingResult(request, defaultModel);
 		}
 	}
@@ -230,8 +233,10 @@ public final class ModelFactory {
 		List<String> keyNames = new ArrayList<>(model.keySet());
 		for (String name : keyNames) {
 			Object value = model.get(name);
+			// 是绑定的属性
 			if (value != null && isBindingCandidate(name, value)) {
 				String bindingResultKey = BindingResult.MODEL_KEY_PREFIX + name;
+				// 如果没有包含绑定的属性，可能有问题，要有绑定结果BindingResult
 				if (!model.containsAttribute(bindingResultKey)) {
 					WebDataBinder dataBinder = this.dataBinderFactory.createBinder(request, value, name);
 					model.put(bindingResultKey, dataBinder.getBindingResult());

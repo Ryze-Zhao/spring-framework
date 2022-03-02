@@ -1040,8 +1040,9 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	@Nullable
 	private ModelAndView getModelAndView(ModelAndViewContainer mavContainer,
 			ModelFactory modelFactory, NativeWebRequest webRequest) throws Exception {
-
+		// 更新session属性，处理数据绑定结果
 		modelFactory.updateModel(webRequest, mavContainer);
+		// 已经处理完成，就不处理了
 		if (mavContainer.isRequestHandled()) {
 			return null;
 		}
@@ -1049,9 +1050,11 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		// 根据从容器中获取的视图名称以及数据模型等信息创建ModelAndView实例
 		ModelAndView mav = new ModelAndView(mavContainer.getViewName(), model, mavContainer.getStatus());
 		if (!mavContainer.isViewReference()) {
+			// view非String类型
 			mav.setView((View) mavContainer.getView());
 		}
 		if (model instanceof RedirectAttributes) {
+			// 保存重定向中传递的数据RedirectAttributes
 			Map<String, ?> flashAttributes = ((RedirectAttributes) model).getFlashAttributes();
 			HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 			if (request != null) {
