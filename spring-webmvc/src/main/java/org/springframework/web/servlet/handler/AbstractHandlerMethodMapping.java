@@ -276,6 +276,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * @see BeanFactoryUtils#beanNamesForTypeIncludingAncestors
 	 */
 	protected String[] getCandidateBeanNames() {
+		// 找出Object类型的，也就是所有的注册的bean名字，包括工厂bean
 		return (this.detectHandlerMethodsInAncestorContexts ?
 				BeanFactoryUtils.beanNamesForTypeIncludingAncestors(obtainApplicationContext(), Object.class) :
 				obtainApplicationContext().getBeanNamesForType(Object.class));
@@ -332,6 +333,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		Class<?> handlerType = (handler instanceof String ? obtainApplicationContext().getType((String) handler) : handler.getClass());
 
 		if (handlerType != null) {
+			// 获取用户定义的类型，针对动态代理类型
 			Class<?> userType = ClassUtils.getUserClass(handlerType);
 			// Method -> Method上对应的RequestMappingInfo
 			// 又是非常熟悉的方法：MethodIntrospector.selectMethods
@@ -340,6 +342,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			Map<Method, T> methods = MethodIntrospector.selectMethods(userType,
 					(MethodIntrospector.MetadataLookup<T>) method -> {
 						try {
+							// 检测每个方法，获取RequestMappingInfo
 							return getMappingForMethod(method, userType);
 						}
 						catch (Throwable ex) {
@@ -353,7 +356,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			else if (mappingsLogger.isDebugEnabled()) {
 				mappingsLogger.debug(formatMappings(userType, methods));
 			}
-			// 把找到的Method  一个个遍历，注册进去
+			// 映射和处理器绑定：把找到的Method  一个个遍历，注册进去
 			methods.forEach((method, mapping) -> {
 				/*
 				 * 循环遍历所有的方法,进行注册
@@ -405,6 +408,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * @return the created HandlerMethod
 	 */
 	protected HandlerMethod createHandlerMethod(Object handler, Method method) {
+		// 如果是bean名字
 		if (handler instanceof String) {
 			return new HandlerMethod((String) handler,
 					obtainApplicationContext().getAutowireCapableBeanFactory(),
@@ -779,6 +783,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 				String name = null;
 				if (getNamingStrategy() != null) {
 					name = getNamingStrategy().getName(handlerMethod, mapping);
+					// 名字映射，name为类名大写字母+#+方法名，比如UserController的getUser方法就是UC#getUser
 					addMappingName(name, handlerMethod);
 				}
 
@@ -789,7 +794,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 					this.corsLookup.put(handlerMethod, corsConfig);
 				}
 
-				// 注册跨域配置
+				// 注册跨域配置（封装成MappingRegistration放入registry）
 				this.registry.put(mapping,
 						new MappingRegistration<>(mapping, handlerMethod, directPaths, name, corsConfig != null));
 			}

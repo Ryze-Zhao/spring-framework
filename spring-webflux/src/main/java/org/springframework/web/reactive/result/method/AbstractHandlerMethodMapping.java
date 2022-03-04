@@ -173,10 +173,13 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * @see #handlerMethodsInitialized(Map)
 	 */
 	protected void initHandlerMethods() {
+		// 找出Object类型的，也就是所有的注册的beanName，包括FactoryBean
 		String[] beanNames = obtainApplicationContext().getBeanNamesForType(Object.class);
 
 		for (String beanName : beanNames) {
+			// 代理目标不行，因为方法可能在代理的时候被重写了
 			if (!beanName.startsWith(SCOPED_TARGET_NAME_PREFIX)) {
+				// 获取类型，如果有Controller或者是RequestMapping注解的就进行方法检测，这里就显示出Controller的用途
 				Class<?> beanType = null;
 				try {
 					beanType = obtainApplicationContext().getType(beanName);
@@ -200,11 +203,14 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * @param handler the bean name of a handler or a handler instance
 	 */
 	protected void detectHandlerMethods(final Object handler) {
+		// 如果是String就获取他的类型
 		Class<?> handlerType = (handler instanceof String ?
 				obtainApplicationContext().getType((String) handler) : handler.getClass());
 
 		if (handlerType != null) {
+			// 获取用户定义的类型，针对动态代理类型
 			final Class<?> userType = ClassUtils.getUserClass(handlerType);
+			// 检测每个方法，获取RequestMappingInfo
 			Map<Method, T> methods = MethodIntrospector.selectMethods(userType,
 					(MethodIntrospector.MetadataLookup<T>) method -> getMappingForMethod(method, userType));
 			if (logger.isTraceEnabled()) {
@@ -213,6 +219,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			else if (mappingsLogger.isDebugEnabled()) {
 				mappingsLogger.debug(formatMappings(userType, methods));
 			}
+			// 进行映射和处理器绑定
 			methods.forEach((method, mapping) -> {
 				Method invocableMethod = AopUtils.selectInvocableMethod(method, userType);
 				registerHandlerMethod(handler, invocableMethod, mapping);

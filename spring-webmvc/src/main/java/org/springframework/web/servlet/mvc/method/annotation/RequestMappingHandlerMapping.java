@@ -298,6 +298,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 		if (info != null) {
 			// 方法上有。在第二步：拿到类上的RequestMappingInfo
 			RequestMappingInfo typeInfo = createRequestMappingInfo(handlerType);
+			// 如果方法RequestMappingInfo不为空，就查看类上，如果有的话要合并
 			if (typeInfo != null) {
 				// 倘若类上面也有，那就调用combine把两者结合
 				// combine的逻辑基如下：
