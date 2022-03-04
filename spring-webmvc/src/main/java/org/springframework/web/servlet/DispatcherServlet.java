@@ -1526,6 +1526,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		// 通过localeResolver把local解析出来，放到response里面去
 		Locale locale =
 				(this.localeResolver != null ? this.localeResolver.resolveLocale(request) : request.getLocale());
+		// 设置本地化
 		response.setLocale(locale);
 
 		View view;
