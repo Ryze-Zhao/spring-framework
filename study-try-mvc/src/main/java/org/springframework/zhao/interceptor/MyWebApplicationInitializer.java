@@ -1,4 +1,4 @@
-package org.springframework.zhao.pure_interface;
+package org.springframework.zhao.interceptor;
 
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -10,7 +10,6 @@ import javax.servlet.ServletRegistration;
 /**
  * .
  * 从官方文档拷贝，主要目的初始化spring容器，注册servlet和注册servlet-mapping
- *
  * @author : HeHaoZhao
  */
 public class MyWebApplicationInitializer implements WebApplicationInitializer {

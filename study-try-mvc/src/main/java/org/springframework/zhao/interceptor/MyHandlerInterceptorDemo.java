@@ -1,11 +1,11 @@
-package org.springframework.zhao.pure_interface;
+package org.springframework.zhao.interceptor;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.startup.Tomcat;
 
 
-public class PureInterfaceApplication {
+public class MyHandlerInterceptorDemo {
 	public static void main(String[] args) throws Exception {
 		// 内置tomcat
 		Tomcat tomcat = new Tomcat();

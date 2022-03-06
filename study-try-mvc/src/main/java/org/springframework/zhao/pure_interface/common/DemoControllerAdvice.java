@@ -14,11 +14,11 @@ public class DemoControllerAdvice {
 	@InitBinder
 	public void initBinderDateType(WebDataBinder webDataBinder) {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		webDataBinder.registerCustomEditor(Date.class, new CustomDateEditor(simpleDateFormat,true));
+		webDataBinder.registerCustomEditor(Date.class, new CustomDateEditor(simpleDateFormat, true));
 	}
 
 	@ModelAttribute
-	public void globalAttribute(Model model){
+	public void globalAttribute(Model model) {
 		model.addAttribute("globalValue", "WOW~全局属性");
 	}
 }

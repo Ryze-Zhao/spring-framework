@@ -1,4 +1,4 @@
-package org.springframework.zhao.pure_interface.common;
+package org.springframework.zhao.interceptor.common;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +18,7 @@ public class UserController {
 		return new User("postUser:RyzeZhao", 19);
 	}
 
-	@RequestMapping(value = {"/user", "/user1"})
+	@RequestMapping(value={"/user","/user1"})
 	public User userORUser1() {
 		return new User("userORUser1:RyzeZhao", 20);
 	}
