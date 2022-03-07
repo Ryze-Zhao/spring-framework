@@ -1,4 +1,4 @@
-package org.springframework.zhao.pure_interface;
+package org.springframework.zhao.particulars_02;
 
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import org.springframework.context.annotation.ComponentScan;
@@ -10,11 +10,12 @@ import java.util.List;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan("org.springframework.zhao.pure_interface")
+@ComponentScan("org.springframework.zhao.particulars_02")
 public class WebConfig implements WebMvcConfigurer {
+
 	@Override
-	public void configureViewResolvers(ViewResolverRegistry registry) {
-//		registry.jsp("/page/",".html");
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
 	}
 
 	@Override

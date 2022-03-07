@@ -1,4 +1,4 @@
-package org.springframework.zhao.pure_interface;
+package org.springframework.zhao.particulars_02;
 
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;

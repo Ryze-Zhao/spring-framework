@@ -1,11 +1,11 @@
-package org.springframework.zhao.interceptor;
+package org.springframework.zhao.particulars_02;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.startup.Tomcat;
 
 
-public class MyHandlerInterceptorDemo {
+public class ParticularsApplication {
 	public static void main(String[] args) throws Exception {
 		// 内置tomcat
 		Tomcat tomcat = new Tomcat();
