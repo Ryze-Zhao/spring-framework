@@ -150,10 +150,12 @@ public class PathResourceResolver extends AbstractResourceResolver {
 	@Nullable
 	private Resource getResource(String resourcePath, @Nullable HttpServletRequest request,
 			List<? extends Resource> locations) {
-
+		// 变量查看是否有该资源
 		for (Resource location : locations) {
 			try {
+				// 可能要编码
 				String pathToUse = encodeOrDecodeIfNecessary(resourcePath, request, location);
+				;// 获得资源，用URL读取
 				Resource resource = getResource(pathToUse, location);
 				if (resource != null) {
 					return resource;
@@ -184,6 +186,7 @@ public class PathResourceResolver extends AbstractResourceResolver {
 	 */
 	@Nullable
 	protected Resource getResource(String resourcePath, Resource location) throws IOException {
+		// 资源是否可读
 		Resource resource = location.createRelative(resourcePath);
 		if (resource.isReadable()) {
 			if (checkResource(resource, location)) {

@@ -554,7 +554,9 @@ public class ResourceHttpRequestHandler extends WebContentGenerator
 			throws ServletException, IOException {
 
 		// For very general mappings (e.g. "/") we need to check 404 first
+		// 获取资源
 		Resource resource = getResource(request);
+		// 找不到
 		if (resource == null) {
 			logger.debug("Resource not found");
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -579,7 +581,9 @@ public class ResourceHttpRequestHandler extends WebContentGenerator
 		prepareResponse(response);
 
 		// Check the media type for the resource
+		// 获取资源媒体类型
 		MediaType mediaType = getMediaType(request, resource);
+		// 设置头信息
 		setHeaders(response, resource, mediaType);
 
 		// Content phase
@@ -611,7 +615,7 @@ public class ResourceHttpRequestHandler extends WebContentGenerator
 			throw new IllegalStateException("Required request attribute '" +
 					HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE + "' is not set");
 		}
-
+		// 处理路径，获取资源名字
 		path = processPath(path);
 		if (!StringUtils.hasText(path) || isInvalidPath(path)) {
 			return null;
@@ -624,6 +628,7 @@ public class ResourceHttpRequestHandler extends WebContentGenerator
 		Assert.notNull(this.transformerChain, "ResourceTransformerChain not initialized.");
 
 		Resource resource = this.resolverChain.resolveResource(request, path, getLocations());
+		// 资源转换
 		if (resource != null) {
 			resource = this.transformerChain.transform(request, resource);
 		}
