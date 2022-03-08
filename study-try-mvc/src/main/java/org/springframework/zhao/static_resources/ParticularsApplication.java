@@ -1,4 +1,4 @@
-package org.springframework.zhao.particulars_02;
+package org.springframework.zhao.static_resources;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleListener;

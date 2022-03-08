@@ -1,4 +1,4 @@
-package org.springframework.zhao.particulars_02;
+package org.springframework.zhao.static_resources;
 
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;

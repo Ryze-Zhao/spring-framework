@@ -1,4 +1,4 @@
-package org.springframework.zhao.particulars_02;
+package org.springframework.zhao.static_resources;
 
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import org.springframework.context.annotation.ComponentScan;
@@ -10,7 +10,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan("org.springframework.zhao.particulars_02")
+@ComponentScan("org.springframework.zhao.static_resources")
 public class WebConfig implements WebMvcConfigurer {
 
 	@Override
