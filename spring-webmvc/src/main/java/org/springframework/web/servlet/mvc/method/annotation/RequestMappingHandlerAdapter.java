@@ -867,7 +867,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 
 			/*
 			 * 进行handlerMethod封装
-			 * 创建InvocableHandlerMethod实例,以及各个组件的配置;
+			 * 创建InvocableHandlerMethod实例，以及各个组件的配置;
 			 * 后面通过调用invokeAndHandle()方法执行处理器
 			 */
 			ServletInvocableHandlerMethod invocableMethod = createInvocableHandlerMethod(handlerMethod);

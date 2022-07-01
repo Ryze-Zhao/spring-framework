@@ -146,7 +146,7 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 
 	/**
 	 * Register all handlers specified in the URL map for the corresponding paths.
-	 * 对应用系统设置的urlMap进行注册,注册的核心方法是调用其父类的registerHandler(),在注册的时候会对我们注册的url 进行简单处理
+	 * 对应用系统设置的urlMap进行注册，注册的核心方法是调用其父类的registerHandler(),在注册的时候会对我们注册的url 进行简单处理
 	 *
 	 * @param urlMap a Map with URL paths as keys and handler beans or bean names as values
 	 * @throws BeansException if a handler couldn't be registered

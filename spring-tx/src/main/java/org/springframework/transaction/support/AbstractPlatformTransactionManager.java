@@ -373,15 +373,15 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 					"No existing transaction found for transaction marked with propagation 'mandatory'");
 		}
 		/*
-		 * PROPAGATION_REQUIRED:当前存在事务就加入到当前的事务,没有就新开一个
-		 * PROPAGATION_REQUIRES_NEW:新开一个事务,若当前存在事务就挂起当前事务
+		 * PROPAGATION_REQUIRED:当前存在事务就加入到当前的事务，没有就新开一个
+		 * PROPAGATION_REQUIRES_NEW:新开一个事务，若当前存在事务就挂起当前事务
 		 * PROPAGATION_NESTED:表示如果当前正有一个事务在运行中，则该方法应该运行在一个嵌套的事务中，
-		 *                      被嵌套的事务可以独立于封装事务进行提交或者回滚(保存点)，如果封装事务不存在,行为就像PROPAGATION_REQUIRES_NEW
+		 *                      被嵌套的事务可以独立于封装事务进行提交或者回滚(保存点)，如果封装事务不存在，行为就像PROPAGATION_REQUIRES_NEW
 		 */
 		else if (def.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRED ||
 				def.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRES_NEW ||
 				def.getPropagationBehavior() == TransactionDefinition.PROPAGATION_NESTED) {
-			// 挂起事务，为什么传入null?因为逻辑走到这里了,经过了上面的isExistingTransaction(transaction) 判断当前是不存在事务的，所以这里是挂起当前事务传递一个null进去
+			// 挂起事务，为什么传入null?因为逻辑走到这里了，经过了上面的isExistingTransaction(transaction) 判断当前是不存在事务的，所以这里是挂起当前事务传递一个null进去
 			SuspendedResourcesHolder suspendedResources = suspend(null);
 			if (debugEnabled) {
 				logger.debug("Creating new transaction with name [" + def.getName() + "]: " + def);
@@ -837,7 +837,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			catch (TransactionException ex) {
 				// can only be caused by doCommit
 				if (isRollbackOnCommitFailure()) {
-					// 提交过程中有异常,执行回滚操作
+					// 提交过程中有异常，执行回滚操作
 					doRollbackOnCommitException(status, ex);
 				}
 				else {
@@ -869,7 +869,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		finally {
 			// 事务执行完毕之后，执行一些清理操作
 			// 清空记录的资源并将挂起的资源恢复
-			// 根据条件，完成后数据清除,和线程的私有资源解绑，重置连接自动提交，隔离级别，是否只读，释放连接，恢复挂起事务等
+			// 根据条件，完成后数据清除，和线程的私有资源解绑，重置连接自动提交，隔离级别，是否只读，释放连接，恢复挂起事务等
 			cleanupAfterCompletion(status);
 		}
 	}
@@ -982,7 +982,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		finally {
 			// 清空记录的资源并将挂起的资源恢复
 			// 子事务结束了，之前挂起的事务就要恢复了
-			// 根据事务状态信息，完成后数据清除,和线程的私有资源解绑，重置连接自动提交，隔离级别，是否只读，释放连接，恢复挂起事务等
+			// 根据事务状态信息，完成后数据清除，和线程的私有资源解绑，重置连接自动提交，隔离级别，是否只读，释放连接，恢复挂起事务等
 			cleanupAfterCompletion(status);
 		}
 	}
@@ -1104,7 +1104,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		}
 		// 是否是新事务
 		if (status.isNewTransaction()) {
-			// 执行清理操作,线程的私有资源解绑，重置连接自动提交，隔离级别，是否只读，释放连接等
+			// 执行清理操作，线程的私有资源解绑，重置连接自动提交，隔离级别，是否只读，释放连接等
 			doCleanupAfterCompletion(status.getTransaction());
 		}
 		// 是否有被挂起的事务

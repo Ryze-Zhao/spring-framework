@@ -85,7 +85,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 
 	/**
 	 * .
-	 * 默认的Handler,这边使用的Object,子类实现的时候,使用HandlerMethod,HandlerExecutionChain等
+	 * 默认的Handler,这边使用的Object,子类实现的时候，使用HandlerMethod,HandlerExecutionChain等
 	 */
 	@Nullable
 	private Object defaultHandler;
@@ -113,7 +113,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 
 	/**
 	 * .
-	 * 从interceptors中解析得到,直接添加给全部handler
+	 * 从interceptors中解析得到，直接添加给全部handler
 	 */
 	private final List<HandlerInterceptor> adaptedInterceptors = new ArrayList<>();
 

@@ -168,7 +168,7 @@ public abstract class BeanDefinitionReaderUtils {
 		 * 情况一：
 		 *  DefaultListableBeanFactory类实现了BeanDefinitionRegistry接口
 		 * 情况二：
-		 *  GenericApplicationContext类实现了BeanDefinitionRegistry接口,并且在 GenericApplicationContext类中维护了一个DefaultListableBeanFactory beanFactory
+		 *  GenericApplicationContext类实现了BeanDefinitionRegistry接口，并且在 GenericApplicationContext类中维护了一个DefaultListableBeanFactory beanFactory
 		 * 该步骤实际调用的是GenericApplicationContext类中的registerBeanDefinition()方法，{@link org.springframework.context.support.GenericApplicationContext#registerBeanDefinition(String,BeanDefinition)}
 		 */
 		registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());

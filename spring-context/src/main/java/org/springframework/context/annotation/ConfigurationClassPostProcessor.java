@@ -313,7 +313,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				}
 			}
 			// 如果当前的bean是JavaBean配置类（含有@Configuration注解的类），则加入到集合configCandidates中
-			//   checkConfigurationClassCandidate()会判断 BeanDefinition 是否是一个配置类,并为BeanDefinition设置属性为lite或者full，方便后面用
+			//   checkConfigurationClassCandidate()会判断 BeanDefinition 是否是一个配置类，并为BeanDefinition设置属性为lite或者full，方便后面用
 			//     如果加了@Configuration，并且proxyBeanMethods属性设置为true，那么对应的BeanDefinition为full，否则为lite
 			//     如果加了@Bean、@Component(及派生的注解)、@ComponentScan、@Import、@ImportResource，那么对应的BeanDefinition为lite
 			else if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDef, this.metadataReaderFactory)) {
@@ -323,7 +323,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 
 		// Return immediately if no @Configuration classes were found
 		/*
-		 * 如果没有@Configuration自定义注解类,直接退出
+		 * 如果没有@Configuration自定义注解类，直接退出
 		 * 下面只对添加@Configuration,@Component, @ComponentScan, @Import, @ImportResource注解的类进行处理
 		 */
 		if (configCandidates.isEmpty()) {
@@ -331,7 +331,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		}
 
 		// Sort by previously determined @Order value, if applicable
-		// <Spring分析点40-2> 对configCandidates 进行 排序,按照@Order 进行排序
+		// <Spring分析点40-2> 对configCandidates 进行 排序，按照@Order 进行排序
 		configCandidates.sort((bd1, bd2) -> {
 			int i1 = ConfigurationClassUtils.getOrder(bd1.getBeanDefinition());
 			int i2 = ConfigurationClassUtils.getOrder(bd2.getBeanDefinition());
@@ -372,7 +372,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				this.resourceLoader, this.componentScanBeanNameGenerator, registry);
 
 		// 实例化2个Set
-		// 将configCandidates(List)集合中的BeanDefinitionHolder放入candidates(Set)集合中进行去重,因为可能有多个配置类重复了
+		// 将configCandidates(List)集合中的BeanDefinitionHolder放入candidates(Set)集合中进行去重，因为可能有多个配置类重复了
 		// alreadyParsed 用于判断是否处理过
 		Set<BeanDefinitionHolder> candidates = new LinkedHashSet<>(configCandidates);
 		Set<ConfigurationClass> alreadyParsed = new HashSet<>(configCandidates.size());
@@ -429,7 +429,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 					// 处理新的
 					if (!oldCandidateNames.contains(candidateName)) {
 						BeanDefinition bd = registry.getBeanDefinition(candidateName);
-						// 新注册的bean如果也是@Configuration配置类,则添加到数据，等待解析
+						// 新注册的bean如果也是@Configuration配置类，则添加到数据，等待解析
 						if (ConfigurationClassUtils.checkConfigurationClassCandidate(bd, this.metadataReaderFactory) &&
 								!alreadyParsedClasses.contains(bd.getBeanClassName())) {
 							// 符合配置类要求就添加到candidates

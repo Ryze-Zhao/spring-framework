@@ -186,7 +186,7 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 					view = this.viewCreationCache.get(cacheKey);
 					if (view == null) {
 						// Ask the subclass to create the View object.
-						// 让子类创建View对象, 留给子类扩展[扩展开放,修改关闭原则]
+						// 让子类创建View对象, 留给子类扩展[扩展开放，修改关闭原则]
 						view = createView(viewName, locale);
 						if (view == null && this.cacheUnresolved) {
 							// 这里cacheUnresolved指的是是否缓存默认的空视图，UNRESOLVED_VIEW是

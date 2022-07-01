@@ -359,7 +359,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			// 映射和处理器绑定：把找到的Method  一个个遍历，注册进去
 			methods.forEach((method, mapping) -> {
 				/*
-				 * 循环遍历所有的方法,进行注册
+				 * 循环遍历所有的方法，进行注册
 				 * handler为controller类实例, 每一个HandlerMethod中都维护着该实例, 因为在后面执行该方法时需要传入该实例
 				 *
 				 * 获取真实可执行的方法，因为上述查找逻辑在特殊情况下查找到的方法可能存在于代理上需要获取非代理方法作为可执行方法调用
@@ -691,7 +691,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		private final MultiValueMap<String, T> pathLookup = new LinkedMultiValueMap<>();
 
 		/**
-		 * 这个Map是Spring MVC4.1新增的（毕竟这个策略接口HandlerMethodMappingNamingStrategy在Spring4.1后才有,这里的name是它生成出来的）
+		 * 这个Map是Spring MVC4.1新增的（毕竟这个策略接口HandlerMethodMappingNamingStrategy在Spring4.1后才有，这里的name是它生成出来的）
 		 * 保存着name和HandlerMethod的对应关系（一个name可以有多个HandlerMethod）
 		 */
 		private final Map<String, List<HandlerMethod>> nameLookup = new ConcurrentHashMap<>();

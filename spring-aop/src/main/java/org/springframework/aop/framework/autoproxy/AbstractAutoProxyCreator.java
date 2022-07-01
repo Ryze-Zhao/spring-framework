@@ -82,7 +82,7 @@ import org.springframework.util.StringUtils;
  * or if none matches, a {@link org.springframework.aop.target.SingletonTargetSource}
  * will be used by default to wrap the target bean instance.
  *
- * 提供为给定的bean对象创建对应的代理对象的方法实现,同时提供代理对象需要的方法拦截器的创建，其中拦截器包括所有代理对象公用的拦截器和某个代理对象私有的拦截器
+ * 提供为给定的bean对象创建对应的代理对象的方法实现，同时提供代理对象需要的方法拦截器的创建，其中拦截器包括所有代理对象公用的拦截器和某个代理对象私有的拦截器
  * @author Juergen Hoeller
  * @author Rod Johnson
  * @author Rob Harrop
@@ -487,7 +487,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		if (this.beanFactory instanceof ConfigurableListableBeanFactory) {
 			AutoProxyUtils.exposeTargetClass((ConfigurableListableBeanFactory) this.beanFactory, beanName, beanClass);
 		}
-		// 创建一个代理工厂：每个Bean对象都使用一个单例的ProxyFactory来创建代理对象，因为每个Bean需要的辅助方法不一样,然后将该ProxyFactory对象引用作为构造函数参数创建对应的代理对象
+		// 创建一个代理工厂：每个Bean对象都使用一个单例的ProxyFactory来创建代理对象，因为每个Bean需要的辅助方法不一样，然后将该ProxyFactory对象引用作为构造函数参数创建对应的代理对象
 		ProxyFactory proxyFactory = new ProxyFactory();
 		// 复制当前 ProxyConfig 的一些属性（例如 proxyTargetClass、exposeProxy）
 		proxyFactory.copyFrom(this);

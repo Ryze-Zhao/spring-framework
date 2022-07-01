@@ -100,7 +100,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 		//  模版方法，由子类拓展增强器(用作子类对已经查找完成的增强器进行拓展)
 		//  {@link AspectJAwareAdvisorAutoProxyCreator#extendAdvisors(java.util.List)}
 		extendAdvisors(eligibleAdvisors);
-		// 如果获取的Advisor集合eligibleAdvisors不为空,则根据优先级进行排序
+		// 如果获取的Advisor集合eligibleAdvisors不为空，则根据优先级进行排序
 		if (!eligibleAdvisors.isEmpty()) {
 			eligibleAdvisors = sortAdvisors(eligibleAdvisors);
 		}

@@ -112,7 +112,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Specify the bean class name of this bean definition.<p>The class name can be modified during bean factory post-processing,typically replacing the original class name with a parsed variant of it.
-	 * 设置bean类名字,这个可能会在后置处理器中修改，比如用了GCLIB代理配置类的时候就会改
+	 * 设置bean类名字，这个可能会在后置处理器中修改，比如用了GCLIB代理配置类的时候就会改
 	 * 指定此BeanDefinition的bean类名。<p>可以在  `BeanFactoryPostProcessor` 过程中修改类名，通常用解析后的变体替换原始类名。
 	 *
 	 * @see #setParentName

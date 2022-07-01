@@ -408,7 +408,7 @@ class ConstructorResolver {
 		Object factoryBean;
 		// 工厂类型
 		Class<?> factoryClass;
-		// 是否是静态的,存在factoryBeanName表示是实例工厂，非静态方法，否则是静态的
+		// 是否是静态的，存在factoryBeanName表示是实例工厂，非静态方法，否则是静态的
 		boolean isStatic;
 
 		// 工厂名不为空
@@ -476,7 +476,7 @@ class ConstructorResolver {
 					}
 				}
 			}
-			// 缓存中存在,则解析存储在 BeanDefinition 中的参数
+			// 缓存中存在，则解析存储在 BeanDefinition 中的参数
 			// 如给定方法的构造函数 A(int ,int )，则通过此方法后就会把配置文件中的("1","1")转换为 (1,1)
 			// 缓存中的值可能是原始值也有可能是最终值
 			if (argsToResolve != null) {

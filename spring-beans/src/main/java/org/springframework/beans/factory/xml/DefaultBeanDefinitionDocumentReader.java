@@ -150,11 +150,11 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			}
 		}
 
-		// <Spring分析点8-3> 解析前处理（解析前处理,留给子类实现(设计模式:模板方法模式)）
+		// <Spring分析点8-3> 解析前处理（解析前处理，留给子类实现(设计模式:模板方法模式)）
 		preProcessXml(root);
 		// <Spring分析点8-4> 解析（根据Root节点进行解析）
 		parseBeanDefinitions(root, this.delegate);
-		// <Spring分析点8-5> 解析后处理（解析后处理,留给子类实现(设计模式:模板方法模式)）
+		// <Spring分析点8-5> 解析后处理（解析后处理，留给子类实现(设计模式:模板方法模式)）
 		postProcessXml(root);
 		// 设置 delegate 回老的 BeanDefinitionParserDelegate 对象
 		this.delegate = parent;
@@ -177,7 +177,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate) {
 		// 如果根节点使用默认标签，执行默认解析
 		if (delegate.isDefaultNamespace(root)) {
-			// 遍历子节点，获取beans的所有子节点,遍历,对其子节点根据是否使用默认标签,使用不同的解析方法
+			// 遍历子节点，获取beans的所有子节点，遍历，对其子节点根据是否使用默认标签，使用不同的解析方法
 			NodeList nl = root.getChildNodes();
 			for (int i = 0; i < nl.getLength(); i++) {
 				Node node = nl.item(i);
@@ -344,10 +344,10 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		// 进行 bean 元素解析。
 		// <Spring分析点11-1> 如果解析成功，则返回 BeanDefinitionHolder 对象。而 BeanDefinitionHolder 为 name 和 alias 的 BeanDefinition 对象
 		// 如果解析失败，则返回 null 。
-		// 解析ele,返回BeanDefinitionHolder类型实例bdHolder,经过这个方法后,bdHolder实例已经包含我们配置文件中配置的各种属性,例如:class,name,id,alias等
+		// 解析ele,返回BeanDefinitionHolder类型实例bdHolder,经过这个方法后,bdHolder实例已经包含我们配置文件中配置的各种属性，例如:class,name,id,alias等
 		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
 		if (bdHolder != null) {
-			// <Spring分析点11-2> 当返回的bdHolder不为空的情况下若存在默认标签的字标签下再有自定义属性,还需要再次对自定义标签进行解析
+			// <Spring分析点11-2> 当返回的bdHolder不为空的情况下若存在默认标签的字标签下再有自定义属性，还需要再次对自定义标签进行解析
 			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
 			try {
 				// Register the final decorated instance.

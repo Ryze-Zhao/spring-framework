@@ -162,7 +162,7 @@ public interface BeanFactory {
 	 * 将别名转换回相应的规范bean名称。 将询问父工厂是否在此工厂实例中找不到该bean。
 	 *
 	 * @param name the name of the bean to retrieve	要检索的bean的名称
-	 * @param requiredType type the bean must match; can be an interface or superclass	bean必须匹配的类型,可以是接口或超类
+	 * @param requiredType type the bean must match; can be an interface or superclass	bean必须匹配的类型，可以是接口或超类
 	 * @return an instance of the bean	bean的一个实例
 	 * @throws NoSuchBeanDefinitionException if there is no such bean definition	如果没有这样的BeanDefinition
 	 * @throws BeanNotOfRequiredTypeException if the bean is not of the required type	如果bean不是所需的类型

@@ -58,7 +58,7 @@ public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
 		 *
 		 * 2. config.isProxyTargetClass(): 是否直接代理目标类以及任何接口 (默认:false)，也就是用户确定要使用CGLIB（但如果Spring判断到目标类更适合使用JDK代理的话，依然会使用JDK代理）
 		 *
-		 * 3. hasNoUserSuppliedProxyInterfaces(config): 目标类是否有实现的接口,没有的话返回true (JDK动态代理基于接口,所以只有目标类存在接口才会使用JDK动态代理)
+		 * 3. hasNoUserSuppliedProxyInterfaces(config): 目标类是否有实现的接口，没有的话返回true (JDK动态代理基于接口，所以只有目标类存在接口才会使用JDK动态代理)
 		 */
 		if (!NativeDetector.inNativeImage() &&
 				(config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config))) {

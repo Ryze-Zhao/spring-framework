@@ -94,7 +94,7 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * Return a provider for the specified bean, allowing for lazy on-demand retrieval
 	 * of instances, including availability and uniqueness options.
 	 * 返回指定bean的提供程序，允许延迟按需检索实例，包括可用性和唯一性选项。
-	 * @param requiredType type the bean must match; can be an interface or superclass	bean必须匹配的类型,可以是接口或超类
+	 * @param requiredType type the bean must match; can be an interface or superclass	bean必须匹配的类型，可以是接口或超类
 	 * @param allowEagerInit whether stream-based access may initialize <i>lazy-init
 	 * singletons</i> and <i>objects created by FactoryBeans</i> (or by factory methods
 	 * with a "factory-bean" reference) for the type check

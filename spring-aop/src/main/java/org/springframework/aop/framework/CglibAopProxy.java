@@ -172,7 +172,7 @@ class CglibAopProxy implements AopProxy, Serializable {
 			Assert.state(rootClass != null, "Target class must be available for creating a CGLIB proxy");
 			// 设置目标类为代理父类(CGLIB基于继承实现代理)
 			Class<?> proxySuperClass = rootClass;
-			// 类名是否包含CGLIB分隔符：如果目标类也是CGLIB代理类,则设目标类的父类为代理父类
+			// 类名是否包含CGLIB分隔符：如果目标类也是CGLIB代理类，则设目标类的父类为代理父类
 			if (rootClass.getName().contains(ClassUtils.CGLIB_CLASS_SEPARATOR)) {
 				proxySuperClass = rootClass.getSuperclass();
 				// 获得原始父类的接口
@@ -202,7 +202,7 @@ class CglibAopProxy implements AopProxy, Serializable {
 			enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
 			enhancer.setStrategy(new ClassLoaderAwareGeneratorStrategy(classLoader));
 
-			// 获取回调类信息,即增强
+			// 获取回调类信息，即增强
 			Callback[] callbacks = getCallbacks(rootClass);
 			Class<?>[] types = new Class<?>[callbacks.length];
 			for (int x = 0; x < types.length; x++) {
@@ -715,9 +715,9 @@ class CglibAopProxy implements AopProxy, Serializable {
 				else {
 					// We need to create a method invocation...
 					/*
-					 * 2.创建一个方法调用,执行目标方法（把需要执行的目标对象，方法，参数，拦截器链等传进来）
+					 * 2.创建一个方法调用，执行目标方法（把需要执行的目标对象，方法，参数，拦截器链等传进来）
 					 * 2.1.new CglibMethodInvocation():CglibMethodInvocation实例继承ReflectiveMethodInvocation，创建一个CglibMethodInvocation对象
-					 * 2.2.proceed():此处与JDK动态代理一样,都是通过ReflectiveMethodInvocation#proceed()方法完成增强的织入
+					 * 2.2.proceed():此处与JDK动态代理一样，都是通过ReflectiveMethodInvocation#proceed()方法完成增强的织入
 					 */
 					retVal = new CglibMethodInvocation(proxy, target, method, args, targetClass, chain, methodProxy).proceed();
 				}

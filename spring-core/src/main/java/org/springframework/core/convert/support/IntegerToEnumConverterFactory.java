@@ -40,7 +40,7 @@ final class IntegerToEnumConverterFactory implements ConverterFactory<Integer, E
 
 	/**
 	 * 内部类的实现.
-	 * 把Integer转为Enum的子类型,相当于根据Integer找到一个enum（注意此处根据index来找的）
+	 * 把Integer转为Enum的子类型，相当于根据Integer找到一个enum（注意此处根据index来找的）
 	 * @author : HeHaoZhao
 	 */
 	private static class IntegerToEnum<T extends Enum> implements Converter<Integer, T> {

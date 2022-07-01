@@ -413,7 +413,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 				if (method.equals(ClassUtils.getMostSpecificMethod(method, clazz))) {
 					if (webServiceRefClass != null && bridgedMethod.isAnnotationPresent(webServiceRefClass)) {
 						if (Modifier.isStatic(method.getModifiers())) {
-							// 静态,抛异常
+							// 静态，抛异常
 							throw new IllegalStateException("@WebServiceRef annotation is not supported on static methods");
 						}
 						if (method.getParameterCount() != 1) {
@@ -425,7 +425,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 					}
 					else if (ejbClass != null && bridgedMethod.isAnnotationPresent(ejbClass)) {
 						if (Modifier.isStatic(method.getModifiers())) {
-							// 静态,抛异常
+							// 静态，抛异常
 							throw new IllegalStateException("@EJB annotation is not supported on static methods");
 						}
 						if (method.getParameterCount() != 1) {
@@ -437,7 +437,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 					}
 					else if (bridgedMethod.isAnnotationPresent(Resource.class)) {
 						if (Modifier.isStatic(method.getModifiers())) {
-							// 静态,抛异常
+							// 静态，抛异常
 							throw new IllegalStateException("@Resource annotation is not supported on static methods");
 						}
 						Class<?>[] paramTypes = method.getParameterTypes();

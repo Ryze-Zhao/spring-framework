@@ -713,7 +713,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				HandlerAdapter ha = context.getBean(HANDLER_ADAPTER_BEAN_NAME, HandlerAdapter.class);
 				this.handlerAdapters = Collections.singletonList(ha);
 			} catch (NoSuchBeanDefinitionException ex) {
-				// 如果出现异常导致获取的适配器为空,则忽略, 后面将会设置默认的适配器
+				// 如果出现异常导致获取的适配器为空，则忽略, 后面将会设置默认的适配器
 				// Ignore, we'll add a default HandlerAdapter later.
 			}
 		}
@@ -1249,7 +1249,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		 * 如果在解析过程中出现异常, 这里会对异常进行处理
 		 */
 		if (exception != null) {
-			// 如果是默认异常,则获取异常视图
+			// 如果是默认异常，则获取异常视图
 			if (exception instanceof ModelAndViewDefiningException) {
 				logger.debug("ModelAndViewDefiningException encountered", exception);
 				mv = ((ModelAndViewDefiningException) exception).getModelAndView();
@@ -1478,7 +1478,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		// 检查注册的HandlerExceptionResolvers
 		ModelAndView exMv = null;
 		if (this.handlerExceptionResolvers != null) {
-			// 遍历所有的异常解析器, 尝试对异常进行解析, 如果解析成功,跳出循环
+			// 遍历所有的异常解析器, 尝试对异常进行解析, 如果解析成功，跳出循环
 			for (HandlerExceptionResolver resolver : this.handlerExceptionResolvers) {
 				exMv = resolver.resolveException(request, response, handler, ex);
 				if (exMv != null) {

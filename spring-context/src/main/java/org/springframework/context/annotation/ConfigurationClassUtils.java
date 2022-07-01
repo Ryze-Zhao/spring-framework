@@ -175,7 +175,7 @@ abstract class ConfigurationClassUtils {
 
 		// Any of the typical annotations found?
 		// 存在 Component ComponentScan Import ImportResource任意一个注解
-		// candidateIndicators 是一个静态常量，在初始化时，包含了四个元素,分别为@Component,@ComponentScan,@Import,@ImportResource这四个注解
+		// candidateIndicators 是一个静态常量，在初始化时，包含了四个元素，分别为@Component,@ComponentScan,@Import,@ImportResource这四个注解
 		// 只要这个类上添加了这四种注解中的一个，就便是这个类是一个配置类，这个类对应的BeanDefinition中的configurationClass属性值为lite
 		for (String indicator : candidateIndicators) {
 			if (metadata.isAnnotated(indicator)) {

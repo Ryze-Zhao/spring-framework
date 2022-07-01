@@ -379,7 +379,7 @@ public class HandlerMethod {
 			handler = this.beanFactory.getBean(beanName);
 		}
 		/*
-		 * 问题: 这里为什么要重新创建一个HandlerMethod实例,而不是在原有的HandlerMethod实例上进行修改?
+		 * 问题: 这里为什么要重新创建一个HandlerMethod实例，而不是在原有的HandlerMethod实例上进行修改?
 		 */
 		return new HandlerMethod(this, handler);
 	}

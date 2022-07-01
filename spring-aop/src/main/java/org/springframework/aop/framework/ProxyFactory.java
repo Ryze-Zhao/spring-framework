@@ -111,7 +111,7 @@ public class ProxyFactory extends ProxyCreatorSupport {
 		 * 根据 AOP 代理的信息为目标 Bean 创建一个代理对象，并返回
 		 * 1.代理类获取:{@link ProxyCreatorSupport#createAopProxy()}
 		 *  createAopProxy():
-		 *      ProxyFactory 父类 ProxyCreatorSupport 的方法,父类ProxyCreatorSupport中维护着变量AopProxyFactory,
+		 *      ProxyFactory 父类 ProxyCreatorSupport 的方法，父类ProxyCreatorSupport中维护着变量AopProxyFactory,
 		 *      DefaultAopProxyFactory 是 AopProxyFactory(接口)的实现类, 通过 DefaultAopProxyFactory#createAopProxy() 根据条件获取JdkDynamicAopProxy或CglibAopProxy实例
 		 *
 		 * 2.生成代理对象:

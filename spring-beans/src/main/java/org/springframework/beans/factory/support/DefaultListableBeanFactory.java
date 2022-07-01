@@ -983,9 +983,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				// 判断beanName对应的bean是否为FactoryBean
 				if (isFactoryBean(beanName)) {
 					// 如果是FactoryBean,使用 &beanName ,去获取 FactoryBean
-					// 为什么要这样做,因为beanName获取的是FactoryBean生产的Bean,要获取FactoryBean本身,需要通过&beanName
-					// 其实,实例化所有的非懒加载单例Bean的时候,如果是FactoryBean,这里只是创建了FactoryBean
-					// 什么时候去创建由FactoryBean产生的Bean呢? 默认是懒加载的,在使用到这个Bean的时候,才通过FactoryBean去创建Bean
+					// 为什么要这样做，因为beanName获取的是FactoryBean生产的Bean,要获取FactoryBean本身，需要通过&beanName
+					// 其实，实例化所有的非懒加载单例Bean的时候，如果是FactoryBean,这里只是创建了FactoryBean
+					// 什么时候去创建由FactoryBean产生的Bean呢? 默认是懒加载的，在使用到这个Bean的时候，才通过FactoryBean去创建Bean
 
 					// 通过getBean(&beanName)拿到的是FactoryBean本身；通过getBean(beanName)拿到的是FactoryBean创建的Bean实例
 					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
@@ -1057,7 +1057,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		if (beanDefinition instanceof AbstractBeanDefinition) {
 			try {
 				/*
-				 * 注册前的最后一次校验,这里的校验不同于之前的XML文件校验
+				 * 注册前的最后一次校验，这里的校验不同于之前的XML文件校验
 				 * 主要是对于 AbstractBeanDefinition 属性中的methodOverrides校验,
 				 * 校验methodOverrides是否与工厂方法并存或者methodOverrides对应的方法不存在
 				 */
@@ -1073,7 +1073,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
 		// <Spring分析点19-3> 如果已经存在
 		if (existingDefinition != null) {
-			// 如果对应的BeanName已经注册且在配置中配置了bean不允许被覆盖,则抛出异常
+			// 如果对应的BeanName已经注册且在配置中配置了bean不允许被覆盖，则抛出异常
 			if (!isAllowBeanDefinitionOverriding()) {
 				throw new BeanDefinitionOverrideException(beanName, beanDefinition, existingDefinition);
 			}
@@ -1144,7 +1144,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		}
 
 		// <Spring分析点19-5> 重新设置 beanName 对应的缓存
-		// 如果该BeanDefinition已经注册,并且为单例,则进行重置
+		// 如果该BeanDefinition已经注册，并且为单例，则进行重置
 		if (existingDefinition != null || containsSingleton(beanName)) {
 			resetBeanDefinition(beanName);
 		}

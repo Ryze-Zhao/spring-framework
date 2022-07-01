@@ -92,7 +92,7 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 		beanDefinitionReader.setEntityResolver(new ResourceEntityResolver(this));
 
 		// Allow a subclass to provide custom initialization of the reader,then proceed with actually loading the bean definitions.
-		// 对BeanDefinition进行设置,可以覆盖
+		// 对BeanDefinition进行设置，可以覆盖
 		initBeanDefinitionReader(beanDefinitionReader);
 		// 加载BeanDefinition
 		loadBeanDefinitions(beanDefinitionReader);

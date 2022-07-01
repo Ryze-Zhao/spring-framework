@@ -39,8 +39,8 @@ import org.springframework.lang.Nullable;
  * {@link InstantiationAwareBeanPostProcessorAdapter} in order to be shielded
  * from extensions to this interface.
  *
- * Instantiation	    表示实例化,对象还未生成
- * Initialization	表示初始化,对象已经生成
+ * Instantiation	    表示实例化，对象还未生成
+ * Initialization	表示初始化，对象已经生成
  *
  * @author Juergen Hoeller
  * @author Rod Johnson

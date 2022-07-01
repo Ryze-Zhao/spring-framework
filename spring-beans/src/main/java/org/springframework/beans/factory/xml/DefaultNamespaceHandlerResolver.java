@@ -138,11 +138,11 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 			return null;
 		}
 		else if (handlerOrClassName instanceof NamespaceHandler) {
-			// <Spring分析点16-3.2> 已经做过解析的情况,直接从缓存读取
+			// <Spring分析点16-3.2> 已经做过解析的情况，直接从缓存读取
 			return (NamespaceHandler) handlerOrClassName;
 		}
 		else {
-			// <Spring分析点16-3.3> 没有做过解析,则返回的是类路径
+			// <Spring分析点16-3.3> 没有做过解析，则返回的是类路径
 			String className = (String) handlerOrClassName;
 			try {
 				// 获得类，并创建 NamespaceHandler 对象
@@ -160,7 +160,7 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 				 * SpringMvc: {@link org.springframework.web.servlet.config.MvcNamespaceHandler#init()}
 				 */
 				 namespaceHandler.init();
-				// 将该handler记录在缓存中,以便下次调用该handler可以直接获取,不用再次转换
+				// 将该handler记录在缓存中，以便下次调用该handler可以直接获取，不用再次转换
 				handlerMappings.put(namespaceUri, namespaceHandler);
 				return namespaceHandler;
 			}

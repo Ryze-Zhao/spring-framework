@@ -144,7 +144,7 @@ final class PostProcessorRegistrationDelegate {
 			String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			// 遍历并找出所有实现 PriorityOrdered接口 的 BeanDefinitionRegistryPostProcessor 实现类
 			for (String ppName : postProcessorNames) {
-				// 如果该 BeanDefinitionRegistryPostProcessor 实现了排序优先级为最高级的PriorityOrdered接口 (PriorityOrdered为最高优先级,关于 BeanFactoryPostProcessor 优先级在后面会说)
+				// 如果该 BeanDefinitionRegistryPostProcessor 实现了排序优先级为最高级的PriorityOrdered接口 (PriorityOrdered为最高优先级，关于 BeanFactoryPostProcessor 优先级在后面会说)
 				// 注：BeanDefinitionRegistryPostProcessor 是BeanFactoryPostProcessor子接口
 				if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
 					// 根据类型名转为对应的 BeanDefinitionRegistryPostProcessor 存入List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors
@@ -160,7 +160,7 @@ final class PostProcessorRegistrationDelegate {
 			registryProcessors.addAll(currentRegistryProcessors);
 			// 遍历 currentRegistryProcessors, 执行 postProcessBeanDefinitionRegistry 方法
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry, beanFactory.getApplicationStartup());
-			// 清空 currentRegistryProcessors 所有元素(只删除元素不删除对象本身,集合对象长度为0且非null)
+			// 清空 currentRegistryProcessors 所有元素(只删除元素不删除对象本身，集合对象长度为0且非null)
 			currentRegistryProcessors.clear();
 
 
@@ -170,7 +170,7 @@ final class PostProcessorRegistrationDelegate {
 			postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			// 遍历并找出所有 不在processedBeans变量中且它的排序优先级为Ordered 的 BeanDefinitionRegistryPostProcessor 实现类
 			for (String ppName : postProcessorNames) {
-				// 如果该 BeanDefinitionRegistryPostProcessor 不在processedBeans变量中且它的排序优先级为Ordered (Ordered为第二优先级,关于 BeanFactoryPostProcessor 优先级在后面会说)
+				// 如果该 BeanDefinitionRegistryPostProcessor 不在processedBeans变量中且它的排序优先级为Ordered (Ordered为第二优先级，关于 BeanFactoryPostProcessor 优先级在后面会说)
 				// 注：BeanDefinitionRegistryPostProcessor 是BeanFactoryPostProcessor子接口
 				if (!processedBeans.contains(ppName) && beanFactory.isTypeMatch(ppName, Ordered.class)) {
 					// 根据类型名转为对应的 BeanDefinitionRegistryPostProcessor 存入List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors
@@ -186,7 +186,7 @@ final class PostProcessorRegistrationDelegate {
 			registryProcessors.addAll(currentRegistryProcessors);
 			// 遍历 currentRegistryProcessors, 执行 postProcessBeanDefinitionRegistry 方法
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry, beanFactory.getApplicationStartup());
-			// 清空 currentRegistryProcessors 所有元素(只删除元素不删除对象本身,集合对象长度为0且非null)
+			// 清空 currentRegistryProcessors 所有元素(只删除元素不删除对象本身，集合对象长度为0且非null)
 			currentRegistryProcessors.clear();
 
 
@@ -219,7 +219,7 @@ final class PostProcessorRegistrationDelegate {
 				registryProcessors.addAll(currentRegistryProcessors);
 				// 遍历 currentRegistryProcessors, 执行 postProcessBeanDefinitionRegistry 方法
 				invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry, beanFactory.getApplicationStartup());
-				// 清空 currentRegistryProcessors 所有元素(只删除元素不删除对象本身,集合对象长度为0且非null)
+				// 清空 currentRegistryProcessors 所有元素(只删除元素不删除对象本身，集合对象长度为0且非null)
 				currentRegistryProcessors.clear();
 			}
 
@@ -237,7 +237,7 @@ final class PostProcessorRegistrationDelegate {
 		}
 
 
-		// 到这里,入参 beanFactoryPostProcessors 和 容器中的所有 BeanDefinitionRegistryPostProcessor 已经全部处理完毕，下面开始处理容器中的所有BeanFactoryPostProcessor
+		// 到这里，入参 beanFactoryPostProcessors 和 容器中的所有 BeanDefinitionRegistryPostProcessor 已经全部处理完毕，下面开始处理容器中的所有BeanFactoryPostProcessor
 
 
 		// Do not initialize FactoryBeans here: We need to leave all regular beans uninitialized to let the bean factory post-processors apply to them!

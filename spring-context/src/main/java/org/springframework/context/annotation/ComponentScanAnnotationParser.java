@@ -67,7 +67,7 @@ class ComponentScanAnnotationParser {
 
 	public Set<BeanDefinitionHolder> parse(AnnotationAttributes componentScan, String declaringClass) {
 		/*
-		 * <Spring分析点41-1> 实例化一个扫描对象,完成对包的扫描解析工作
+		 * <Spring分析点41-1> 实例化一个扫描对象，完成对包的扫描解析工作
 		 * 注意:在此处之前也实例化了一个ClassPathBeanDefinitionScanner类型的scanner对象,
 		 * {@link AnnotationConfigApplicationContext#AnnotationConfigApplicationContext()}
 		 */

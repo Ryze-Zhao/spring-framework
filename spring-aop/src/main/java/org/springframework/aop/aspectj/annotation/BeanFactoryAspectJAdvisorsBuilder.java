@@ -103,9 +103,9 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 					String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 							this.beanFactory, Object.class, true, false);
 
-					// 遍历我们从IOC容器中获取处的所有Bean的名称，找出添加了@Aspect的类, 进行解析,注册到aspectNames列表
+					// 遍历我们从IOC容器中获取处的所有Bean的名称，找出添加了@Aspect的类, 进行解析，注册到aspectNames列表
 					for (String beanName : beanNames) {
-						// 不合法的bean则略过,由子类定义规则,默认返回true
+						// 不合法的bean则略过，由子类定义规则，默认返回true
 						if (!isEligibleBean(beanName)) {
 							continue;
 						}

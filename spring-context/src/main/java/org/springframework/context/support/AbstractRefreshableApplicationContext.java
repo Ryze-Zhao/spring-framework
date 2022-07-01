@@ -134,7 +134,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 			/*
 			 * 更新 allowBeanDefinitionOverriding 和 allowCircularReferences 的值，默认这段代码没用，不会修改默认值，除非你beanFactory.set*Name 修改了值
 			 *
-			 * 定制beanFactory,设置相关属性,包括是否允许覆盖同名称的不同定义的对象以及循环依赖
+			 * 定制beanFactory,设置相关属性，包括是否允许覆盖同名称的不同定义的对象以及循环依赖
 			 * 设置@Autowired和@Qualifer注解解析器QualifierAnnotationAutowire CandidateResolver
 			 */
 			customizeBeanFactory(beanFactory);

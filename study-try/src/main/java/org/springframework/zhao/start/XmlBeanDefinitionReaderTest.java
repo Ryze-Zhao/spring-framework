@@ -12,7 +12,7 @@ import org.springframework.zhao.start.service.CityService;
  */
 public class XmlBeanDefinitionReaderTest {
     public static void main(String[] args) {
-    	// 容器初始化阶段,保存 BeanDefinition
+    	// 容器初始化阶段，保存 BeanDefinition
 		ClassPathResource resource = new ClassPathResource("spring/start/bean/SpringConfig.xml");
 		DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
 		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);

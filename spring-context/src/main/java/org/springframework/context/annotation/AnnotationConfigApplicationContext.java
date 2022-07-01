@@ -95,9 +95,9 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 
 		/*
 		 *  ClassPathBeanDefinitionScanner: 可以用来扫描包或者类，继而转换成 BeanDefinition
-		 *      1.当初始化 AnnotationConfigApplicationContext 时传入的是配置类的Class信息时,在后面根据注解信息获取到包信息并扫描时使用的并不是这个scanner对象,
+		 *      1.当初始化 AnnotationConfigApplicationContext 时传入的是配置类的Class信息时，在后面根据注解信息获取到包信息并扫描时使用的并不是这个scanner对象,
 		 *      而是spring内部实例化的一个ClassPathBeanDefinitionScanner {@link ComponentScanAnnotationParser#parse(org.springframework.core.annotation.AnnotationAttributes, java.lang.String)}
-		 *      2.当初始化 AnnotationConfigApplicationContext 时传入的是配置类的包路径信息时,在{@link this#scan(String...)}方法中对包路径进行扫描时使用的是该scanner对象
+		 *      2.当初始化 AnnotationConfigApplicationContext 时传入的是配置类的包路径信息时，在{@link this#scan(String...)}方法中对包路径进行扫描时使用的是该scanner对象
 		 *  总之: 两种方式对包的扫描工作都是在{@link ClassPathBeanDefinitionScanner#doScan(String...)}中进行的
 		 *
 		 *  注意：

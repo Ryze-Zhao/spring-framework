@@ -189,7 +189,7 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 			else {
 				// Dynamic matching failed.
 				// Skip this interceptor and invoke the next in the chain.
-				// 如果动态匹配失败,则跳过该拦截器,执行下一个(递归)
+				// 如果动态匹配失败，则跳过该拦截器，执行下一个(递归)
 				return proceed();
 			}
 		}
@@ -198,7 +198,7 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 			// It's an interceptor, so we just invoke it: The pointcut will have
 			// been evaluated statically before this object was constructed.
 			/*
-			 * 执行每个拦截器, 会先执行前置通知,再执行后置通知
+			 * 执行每个拦截器, 会先执行前置通知，再执行后置通知
 			 *  后置增强: {@link AspectJAfterAdvice#invoke(org.aopalliance.intercept.MethodInvocation)}
 			 *  前置增强: {@link MethodBeforeAdviceInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)}
 			 *

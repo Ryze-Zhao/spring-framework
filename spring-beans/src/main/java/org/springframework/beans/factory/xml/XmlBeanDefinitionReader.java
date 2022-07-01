@@ -353,7 +353,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		Set<EncodedResource> currentResources = this.resourcesCurrentlyBeingLoaded.get();
 		if (!currentResources.add(encodedResource)) {
 			// 将当前资源加入记录缓存中。如果已存在，抛出异常
-			// 将encodedResource添加到currentResources集合中,如果添加失败,则抛出异常
+			// 将encodedResource添加到currentResources集合中，如果添加失败，则抛出异常
 			throw new BeanDefinitionStoreException("Detected cyclic loading of " + encodedResource + " - check your import definitions!");
 		}
 
@@ -362,7 +362,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		try (InputStream inputStream = encodedResource.getResource().getInputStream()) {
 			// <Spring分析点2-2> 从 EncodedResource 获取封装的 Resource ，并从 Resource 中获取其中的 InputStream ，然后将 InputStream 封装为 InputSource
 			InputSource inputSource = new InputSource(inputStream);
-			// 如果encodedResource中设置的编码不为空,则设置inputSource的编码
+			// 如果encodedResource中设置的编码不为空，则设置inputSource的编码
 			if (encodedResource.getEncoding() != null) {
 				inputSource.setEncoding(encodedResource.getEncoding());
 			}
@@ -374,7 +374,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 					"IOException parsing XML document from " + encodedResource.getResource(), ex);
 		}
 		finally {
-			// <Spring分析点2-3> 从记录缓存中剔除该资源 加载完毕,从记录缓存集合中将encodedResource移除
+			// <Spring分析点2-3> 从记录缓存中剔除该资源 加载完毕，从记录缓存集合中将encodedResource移除
 			currentResources.remove(encodedResource);
 			if (currentResources.isEmpty()) {
 				this.resourcesCurrentlyBeingLoaded.remove();

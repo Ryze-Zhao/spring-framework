@@ -560,7 +560,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * @see #setContextConfigLocation
 	 */
 	protected WebApplicationContext initWebApplicationContext() {
-		// 获取根节点上下文,通过ContextLoaderListener加载,服务器启动便加载
+		// 获取根节点上下文，通过ContextLoaderListener加载，服务器启动便加载
 		WebApplicationContext rootContext =
 				WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		WebApplicationContext wac = null;

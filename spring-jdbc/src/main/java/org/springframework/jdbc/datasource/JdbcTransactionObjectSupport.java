@@ -177,7 +177,7 @@ public abstract class JdbcTransactionObjectSupport implements SavepointManager, 
 		try {
 			// 回滚到保存点
 			conHolder.getConnection().rollback((Savepoint) savepoint);
-			// 重置回滚标记,不需要回滚
+			// 重置回滚标记，不需要回滚
 			conHolder.resetRollbackOnly();
 		}
 		catch (Throwable ex) {

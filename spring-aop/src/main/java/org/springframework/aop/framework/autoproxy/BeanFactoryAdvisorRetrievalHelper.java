@@ -85,7 +85,7 @@ public class BeanFactoryAdvisorRetrievalHelper {
 		}
 
 		List<Advisor> advisors = new ArrayList<>();
-		// 遍历所有增强器的名称,将其实例化（如果事务就是BeanFactoryTransactionAttributeSourceAdvisor）
+		// 遍历所有增强器的名称，将其实例化（如果事务就是BeanFactoryTransactionAttributeSourceAdvisor）
 		for (String name : advisorNames) {
 			// 判断是不是一个合适的bean
 			if (isEligibleBean(name)) {

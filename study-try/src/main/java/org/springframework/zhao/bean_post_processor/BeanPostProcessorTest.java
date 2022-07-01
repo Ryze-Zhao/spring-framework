@@ -9,7 +9,7 @@ import org.springframework.zhao.aware.MyApplicationAware;
 
 public class BeanPostProcessorTest {
     public static void main(String[] args) {
-	    // 容器初始化阶段,保存 BeanDefinition
+	    // 容器初始化阶段，保存 BeanDefinition
 	    ClassPathResource resource = new ClassPathResource("spring/bean_post_processor/bean/SpringConfig.xml");
 	    DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
 	    XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);

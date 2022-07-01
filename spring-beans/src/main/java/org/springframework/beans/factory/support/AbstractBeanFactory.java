@@ -275,8 +275,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 		// Eagerly check singleton cache for manually registered singletons.
 		// 直接尝试从缓存中获取或者从 singletonFactories 中的 ObjectFactory 中获取 Bean 对象 (从缓存中获取单例bean)
-		// 检查缓存中或者实例工厂中是否有对应的实例，为什么首先使用这段代码呢?因为在创建单例bean的时候会存在依赖注入的情况,而在创建依赖的时候为了避免循环依赖,
-		// Spring创建bean的原则是不等bean创建完成就会将创建bean的 objectFactory 提早曝光，也就是将 ObjectFactory 加入到缓存中,一旦下一个bean创建的时候需要依赖上一个bean则直接使用 ObjectFactory
+		// 检查缓存中或者实例工厂中是否有对应的实例，为什么首先使用这段代码呢?因为在创建单例bean的时候会存在依赖注入的情况，而在创建依赖的时候为了避免循环依赖,
+		// Spring创建bean的原则是不等bean创建完成就会将创建bean的 objectFactory 提早曝光，也就是将 ObjectFactory 加入到缓存中，一旦下一个bean创建的时候需要依赖上一个bean则直接使用 ObjectFactory
 		Object sharedInstance = getSingleton(beanName);
 		// 如果从缓存中获取到
 		if (sharedInstance != null && args == null) {
@@ -309,8 +309,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			 *
 			 * 注意:
 			 *  1、只有在单例情况下才会尝试解决循环依赖;
-			 *  2、原型模式情况下,如果存在A中有B的属性,B中有A的属性,那么当依赖注入的时候,就会产生当A还未创建完成的时候因为对于B的创建再次返回创建A,
-			 * 造成循环依赖,对于此种情况Spring选择抛出异常,而不是解决循环依赖;
+			 *  2、原型模式情况下，如果存在A中有B的属性,B中有A的属性，那么当依赖注入的时候，就会产生当A还未创建完成的时候因为对于B的创建再次返回创建A,
+			 * 造成循环依赖，对于此种情况Spring选择抛出异常，而不是解决循环依赖;
 			 *  2.1、因为isPrototypeCurrentlyInCreation(beanName)为true, 说明此时正在创建的原型类型的bean已经存在于正在创建的集合中,
 			 * 此时是对同一个bean的第二次创建, 然而第一次创建还未完成, 说明出现了循环依赖, 抛出异常;如果该bean是原型, 但是这是第一次创建, 可以正常向下执行
 			 *
@@ -325,8 +325,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			 *
 			 * !containsBeanDefinition(beanName):如果beanDefinitionMap中也就是当前加载的XML配置文件所生成的在类中不包括beanName,则尝试从parentBeanFactory中检测
 			 * 注意:
-			 *   如果原型模式的bean中出现循环依赖,那么就会抛出异常,并且程序将不再向下执行,如果原型模式的bean是第一次创建,那么可以继续执行
-			 *   如果是单例模式中有循环依赖,那么在后面创建单例模式的的bean时会针对循环依赖进行解决
+			 *   如果原型模式的bean中出现循环依赖，那么就会抛出异常，并且程序将不再向下执行，如果原型模式的bean是第一次创建，那么可以继续执行
+			 *   如果是单例模式中有循环依赖，那么在后面创建单例模式的的bean时会针对循环依赖进行解决
 			 */
 			BeanFactory parentBeanFactory = getParentBeanFactory();
 			// parentBeanFactory 不为空且 beanDefinitionMap 中不存该 name 的 BeanDefinition
@@ -371,7 +371,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				}
 				// <Spring分析点20-6> 从容器中获取 beanName 相应的 GenericBeanDefinition 对象，并将其转换为 RootBeanDefinition 对象
 
-				// 将存储XML配置文件的 GenericBeanDefinition 转换为 RootBeanDefinition,转换的同时如果父类bean不为空的话,则会合并父类的属性
+				// 将存储XML配置文件的 GenericBeanDefinition 转换为 RootBeanDefinition,转换的同时如果父类bean不为空的话，则会合并父类的属性
 				RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
 				// 检查给定的合并的 BeanDefinition
 				checkMergedBeanDefinition(mbd, beanName, args);
@@ -1264,7 +1264,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		Object curVal = this.prototypesCurrentlyInCreation.get();
 		/*
 		 * 如果正在创建的beanName是原型, 并且已经存在于prototypesCurrentlyInCreation(正在创建的原型类型bean集合)集合中
-		 * 如果是原型,并且已经存在于该集合中, 那么可以判断出此时该bean已经出现循环依赖, 那么对于原型类型, 不解决循环依赖,
+		 * 如果是原型，并且已经存在于该集合中, 那么可以判断出此时该bean已经出现循环依赖, 那么对于原型类型, 不解决循环依赖,
 		 * 而是抛出异常
 		 */
 		return (curVal != null &&
@@ -2039,7 +2039,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		 * 创建FactoryBean中的Bean
 		 * 注意：
 		 *  如果我们创建的bean就是我们所需要的bean,那么以上两步就可以满足业务要求
-		 *  如果需要使用FactoryBean的getObject()方法获取bean对象的话,需要下面的业务逻辑
+		 *  如果需要使用FactoryBean的getObject()方法获取bean对象的话，需要下面的业务逻辑
 		 *  加载FactoryBean(以下为通过beanFactory#getObject返回bean对象)
 		 */
 		Object object = null;
